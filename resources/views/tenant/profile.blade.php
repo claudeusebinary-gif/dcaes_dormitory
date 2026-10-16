@@ -239,25 +239,26 @@
                 Edit
             </a>
 
-            <h3 class="ruw"><span class="lab">Full Name</span><span class="val">{{ $u->full_name }}</span></h3>
+            <h3 class="ruw5"><span class="lab">Full Name</span><span class="val">{{ $u->full_name }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Email Address</span><span class="val">{{ $u->email }}</span></h3>
+            <h3 class="ruw5"><span class="lab">Email Address</span><span class="val">{{ $u->email }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Phone Number</span><span
+            <h3 class="ruw5"><span class="lab">Phone Number</span><span
                     class="val">{{ $u->phone_number ?: 'Not set' }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Birthdate</span><span class="val">{{ $u->birthday_label }}</span></h3>
+            <h3 class="ruw5"><span class="lab">Birthdate</span><span class="val">{{ $u->birthday_label }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Gender</span><span
+            <h3 class="ruw5"><span class="lab">Gender</span><span
                     class="val">{{ $u->sex ? ucfirst($u->sex) : 'Not set' }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Home Address</span><span class="val">{{ $u->address ?: 'Not set' }}</span>
+            <h3 class="ruw5"><span class="lab">Home Address</span><span class="val">{{ $u->address ?: 'Not set' }}</span>
             </h3>
             <hr class="hw5">
         </div>
-        <div class="personaleme">@php $u = auth()->user();
-        $ec = $u->emergencyContact; @endphp
-            <h1 class="stays">Emergency Contact<br><span>Who we call if something comes up</span></h1>
+       <div class="personal emergency">
+    @php $ec = $u->emergencyContact; @endphp
+
+    <h1 class="stays">Emergency Contact<br><span>Who we call if something comes up</span></h1>
 
             <a href="#" class="edit-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
@@ -270,15 +271,15 @@
 
             @php $ec = $u->emergencyContact; @endphp
 
-            <h3 class="ruw"><span class="lab">Contact Name</span><span class="val">{{ $ec?->name ?: 'Not set' }}</span></h3>
+            <h3 class="ruw5"><span class="lab">Contact Name</span><span class="val">{{ $ec?->name ?: 'Not set' }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Relationship</span><span
+            <h3 class="ruw5"><span class="lab">Relationship</span><span
                     class="val">{{ $ec?->relationship ?: 'Not set' }}</span></h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Phone Number</span><span class="val">{{ $ec?->phone ?: 'Not set' }}</span>
+            <h3 class="ruw5"><span class="lab">Phone Number</span><span class="val">{{ $ec?->phone ?: 'Not set' }}</span>
             </h3>
             <hr class="hw5">
-            <h3 class="ruw"><span class="lab">Address</span><span class="val">{{ $ec?->address ?: 'Not set' }}</span></h3>
+            <h3 class="ruw5"><span class="lab">Address</span><span class="val">{{ $ec?->address ?: 'Not set' }}</span></h3>
             <hr class="hw5">
         </div>
     </section>

@@ -1,27 +1,43 @@
 *.log
+npm-debug.log
+yarn-error.log
 .DS_Store
+Thumbs.db
+
+# environment and secrets
 .env
 .env.backup
 .env.production
-.phpactor.json
+/auth.json
+
+# dependencies
+/vendor
+/node_modules
+
+# build and generated files
+/public/build
+/public/hot
+/public/storage
+/public/fonts-manifest.dev.json
+/storage/*.key
+/storage/pail
+bootstrap/compiled.php
+
+# tests and tools
 .phpunit.result.cache
+/.phpunit.cache
+.phpactor.json
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+/.vagrant
+
+# editors
 /.codex
 /.cursor/
 /.idea
 /.nova
-/.phpunit.cache
 /.vscode
 /.zed
-/auth.json
-/node_modules
-/public/build
-/public/fonts-manifest.dev.json
-/public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
-_ide_helper.php
-Homestead.json
-Homestead.yaml
-Thumbs.db
+
+/database/*.sqlite

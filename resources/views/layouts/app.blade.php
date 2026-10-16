@@ -16,12 +16,14 @@
     <link rel="stylesheet" href="{{ asset('css/home.css') }}?v={{ filemtime(public_path('css/home.css')) }}">
      <link rel="stylesheet" href="{{ asset('css/profile.css') }}?v={{ filemtime(public_path('css/profile.css')) }}">
       <link rel="stylesheet" href="{{ asset('css/dorm.css') }}?v={{ filemtime(public_path('css/dorm.css')) }}">
+         <link rel="stylesheet" href="{{ asset('css/logout.css') }}?v={{ filemtime(public_path('css/logout.css')) }}">
+           <link rel="stylesheet" href="{{ asset('css/rooms.css') }}?v={{ filemtime(public_path('css/rooms.css')) }}">
     @stack('styles')
 </head>
 
 <body>
     @include('partials.sidebar')
-
+   @include('partials.logout-modal')
     <main class="main-content">
         @include('partials.notification-bell')
 
@@ -30,6 +32,7 @@
 
     <script src="{{ asset('js/sidebar.js') }}"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
+       <script src="{{ asset('js/logout-modal.js') }}"></script>
     @stack('scripts')
 </body>
 
