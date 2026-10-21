@@ -288,18 +288,7 @@
         <p class="find">Find your next room, check availability, and manage your stay — <br>all in one place.</p>
         <p class="find2">Featured Rooms</p>
         <hr class="hr1">
-        <div class="boxes">
-            <div class="box1">
-                <h1 class="roomp">Room 101</h1>&nbsp;<h1 class="roomp1">— Good For 6</h1>
-                <h1 class="roomp2">Double Bed For 2</h1>
-                <h1 class="roomp3">₱2,500 / month</h1>
-            </div>
-            <div class="box2">
-                <h1 class="roomp">Room 111</h1>&nbsp;<h1 class="roomp1">— Good For 6</h1>
-                <h1 class="roomp22">Double Bed For 2</h1>
-                <h1 class="roomp3">₱2,500 / month</h1>
-            </div>
-        </div>
+        @include('partials.featured-rooms', ['featured' => $featured])
         <h1 class="viewsa">View More.</h1>
         <p class="find3">Announcements</p>
         <hr class="hr2">

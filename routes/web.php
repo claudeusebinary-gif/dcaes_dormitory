@@ -8,6 +8,8 @@ use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureTenant;
 use App\Http\Middleware\NoStore;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ComplaintController;
+use App\Http\Controllers\SuggestionController;
 
 // Public: landing page with login / sign-up panels
 Route::get('/', [AuthController::class, 'show'])->middleware(NoStore::class)->name('login');
@@ -35,11 +37,14 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::get('/settings', [TenantController::class, 'settings'])->name('settings');
         Route::get('/marketplace', [TenantController::class, 'marketplace'])->name('marketplace');
         Route::get('/calendar', [TenantController::class, 'calendar'])->name('calendar');
+        Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');    
+        Route::post('/suggestions', [SuggestionController::class, 'store'])->name('suggestions.store');
 
         // Notification bell JSON API (old includes/notifications.php)
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->whereNumber('id')->name('notifications.read');
+        Route::post('/messages', [TenantController::class, 'sendMessage'])->middleware('throttle:10,1')->name('messages.send');
     });
 
     // Admin area (old Pages/Admin/admin.php)

@@ -565,44 +565,6 @@ body.sb-collapsed .dot {
     text-align: left;
 }
 
-.tap3 {
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.8rem;
-    color: #000000;
-    margin-top: 15px;
-    line-height: 1;
-    text-align: left;
-}
-
-.lagayns {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 14px;
-}
-
-.leetss {
-    width: 19px;
-    height: 19px;
-    border-radius: 4px;
-    background-color: #672C2C;
-}
-
-.uhner {
-    font-family: 'Nunito Sans', sans-serif;
-    font-weight: 700;
-    font-size: .9rem;
-    align-items: center;
-    color: #000000;
-}
-
-.lista {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-}
 
 .ri-detail[hidden] {
     display: none;
@@ -1002,4 +964,42 @@ body.sb-collapsed .dot {
 
 .mainnn-bed.available .rmd-bedstat {
     color: #2f5a3a;
+}
+.tap3 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: #000000;
+    margin-top: 15px;
+    line-height: 1;
+    text-align: left;
+}
+
+.lagayns {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+}
+
+.leetss {
+    width: 19px;
+    height: 19px;
+    border-radius: 4px;
+    background-color: #672C2C;
+}
+
+.uhner {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    align-items: center;
+    color: #000000;
+}
+
+.lista {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
 }

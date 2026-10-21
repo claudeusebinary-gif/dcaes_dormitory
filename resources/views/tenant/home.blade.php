@@ -84,18 +84,7 @@
     <h1 class="osass">A few of the rooms open right now.</h1>
     <h1 class="osasss">Real rooms, real availability — updated as soon as someone books or moves out.</h1>
     <hr class="hw1">
-    <div class="boxes">
-        <div class="box1">
-            <h1 class="roomp">Room 101</h1>&nbsp;<h1 class="roomp1">— Good For 6</h1>
-            <h1 class="roomp2">Double Bed For 2</h1>
-            <h1 class="roomp3">₱2,500 / month</h1>
-        </div>
-        <div class="box2">
-            <h1 class="roomp">Room 111</h1>&nbsp;<h1 class="roomp1">— Good For 6</h1>
-            <h1 class="roomp22">Double Bed For 2</h1>
-            <h1 class="roomp3">₱2,500 / month</h1>
-        </div>
-    </div>
+    @include('partials.featured-rooms', ['featured' => $featured])  
     <div class="bgg">
         <h1 class="da">THE PROCESS</h1>
         <p class="prom">From browsing to move-in, in three </p>

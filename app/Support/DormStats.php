@@ -8,6 +8,9 @@ use App\Models\User;
 
 class DormStats
 {
+    public const RESERVATION_FEE = 50;
+public const SECURITY_FEE    = 50;
+public const CLEAN_FEE       = 20;
     public const ROOMS = 17;
     public const BEDS_PER_ROOM = 6;   
     public const DECKS_PER_BED = 2;   
@@ -37,7 +40,14 @@ class DormStats
             'vacancies'       => max(0, $spaces - $occupied),
         ];
     }
-
+public static function fees(): array
+{
+    return [
+        'reservation' => self::RESERVATION_FEE,
+        'security'    => self::SECURITY_FEE,
+        'clean'       => self::CLEAN_FEE,
+    ];
+}
     public static function overview(): array
     {
         $perRoom = self::BEDS_PER_ROOM * self::DECKS_PER_BED;   
@@ -140,5 +150,32 @@ public static function bedTitle(\Illuminate\Support\Collection $occupants): stri
     }
 
     return $rooms;
+}
+public static function featuredRooms(int $limit = 2): \Illuminate\Support\Collection
+{
+    $counts = User::where('role', 'tenant')
+        ->whereNotNull('room_number')
+        ->selectRaw('room_number, count(*) as total')
+        ->groupBy('room_number')
+        ->pluck('total', 'room_number');
+
+    return Room::where('under_maintenance', false)
+        ->orderBy('room_number')
+        ->get()
+        ->map(function ($room) use ($counts) {
+            $capacity = $room->total_beds * self::DECKS_PER_BED;
+            $occupied = (int) ($counts[$room->room_number] ?? 0);
+
+            return [
+                'number' => $room->room_number,
+                'beds'   => $room->total_beds,
+                'decks'  => self::DECKS_PER_BED,
+                'price'  => (float) $room->price_per_bed,
+                'free'   => max(0, $capacity - $occupied),
+            ];
+        })
+        ->filter(fn ($room) => $room['free'] > 0)
+        ->take($limit)
+        ->values();
 }
 }

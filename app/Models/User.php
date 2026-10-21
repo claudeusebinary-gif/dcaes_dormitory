@@ -81,7 +81,10 @@ public function getBedLabelAttribute(): string
     {
         return $this->role === 'admin';
     }
-
+public function complaints(): HasMany
+{
+    return $this->hasMany(Complaint::class);
+}
     public function tenantNotifications(): HasMany
     {
         return $this->hasMany(Notification::class, 'tenant_id');

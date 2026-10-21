@@ -14,7 +14,7 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    /** Landing page with the login / sign-up panels. */
+   
     public function show(): View|RedirectResponse
     {
         if (Auth::check()) {
@@ -22,9 +22,10 @@ class AuthController extends Controller
         }
 
         return view('auth.index', [
-            // 'login' or 'signup' - which panel is visible
+        
             'view' => session('view', 'login'),
             'stats' => DormStats::get(),
+             'featured' => DormStats::featuredRooms(), 
         ]);
     }
 
