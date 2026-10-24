@@ -165,6 +165,10 @@
     display: flex;
     flex-direction: row;
     gap: 0;
+    transition: all 0.23s ease;
+}
+.roomstart:hover{
+    transform:translateY(-5px) ;
 }
 
 .saleft {
@@ -611,8 +615,6 @@
     position: relative;
     overflow: hidden;
     width: 40%;
-    height: auto;
-    min-height: 200px;
     background-color: #672C2C;
     display: flex;
     align-items: center;
@@ -633,8 +635,6 @@
     position: relative;
     overflow: hidden;
     width: 40%;
-    height: auto;
-    min-height: 200px;
     background-color: #672C2C;
     display: flex;
     align-items: center;
@@ -895,6 +895,9 @@
     margin-top: -5px;
 }
 .progress.progress--payment {
+    transform: translate(2px, 25px);
+}
+.progress{
     transform: translate(2px, 25px);
 }
 .goback {
@@ -1523,7 +1526,59 @@ justify-content: flex-start;
     border: 1px solid #672C2C;
     color: #672C2C;
 }
+[data-beds] .sixulit.free {
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+}
+[data-beds] .sixulit.free:hover {
+    transform: translateY(-2px);
+}
+[data-beds] .sixulit.free.selected {
+    background-color: #c4dcc7;
+    border: 2px solid #1e471d;
+    box-shadow: 0 0 0 3px rgba(30, 71, 29, .18);
+}
 
+.notes--modal {
+    width: 100%;
+    margin: 15px 0 0 0;
+    box-sizing: border-box;
+    align-items: center;
+}
+.notes--modal .box9 {
+    margin-top: 0;
+}
+
+.deckpick {
+    display: none;
+    margin-left: auto;          /* pushes it to the right */
+    align-items: center;
+    gap: 8px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+}
+.deckpick.is-visible { display: flex; }
+.deckpick button {
+    padding: 5px 14px;
+    border-radius: 6px;
+    border: 1px solid #90a094;
+    background: #fff;
+    cursor: pointer;
+    font: inherit;
+}
+.deckpick button.active {
+    background: #1e471d;
+    border-color: #1e471d;
+    color: #fff;
+}
+.bed-hint {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    color: #672C2C;
+    margin-top: 8px;
+    min-height: 1em;
+}
 .msg-status {
     margin: 12px 0 0;
     text-align: center;
@@ -1620,8 +1675,26 @@ justify-content: flex-start;
     background-color: #ffffff59;
     transition: background-color .25s ease;
 }
-
-
+.padiretso54{
+    margin-top: 15px;
+    width: 100%;
+    height: 1px;
+    border: none;
+    background-color: #00000027;
+    transition: background-color .25s ease;
+}
+.padiretso545{
+    margin-top: 15px;
+    width: 100%;
+     padding-left: 20px;
+    margin-left: -20px;
+    padding-right: 20px;
+    height: 0;                          
+    border: none;
+    border-top: 2px dotted #7a3030;   
+    background: none;
+    transition: border-color .25s ease; 
+}
 .progressh1,
 .nampad {
     font-family: 'Nunito Sans', sans-serif;
@@ -1663,8 +1736,6 @@ justify-content: flex-start;
     font-weight: 500;
     color: #fffefe85;
     display: flex;
-    margin: 30px 0 0;
-    transform: translateX(-220px);
 }
 .tintinant4 {
     font-family: 'Nunito Sans', sans-serif;
@@ -1672,8 +1743,14 @@ justify-content: flex-start;
     font-weight: 500;
     color: #fffefe85;
     display: flex;
-    margin: 30px 0 0 -90px;
-    transform: translateX(-220px);
+}
+.tintinant44 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fffefe85;
+    display: flex;
+    margin-bottom: -15px;
 }
 .tellme {
     font-family: 'Inria Serif', serif;
@@ -1682,11 +1759,27 @@ justify-content: flex-start;
     color: #ffffff;
     display: flex;
     margin: 10px 0 0;
-    transform: translateX(-150px);
+   
     display: flex;
     flex-direction: column;
 }
-
+.tellme23 {
+    font-family: 'Inria Serif', serif;
+    font-size: 2.3rem;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    display: flex;
+    flex-direction: column;
+}
+.tellme23 span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fffefe85;
+    display: flex;
+   margin-top: 10px;
+}
 .tellme span {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 1rem;
@@ -1709,6 +1802,21 @@ justify-content: flex-start;
     align-items: center;
     padding: 30px;
     gap: 20px;
+}
+.roomnabox2 {
+    width: 645px;
+    height: 110px;
+    background-color: #ffffff2a;
+    border: 1px solid #ffffff2d;
+    border-radius: 7px;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    padding: 30px;
+    gap: 20px;
+    margin-top: 5px;
 }
 
 .higaan {
@@ -1832,10 +1940,14 @@ justify-content: flex-start;
     display: flex;
     flex-direction: column;
     gap: 13px;
-    transform: translateX(-205px);
     margin-top: 30px;
 }
-
+.mgainfos2 {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 30px;
+}
 .padiretso42 {
     width: 645px;
     height: 1px;
@@ -2550,4 +2662,483 @@ width: 16px;
     margin-top: 30px;
     position: absolute;
     
+}
+.liftfat{
+    display: flex;
+    flex-direction: column;
+     margin-top: 35px;
+}
+.adjust{
+    display: flex;
+    margin-top: -35px;
+    margin-left: -5px;
+}
+.adjustagain{
+    display: flex;
+    margin-top: -24px;
+    margin-left: -4px;
+}
+
+.wala1 {
+    justify-content: flex-start;  
+    padding-top: 163px;           
+    box-sizing: border-box;
+}
+
+.adjust,
+.adjustagain {
+    display: contents;             
+}
+
+.wala1 .progress {
+    position: absolute;            
+    top: 100px;
+    left: 52px;
+    margin: 0;
+}
+.bagongtuo{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.bagongtuo h1{
+    font-family: 'Inria Serif', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 20px;
+    color: #000000;
+}
+.bagongtuo span{
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: -10px;
+    color: #00000080;
+    width: 520px;
+    text-align: center;
+}
+.chik{
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    background-color: #1e471d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chik svg{
+    height: 45px;
+    width: 45px;
+    color: rgb(255, 255, 255);
+}
+.dateofdating{
+    width: 300px;
+    height: 30px;
+    background-color: transparent;
+    border: 1px solid  #7c6c6c50;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+.dateofdating svg{
+    height: 20px;
+    width: 20px;
+   margin-bottom: -4px;
+}
+.dateofdating span{
+ font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #00000080;
+    margin-top: 1px;
+}
+.hatiinnatinmain{
+    display: flex;
+    flex-direction: row;
+    gap:    20px;
+     width: 952px;
+    height: auto;
+    margin-top: 20px;
+}
+.hatiinnatin{
+    width: 60%;
+    border: 1px solid #00000018;
+    height: auto;   
+    border-radius: 12px;
+    padding: 20px;
+}
+.hatiinnatin2{
+    height: auto;
+    width: 40%;
+    border: 1px solid #00000018;
+    border-radius: 12px;
+    padding: 20px;
+}
+.kakanan{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.kakanan1{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.kakanan1 h1{
+    margin: 0;                      
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #000000a2;
+    width: 200px;
+}
+
+.kakanan1 span{
+    margin: 0;                      
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 800;
+    color: #000000;
+    text-align: right;             
+}
+.kakanan12{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.kakanan12 h1{
+    margin: 0;                      
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #672C2C;
+    width: 200px;
+}
+
+.kakanan12 span{
+    margin: 0;                      
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #672C2C;
+    text-align: right;             
+}
+.receipt-title{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    text-align: left;
+}
+
+.kakanan h1{
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #000000;
+}
+
+.receipt-title span{
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .7rem;
+    font-weight: 500;
+    color: #797676;
+    text-align: left;
+}
+.receipt-title h1{
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #000000;
+    text-align: left;
+}
+.lagaw{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex-shrink: 0;
+    height: 29px;
+    padding: 0 20px;
+    border-radius: 999px;         
+    background-color: #6b8f71;     
+    color: #ffffff;               
+    white-space: nowrap;
+    margin-left: -100px;
+}
+
+.lagaw svg{
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+}
+
+.lagaw .pidsa{
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    color: #ffffff;
+}
+.redbg{
+    background-color: #672c2c2d;
+    height: 70px;
+    width: 100%;
+    padding-left: 20px;
+    margin-left: -20px;
+    padding-right: 20px;
+    margin-top: -5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+
+}
+.qrr{
+    display: flex;
+    flex-direction: row;
+    align-items: center;      
+    gap: 16px;               
+    width: 100%;
+    margin-top: 20px;
+}
+
+.qer{
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;           
+    margin: 0;             
+}
+
+.qrr h1{
+    display: block;          
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 400;        
+    line-height: 1.5;
+    color: #000000;
+    text-align: left;
+}
+
+.qrr h1 span{
+    display: inline;         
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: inherit;
+    font-weight: 700;       
+    color: #000000;
+    text-align: left;
+}
+.akingbutton{
+    display: flex;
+    flex-direction: row;
+     width: 952px;
+     gap:20px;
+     margin-top: 20px;
+}
+.akingbutton1{
+    width: 66%; 
+    height: 50px;
+    background-color: transparent;
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;        
+    color: #672C2C;
+    border: 1px solid #672C2C;
+    border-radius: 6px;
+    transition: all 0.23s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+}
+.akingbutton1:hover{
+    background-color: #672C2C;
+     border: 1px solid #672C2C;
+      color: #ffffff;
+}
+.akingbutton1 svg{
+    height: 20px;
+    width: 20px;
+    margin-top: -4px;
+}
+.akingbutton2{
+    width: 34%;
+    height: 50px;
+    background-color: #672C2C;
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;        
+    color: #ffffff;
+    border: 1px solid #672C2C;
+    border-radius: 6px;
+    transition: all 0.23s ease;
+    cursor: pointer;
+     display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-indent: 10px;
+}
+.akingbutton2 svg{
+    height: 20px;
+    width: 20px;
+    margin-top: -4px;
+}
+.akingbutton2:hover{
+    background-color: transparent;
+     color: #672C2C;
+    border: 1px solid #672C2C;
+}
+.hatiinnatin2 h1{
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;        
+    color: #672C2C;
+    margin-top: -1px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    gap:10px;
+}
+.hatiinnatin2 h1 svg{
+    height: 20px;
+    width: 20px;
+}
+.pabelow{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.stepby{
+    position: relative;           
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;     
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;               
+}
+
+
+.stepby:not(:last-child)::after{
+    content: "";
+    position: absolute;
+    left: 14.5px;                 
+    top: 30px;                   
+    height: calc(100% - 30px + 40px);   
+    width: 1px;
+    background-color: #00000026;
+}
+
+.stepby1{
+    position: relative;
+    z-index: 1;                  
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #672c2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stepby1 h1{
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+}
+
+.stepby span{
+    display: flex;
+    align-items: center;        
+    min-height: 30px;
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #000000;
+    width: 250px;
+    text-align: start;
+}
+.addmove{
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+.addmove h1{
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;        
+    color: #000000ad;
+    margin-top: -1px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    gap:5px;
+}
+.addmove h1 svg{
+    height: 15px;
+    width: 15px;
+}
+.addmove4{
+    display: flex;
+    flex-direction: row;
+    gap: 15px;
+}
+
+.needtooo .needtao{
+    display: block;             
+    margin: 0;                   
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .7rem;
+    font-weight: 600;
+    color: #000000ad;
+    text-align: left;
+}
+
+.needtooo .needtao span{
+    display: inline;            
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: inherit;
+    font-weight: 600;
+    color: #672C2C;              
+    text-decoration: underline;
+    cursor: pointer;
+    transition: opacity .2s ease;
+}
+
+.needtooo .needtao span:hover{
+    opacity: .75;
 }

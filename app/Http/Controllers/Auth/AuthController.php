@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use App\Models\Announcement;
 
 class AuthController extends Controller
 {
@@ -26,6 +27,7 @@ class AuthController extends Controller
             'view' => session('view', 'login'),
             'stats' => DormStats::get(),
              'featured' => DormStats::featuredRooms(), 
+              'announcements' => Announcement::current()->take(2)->get(),
         ]);
     }
 

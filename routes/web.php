@@ -11,7 +11,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\SuggestionController;
 
-// Public: landing page with login / sign-up panels
+
+// Public: landing page with login / sign-up panels 
 Route::get('/', [AuthController::class, 'show'])->middleware(NoStore::class)->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup');
@@ -45,10 +46,18 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.read-all');
         Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->whereNumber('id')->name('notifications.read');
         Route::post('/messages', [TenantController::class, 'sendMessage'])->middleware('throttle:10,1')->name('messages.send');
+        Route::post('/rooms/book', [TenantController::class, 'book'])->middleware('throttle:10,1')->name('rooms.book');
     });
 
     // Admin area (old Pages/Admin/admin.php)
     Route::middleware(EnsureAdmin::class)->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+        Route::view('/tenants',      'admin.page', ['title' => 'Tenants'])->name('tenants');
+Route::view('/announcement', 'admin.page', ['title' => 'Announcement'])->name('announcement');
+Route::view('/rooms',        'admin.page', ['title' => 'Rooms'])->name('rooms');
+Route::view('/payments',     'admin.page', ['title' => 'Payments'])->name('payments');
+Route::view('/complaints',   'admin.page', ['title' => 'Complaints'])->name('complaints');
+Route::view('/approvals',    'admin.page', ['title' => 'Approvals'])->name('approvals');
+Route::view('/settings',     'admin.page', ['title' => 'Settings'])->name('settings');
     });
 });

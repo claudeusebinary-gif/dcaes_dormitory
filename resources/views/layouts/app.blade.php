@@ -18,6 +18,7 @@
       <link rel="stylesheet" href="{{ asset('css/dorm.css') }}?v={{ filemtime(public_path('css/dorm.css')) }}">
          <link rel="stylesheet" href="{{ asset('css/logout.css') }}?v={{ filemtime(public_path('css/logout.css')) }}">
            <link rel="stylesheet" href="{{ asset('css/rooms.css') }}?v={{ filemtime(public_path('css/rooms.css')) }}">
+            <link rel="stylesheet" href="{{ asset('css/payments.css') }}?v={{ filemtime(public_path('css/payments.css')) }}">
     @stack('styles')
 </head>
 
@@ -25,7 +26,9 @@
     @include('partials.sidebar')
    @include('partials.logout-modal')
     <main class="main-content">
-        @include('partials.notification-bell')
+        @unless(auth()->user()->isAdmin())
+    @include('partials.notification-bell')
+@endunless
 
         @yield('content')
     </main>

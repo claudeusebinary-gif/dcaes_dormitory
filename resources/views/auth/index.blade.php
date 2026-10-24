@@ -46,7 +46,7 @@
                                 <path d="M2 7l10 6 10-6"></path>
                             </svg>
                             <div class="inputr">
-                                <input type="email" id="email" name="email" placeholder=" " required>
+                                <input type="text" id="email" name="email" placeholder=" " required>
                                 <label for="email">Email Address</label>
                             </div>
                         </div>
@@ -292,14 +292,15 @@
         <h1 class="viewsa">View More.</h1>
         <p class="find3">Announcements</p>
         <hr class="hr2">
-        <div class="anns">
-            <h1 class="wat">Water interruption scheduled on July 28, 8:00 AM – 12:00 PM. Please store water in advance.
-            </h1>
-        </div>
-        <div class="anns1">
-            <h1 class="wat1">Friendly reminder that August rent is due on the 5th. Message admin if you need an
-                extension.</h1>
-        </div>
+       @forelse ($announcements as $announcement)
+    <div class="{{ $loop->first ? 'anns' : 'anns1' }}">
+        <h1 class="{{ $loop->first ? 'wat' : 'wat1' }}">{{ $announcement->message }}</h1>
+    </div>
+@empty
+    <div class="anns">
+        <h1 class="wat">No announcements right now.</h1>
+    </div>
+@endforelse
         <div class="buttonsa"><button type="button" class="book" href="#">Book Now</button> <button type="button"
                 class="viewa" href="#">View Rooms</button></div>
     </section>

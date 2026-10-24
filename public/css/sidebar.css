@@ -393,3 +393,8 @@ body.sb-collapsed .sb-user {
         padding: 72px 18px 24px;
     }
 }
+.sb-user:disabled {
+    cursor: default;
+    pointer-events: none;
+    opacity: 1;
+}

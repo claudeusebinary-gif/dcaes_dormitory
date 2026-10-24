@@ -1,7 +1,8 @@
 @php
     $user = auth()->user();
-    $active = str_replace('tenant.', '', (string) request()->route()?->getName());
-     $roleLine = $user->room_number ? 'Tenant · Room ' . $user->room_number : 'Tenant';
+   $isAdmin  = $user->isAdmin();
+$active   = str_replace(['tenant.', 'admin.'], '', (string) request()->route()?->getName());
+$roleLine = $isAdmin ? 'Owner / Admin' : ($user->room_number ? 'Tenant · Room ' . $user->room_number : 'Tenant');
 
     $icons = [
         'menu' => '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
@@ -17,6 +18,10 @@
         'marketplace' => '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2 2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>',
         'calendar' => '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>',
         'chevron' => '<path d="m6 9 6 6 6-6"/>',
+        'dashboard'  => '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+'tenants'    => '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+'complaints' => '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+'approvals'  => '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
     ];
 
     $icon = fn (string $key) => '<svg class="sb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . $icons[$key] . '</svg>';
@@ -37,6 +42,21 @@
         ['key' => 'marketplace', 'label' => 'Tenant Marketplace', 'route' => 'tenant.marketplace'],
         ['key' => 'calendar',    'label' => 'Event Calendar',     'route' => 'tenant.calendar'],
     ];
+    if ($isAdmin) {
+    $menu = [
+        ['key' => 'dashboard',    'label' => 'Dashboard',    'route' => 'admin.dashboard'],
+        ['key' => 'tenants',      'label' => 'Tenants',      'route' => 'admin.tenants'],
+        ['key' => 'announcement', 'label' => 'Announcement', 'route' => 'admin.announcement'],
+        ['key' => 'rooms',        'label' => 'Rooms',        'route' => 'admin.rooms'],
+        ['key' => 'payments',     'label' => 'Payments',     'route' => 'admin.payments'],
+        ['key' => 'complaints',   'label' => 'Complaints',   'route' => 'admin.complaints'],
+        ['key' => 'approvals',    'label' => 'Approvals',    'route' => 'admin.approvals'],
+    ];
+    $preferences = [
+        ['key' => 'settings', 'label' => 'Settings', 'route' => 'admin.settings'],
+    ];
+    $userMenu = [];
+}
     $userMenuOpen = in_array($active, array_column($userMenu, 'key'), true);
 @endphp
 
@@ -58,7 +78,7 @@
         <ul>
             @foreach ($menu as $it)
                 <li>
-                    <a href="{{ route($it['route']) }}" class="sb-link{{ $it['key'] === $active ? ' active' : '' }}"
+                    <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}" class="sb-link{{ $it['key'] === $active ? ' active' : '' }}"
                         @if ($it['key'] === $active) aria-current="page" @endif title="{{ $it['label'] }}">
                         {!! $icon($it['key']) !!}
                         <span class="sb-label">{{ $it['label'] }}</span>
@@ -71,7 +91,7 @@
         <ul>
             @foreach ($preferences as $it)
                 <li>
-                    <a href="{{ route($it['route']) }}" class="sb-link{{ $it['key'] === $active ? ' active' : '' }}"
+                    <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}" class="sb-link{{ $it['key'] === $active ? ' active' : '' }}"
                         @if ($it['key'] === $active) aria-current="page" @endif title="{{ $it['label'] }}">
                         {!! $icon($it['key']) !!}
                         <span class="sb-label">{{ $it['label'] }}</span>
@@ -82,18 +102,20 @@
     </nav>
 
     <div class="sb-footer">
-        <button type="button" class="sb-user{{ $userMenuOpen ? ' open' : '' }}" id="sbUser"
-            aria-expanded="{{ $userMenuOpen ? 'true' : 'false' }}">
+    <button type="button" class="sb-user{{ $userMenuOpen ? ' open' : '' }}" id="sbUser"
+    aria-expanded="{{ $userMenuOpen ? 'true' : 'false' }}" {{ $isAdmin ? 'disabled' : '' }}>
             <span class="sb-avatar">{{ $user->initial }}</span>
             <span class="sb-userinfo">
                 <span class="sb-name">{{ $user->display_name }}</span>
                 <span class="sb-role">{{ $roleLine }}</span>
             </span>
-            <span class="sb-chevron">{!! $icon('chevron') !!}</span>
+            @unless($isAdmin)
+    <span class="sb-chevron">{!! $icon('chevron') !!}</span>
+@endunless
         </button>
         <div class="sb-usermenu" id="sbUserMenu" {{ $userMenuOpen ? '' : 'hidden' }}>
             @foreach ($userMenu as $it)
-                <a href="{{ route($it['route']) }}" class="sb-subitem{{ $it['key'] === $active ? ' active' : '' }}">
+                <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}" class="sb-subitem{{ $it['key'] === $active ? ' active' : '' }}">
                     {!! $icon($it['key']) !!}
                     <span>{{ $it['label'] }}</span>
                 </a>
