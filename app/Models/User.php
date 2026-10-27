@@ -17,7 +17,7 @@ class User extends Authenticatable
     'full_name', 'email', 'password', 'role',
     'room_number', 'bed_number', 'bed_deck', 'phone_number',
     'move_in_date', 'monthly_rent', 'payment_status',
-    'sex', 'birthday', 'address',
+       'sex', 'birthday', 'address', 'civil_status', 'occupation', 'billing_email',
 ];
 
 public function emergencyContact(): HasOne
@@ -116,7 +116,7 @@ public function getPaymentStatusLabelAttribute(): string
     };
 }
 
-/** CSS class used to color the status text. */
+
 public function getPaymentStatusClassAttribute(): string
 {
     return match ($this->payment_status) {

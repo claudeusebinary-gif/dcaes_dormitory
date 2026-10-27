@@ -1,0 +1,230 @@
+.locatesa{
+    display: flex;
+    flex-direction: row;
+    margin-top: 20px;
+    gap: 15px;
+}
+.locatesa1{
+    width: 75%;
+    height: 800px;
+    background-color: #ffffff;
+    border-radius: 9px;
+    border: 1px solid #00000023;
+    overflow: hidden;            
+    display: flex;
+    flex-direction: column;
+}
+
+.locatesa-map{
+    flex: 1;                    
+    width: 100%;
+    border: 0;
+    min-height: 0;
+}
+
+.locatesa-foot{
+    height: 52px;
+    flex: none;
+    padding: 0 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #00000015;
+    background: #ffffff;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.locatesa-name{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 800;
+    font-size: .95rem;
+    color: #000000;
+}
+.locatesa-name svg{
+    width: 18px;
+    height: 18px;
+    color: #672c2c;
+}
+
+.locatesa-coords{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #00000081;
+}
+.locatesa-coords a{
+    color: #672c2c;
+    font-weight: 800;
+    text-decoration: none;
+}
+.locatesa-coords a:hover{ text-decoration: underline; }
+.locatesa2{
+    width: 25%;
+    height: 800px;
+    background-color: #ffffff;
+    border-radius: 9px;
+    border: 1px solid #00000023;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    gap: 10px;
+    text-indent: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.contactandner{
+      font-family: 'Inria Serif', serif;
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #672c2c;
+    text-indent: 0;
+}
+.padiretso23175 {
+    width: 100%;
+    height: 1px;
+    border: none;
+    background-color: #00000027;
+    transition: background-color .25s ease;
+    margin-top: 10px;
+}
+.padiretso231756 {
+    width: 100%;
+    height: 1px;
+    border: none;
+    background-color: #00000027;
+    transition: background-color .25s ease;
+    margin-top: 15px;
+}
+.locatediv{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
+.locatediv h1{
+    font-family: 'Nunito Sans', sans-serif;
+    font-size:.9rem;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+   
+}
+.locatediv a{
+    font-family: 'Nunito Sans', sans-serif;
+    font-size:.9rem;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+
+    text-decoration: none;
+}
+.locatediv svg{
+    height: 20px;
+    width: 20px;
+    margin: 0;
+}
+.kuha{
+    font-family: 'Nunito Sans', sans-serif;
+    font-size:.8rem;
+    font-weight: 600;
+    color: #000000d2;
+    margin-top: -15px;
+    text-indent: 0;
+    
+}
+.tatlonalink{
+    margin-top: -10px;
+}
+.tatlonalink1{
+    height: 60px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0 20px;               
+    border-radius: 6px;
+    background: transparent;
+    border: 1px solid #0000002f;
+    cursor: pointer;
+    transition: all 0.23s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;    
+    text-decoration: none;
+    text-indent: 0;
+    margin-top: 15px;
+}
+.tatlonalink1:hover{
+    background-color: #672c2c15;
+    border: 1px solid #672c2c;
+}
+
+.tatlonalink1 .locatediv{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 14px;
+    width: 100%;
+    margin: 0;                      
+}
+.tatlonalink1 .locatediv svg{
+    flex: none;                     
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    color: #672c2c;
+}
+.tatlonalink1 .locatediv h1,
+.tatlonalink1 .locatediv a{
+    margin: 0;                       
+    line-height: 1;
+    text-indent: 0;
+}
+
+.invoss9 {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.invoss19 {
+    width: 50px;
+    height: 50px;
+    border-radius: 6px;
+    background-color: #672c2c44;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.invoss19 svg {
+    height: 20px;
+    width: 20px;
+    color: #672c2c;
+}
+
+.ibosses9 {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    gap: 5px;
+    text-indent: 13px;
+
+}
+.ibosses9 h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+}
+
+.ibosses9 span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #00000086;
+}

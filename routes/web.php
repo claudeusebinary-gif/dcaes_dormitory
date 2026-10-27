@@ -10,6 +10,7 @@ use App\Http\Middleware\NoStore;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\SuggestionController;
+use App\Http\Controllers\RoomRequestController;
 
 
 // Public: landing page with login / sign-up panels 
@@ -33,9 +34,12 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::get('/dorm', [TenantController::class, 'dorm'])->name('dorm');
         Route::get('/rooms', [TenantController::class, 'rooms'])->name('rooms');
         Route::get('/payments', [TenantController::class, 'payments'])->name('payments');
+        Route::post('/payments/pay', [TenantController::class, 'pay'])->middleware('throttle:10,1')->name('payments.pay');
         Route::get('/announcement', [TenantController::class, 'announcement'])->name('announcement');
         Route::get('/location', [TenantController::class, 'location'])->name('location');
         Route::get('/settings', [TenantController::class, 'settings'])->name('settings');
+        Route::put('/settings/general', [TenantController::class, 'updateGeneral'])->name('settings.general');
+        Route::put('/settings/billing-email', [TenantController::class, 'updateBillingEmail'])->name('settings.billing-email');
         Route::get('/marketplace', [TenantController::class, 'marketplace'])->name('marketplace');
         Route::get('/calendar', [TenantController::class, 'calendar'])->name('calendar');
         Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');    
@@ -47,6 +51,8 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::post('/notifications/{id}/read', [NotificationController::class, 'read'])->whereNumber('id')->name('notifications.read');
         Route::post('/messages', [TenantController::class, 'sendMessage'])->middleware('throttle:10,1')->name('messages.send');
         Route::post('/rooms/book', [TenantController::class, 'book'])->middleware('throttle:10,1')->name('rooms.book');
+        Route::post('/requests/maintenance', [RoomRequestController::class, 'maintenance'])->middleware('throttle:10,1')->name('requests.maintenance');
+        Route::post('/requests/transfer', [RoomRequestController::class, 'transfer'])->middleware('throttle:10,1')->name('requests.transfer');
     });
 
     // Admin area (old Pages/Admin/admin.php)

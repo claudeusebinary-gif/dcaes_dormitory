@@ -25,28 +25,36 @@ class Billing
         $today  = now()->startOfDay();
         $moveIn = Carbon::parse($user->move_in_date ?? $user->created_at)->startOfDay();
         $dueDay = $moveIn->day;
+        $paidPeriods = \App\Models\Payment::where('user_id', $user->id)->pluck('period')->all();
+        $paymentRows = \App\Models\Payment::where('user_id', $user->id)->get()->keyBy('period');
 
-        // 1) one bill per month, from the move-in month to 4 months ahead
+       
         $all  = [];
-        $last = $today->copy()->startOfMonth()->addMonths(4);
+$last = $moveIn->copy()->startOfMonth()->addMonths(2);
+$window = $today->copy()->startOfMonth()->addMonths(2);
+if ($window->gt($last)) $last = $window;     // keeps sliding forward as months pass
         for ($m = $moveIn->copy()->startOfMonth(); $m->lte($last); $m->addMonthNoOverflow()) {
             $due = $m->copy()->day(min($dueDay, $m->daysInMonth));
-            $all[] = [
-                'label'  => $m->format('F Y'),
-                'due'    => $due,
-                'amount' => $rent,
-                'status' => $due->gt($today) ? 'pending' : 'paid',
-            ];
+            $period = $m->format('Y-m');
+$all[] = [
+    'label'  => $m->format('F Y'),
+    'period' => $period,
+    'due'    => $due,
+    'amount' => $rent,
+    'status' => in_array($period, $paidPeriods, true)
+        ? 'paid'
+        : ($due->gt($today) ? 'pending' : 'paid'),
+];
         }
 
-        // 2) the latest bill whose due date has passed takes the tenant's real status
+       
         $latestPast = null;
         foreach ($all as $i => $inv) {
             if ($inv['due']->lte($today)) {
                 $latestPast = $i;
             }
         }
-        if ($latestPast !== null) {
+      if ($latestPast !== null && ! in_array($all[$latestPast]['period'], $paidPeriods, true)) {
             $all[$latestPast]['status'] = match ($user->payment_status) {
                 'overdue'    => 'overdue',
                 'up_to_date' => 'paid',
@@ -54,7 +62,7 @@ class Billing
             };
         }
 
-        // 3) the numbers for the cards
+     
         $overdue = array_filter($all, fn ($i) => $i['status'] === 'overdue');
         $paid    = array_filter($all, fn ($i) => $i['status'] === 'paid' && $i['due']->year === $today->year);
         $pending = array_values(array_filter($all, fn ($i) => $i['status'] === 'pending'));
@@ -64,8 +72,6 @@ class Billing
         $balance      = $overdueTotal + ($nextPending['amount'] ?? 0);
         $firstUnpaid  = $overdue ? reset($overdue) : $nextPending;
 
-        // 4) rows for the list (last 3 months + everything unpaid) and the full paid history
-        // list shows 6 invoices max: every unpaid one, topped up with the latest paid ones
         $unpaid     = array_values(array_filter($all, fn ($i) => $i['status'] !== 'paid'));
         $paidList   = array_values(array_filter($all, fn ($i) => $i['status'] === 'paid'));
         $spaceLeft  = max(0, 6 - count($unpaid));
@@ -73,10 +79,14 @@ class Billing
         $display    = array_slice($display, 0, 6);
         $history = array_reverse(array_values(array_filter($all, fn ($i) => $i['status'] === 'paid')));
 
-        $format = function (array $i) use ($user): array {
+        $format = function (array $i) use ($user, $paymentRows): array {
             $i['due_text'] = $i['due']->format('F j, Y');
             $i['paid_on']  = $i['due']->format('M j, Y');
             $i['ref']      = 'DAC-' . $i['due']->format('Ym') . '-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
+            $p = $paymentRows->get($i['period']);
+$i['paid_amount']  = $p ? (float) $p->amount : $i['amount'];
+$i['method']       = $p->method ?? 'Recorded by dorm';
+$i['paid_at_text'] = $p ? $p->paid_at->format('M j, Y g:i A') : $i['due']->format('M j, Y');
             $i['color']    = match ($i['status']) {
                 'paid'    => 'background-color:#90b49f',
                 'overdue' => 'background-color:#c9706f',
@@ -85,7 +95,23 @@ class Billing
             return $i;
         };
 
-        return [
+      $daysToDue = $firstUnpaid ? (int) $today->diffInDays($firstUnpaid['due'], false) : null;
+$nextDueSub = match (true) {
+    $daysToDue === null => 'Nothing due',
+    $daysToDue < 0      => abs($daysToDue) . ' day' . (abs($daysToDue) === 1 ? '' : 's') . ' overdue',
+    $daysToDue === 0    => 'Due today',
+    $daysToDue === 1    => 'Due tomorrow',
+    default             => 'In ' . $daysToDue . ' days',
+};
+$ordinal = in_array($dueDay % 100, [11, 12, 13], true)
+    ? 'th'
+    : ([1 => 'st', 2 => 'nd', 3 => 'rd'][$dueDay % 10] ?? 'th');
+
+return [
+    'rent_text'     => '₱' . number_format($rent, 2),
+    'due_day_text'  => $dueDay . $ordinal,
+    'next_due_text' => $firstUnpaid ? $firstUnpaid['due']->format('M j') : '—',
+    'next_due_sub'  => $nextDueSub,
             'room'          => $user->room_number,
             'rent'          => $rent,
             'invoices'      => array_map($format, $display),
@@ -119,6 +145,7 @@ class Billing
     {
         return [
             'room' => $room, 'rent' => 0, 'invoices' => [], 'history' => [],
+            'rent_text' => '₱0.00', 'due_day_text' => null, 'next_due_text' => '—', 'next_due_sub' => 'No room booked yet',
             'balance_text' => '₱0', 'balance_sub' => 'No balance due',
             'overdue_text' => '₱0', 'overdue_sub' => 'No overdue invoices',
             'paid_text'    => '₱0', 'paid_sub'    => '0 payments in ' . now()->year,

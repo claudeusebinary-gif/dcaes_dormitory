@@ -19,6 +19,10 @@
          <link rel="stylesheet" href="{{ asset('css/logout.css') }}?v={{ filemtime(public_path('css/logout.css')) }}">
            <link rel="stylesheet" href="{{ asset('css/rooms.css') }}?v={{ filemtime(public_path('css/rooms.css')) }}">
             <link rel="stylesheet" href="{{ asset('css/payments.css') }}?v={{ filemtime(public_path('css/payments.css')) }}">
+            <link rel="stylesheet" href="{{ asset('css/animations.css') }}?v={{ filemtime(public_path('css/animations.css')) }}">
+             <link rel="stylesheet" href="{{ asset('css/announcement.css') }}?v={{ filemtime(public_path('css/announcement.css')) }}">
+              <link rel="stylesheet" href="{{ asset('css/location.css') }}?v={{ filemtime(public_path('css/location.css')) }}">
+               <link rel="stylesheet" href="{{ asset('css/settings.css') }}?v={{ filemtime(public_path('css/settings.css')) }}">
     @stack('styles')
 </head>
 
@@ -40,3 +44,4 @@
 </body>
 
 </html>
+<script src="{{ asset('js/animations.js') }}"></script>

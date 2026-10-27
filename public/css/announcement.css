@@ -1,0 +1,467 @@
+.fournafourbox {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.fournafourbox1 {
+    width: 100%;
+    height: 70px;
+    border-radius: 9px;
+    background-color: #ffffff;
+    border: 1px solid #00000017;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+.fournafourbox1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .5rem;
+    font-weight: 600;
+    color: #672c2c;
+    margin-bottom: 10px;
+}
+
+.fourbox1four {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -30px;
+}
+
+.fourbox1four h1 {
+    font-family: 'Inria Serif', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000000;
+
+}
+
+.totalposted {
+    width: 42px;
+    height: 42px;
+    background-color: #672c2c54;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.totalposted svg {
+    height: 20px;
+    width: 20px;
+    color: #672c2c;
+}
+
+.sixnabelog {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin-top: 10px;
+}
+
+.sixnabelog1 {
+    width: 80px;
+    height: 30px;
+    background-color: #FFFFFF;
+    border: 1px solid #0000001f;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.sixnabelog1:hover {
+    background-color: #672c2c42;
+}
+
+.sixnabelog1 h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #000000;
+}
+
+.boxnabrown {
+    width: 100%;
+    max-height: 600px;
+    margin-top: 20px;
+    padding: 40px;
+    box-sizing: border-box;
+    background-color: #E2D5BE;
+    border-radius: 12px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.25);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.boxnabrown1 {
+    width: 100%;
+    height: 250px;
+    box-sizing: border-box;
+    padding-bottom: 20px;
+    background-color: #FFFCF7;
+    border-radius: 0 0 10px 10px;
+    border-top: 8px solid #672c2c;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    text-indent: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.boxnabrown1 {
+    position: relative;
+}
+
+.boxnabrown1::before {
+    content: "";
+    position: absolute;
+    top: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #B5736B;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='22' y1='2' x2='11' y2='13'/%3E%3Cpolygon points='22 2 15 22 11 13 2 9 22 2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 14px 14px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.toppay {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 800;
+    color: #C98A2C;
+    margin-top: 15px;
+}
+
+.rentdue {
+    font-family: 'Inria Serif', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000000;
+    margin-top: -2px;
+}
+
+.friendlyreminder {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000000a8;
+    margin-top: -2px;
+    width: 349px;
+    text-indent: 0;
+    margin-left: 20px;
+
+}
+
+.unpdaid {
+    width: 110px;
+    height: 25px;
+    border-radius: 9999px;
+    background-color: #E2D5BE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    margin-top: auto;
+}
+
+.unpdaid span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .7rem;
+    font-weight: 800;
+    color: #672c2c;
+    text-indent: 0;
+}
+
+.unpdaid2 {
+    width: 110px;
+    height: 24px;
+    border-radius: 9999px;
+    background-color: #EFE7D9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+}
+
+.unpdaid2 span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .6rem;
+    font-weight: 800;
+    color: #000000;
+    text-indent: 0;
+}
+
+.unpdaid2main {
+    width: 100%;
+    box-sizing: border-box;
+    padding-right: 30px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.unpdaid2main h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #00000081;
+    margin: 0;
+    text-indent: 0;
+}
+
+.boxnabrown1 {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.boxnabrown1:hover {
+    transform: rotate(0deg) translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.is-hidden {
+    display: none !important;
+}
+
+.boxnabrown {
+    height: auto;
+    min-height: 600px;
+    grid-template-rows: none;
+    grid-auto-rows: 250px;
+    align-content: start;
+}
+
+.boxnabrown1 {
+    transform: rotate(var(--rot, 0deg));
+}
+
+.sixnabelog1.active {
+    background-color: #672c2c;
+}
+
+.sixnabelog1.active h1 {
+    color: #ffffff;
+}
+
+.sixnabelog1.active:hover {
+    background-color: #672c2c;
+}
+
+.statcard {
+    cursor: pointer;
+    transition: all .23s ease;
+}
+
+.statcard:hover {
+    border-color: #672c2c;
+}
+
+.statcard.active-stat {
+    border: 1px solid #672c2c;
+    box-shadow: 0 0 0 2px #672c2c26;
+}
+
+.pinned-mark {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 18px;
+    height: 18px;
+    color: #672c2c;
+    text-indent: 0;
+}
+
+.pinned-mark svg {
+    width: 100%;
+    height: 100%;
+}
+
+.ann-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #672c2c99;
+}
+
+.ann-pager {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 20px 0;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.ann-pager button {
+    min-width: 36px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 9999px;
+    background: #fff;
+    border: 1px solid #0000001f;
+    cursor: pointer;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #000;
+    transition: all .23s ease;
+}
+
+.ann-pager button:hover:not(:disabled) {
+    background: #672c2c42;
+}
+
+.ann-pager button.current {
+    background: #672c2c;
+    border-color: #672c2c;
+    color: #fff;
+}
+
+.ann-pager button:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.ann-pager span {
+    margin-left: 12px;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #00000081;
+}
+
+.ann-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, .45);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.ann-overlay.open {
+    display: flex;
+}
+
+.ann-modal {
+    position: relative;
+    background: #FFFCF7;
+    width: 100%;
+    max-width: 520px;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, .3);
+    font-family: 'Nunito Sans', sans-serif;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.ann-modal-bar {
+    height: 8px;
+    background: #672c2c;
+}
+
+.ann-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: #EFE7D9;
+    color: #672c2c;
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.ann-close:hover {
+    background: #E2D5BE;
+}
+
+.ann-modal-body {
+    padding: 26px 30px 30px;
+}
+
+.ann-cat {
+    margin: 0 0 6px;
+    font-size: .8rem;
+    font-weight: 800;
+}
+
+.ann-modal h2 {
+    margin: 0 0 14px;
+    font-family: 'Inria Serif', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #000;
+    padding-right: 30px;
+}
+
+.ann-text {
+    margin: 0 0 22px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000000a8;
+    line-height: 1.5;
+}
+
+.ann-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.ann-meta div {
+    flex: 1;
+    min-width: 120px;
+    background: #EFE7D9;
+    border-radius: 9px;
+    padding: 10px 14px;
+}
+
+.ann-meta span {
+    display: block;
+    font-size: .7rem;
+    font-weight: 800;
+    color: #00000081;
+}
+
+.ann-meta strong {
+    font-size: .9rem;
+    font-weight: 800;
+    color: #000;
+}
+.sixnabelog{
+    align-items: center;
+    flex-wrap: wrap;          
+}
+.sixnabelog .ann-pager{
+    margin: 0 0 0 auto;        
+    justify-content: flex-end;
+}
