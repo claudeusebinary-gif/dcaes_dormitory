@@ -18,6 +18,7 @@ class User extends Authenticatable
     'room_number', 'bed_number', 'bed_deck', 'phone_number',
     'move_in_date', 'monthly_rent', 'payment_status',
        'sex', 'birthday', 'address', 'civil_status', 'occupation', 'billing_email',
+'notification_prefs',
 ];
 
 public function emergencyContact(): HasOne
@@ -45,6 +46,7 @@ public function getAgeAttribute(): ?int
         'move_in_date' => 'date',
         'monthly_rent' => 'decimal:2',
         'birthday' => 'date',
+        'notification_prefs' => 'array',
     ];
 }
 public function getMoveInDateLabelAttribute(): string
@@ -66,7 +68,7 @@ public function roommates(): HasMany
         ->where('role', 'tenant')
         ->where('id', '!=', $this->id);
 }
-/** e.g. "2 (Upper Deck)", or "Not assigned" */
+
 public function getBedLabelAttribute(): string
 {
     if (! $this->bed_number) {
@@ -76,6 +78,24 @@ public function getBedLabelAttribute(): string
     return $this->bed_deck
         ? $this->bed_number . ' (' . ucfirst($this->bed_deck) . ' Deck)'
         : $this->bed_number;
+}
+public const NOTIFICATION_DEFAULTS = [
+    'email_payment'       => true,
+    'email_announcements' => true,
+    'email_maintenance'   => true,
+    'push_due'            => true,
+    'sms_urgent'          => true,
+    'sms_due'             => true,
+];
+
+public function notificationPrefs(): array
+{
+    return array_merge(self::NOTIFICATION_DEFAULTS, (array) $this->notification_prefs);
+}
+
+public function wantsNotification(string $key): bool
+{
+    return (bool) ($this->notificationPrefs()[$key] ?? false);
 }
     public function isAdmin(): bool
     {
@@ -98,7 +118,6 @@ public function setBedDeckAttribute($value): void
 {
     $this->attributes['bed_deck'] = $value ? ucfirst(strtolower($value)) : null;
 }
-    /** First letter of the display name, used for the sidebar avatar. */
     public function getInitialAttribute(): string
     {
         return mb_strtoupper(mb_substr($this->display_name, 0, 1));

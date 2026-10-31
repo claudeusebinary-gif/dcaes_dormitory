@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('paid_at');
             $table->timestamps();
 
-            $table->unique(['user_id', 'period']);     // a month can only be paid once
+            $table->unique(['user_id', 'period']);    
         });
     }
 

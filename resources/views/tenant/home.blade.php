@@ -3,12 +3,16 @@
 @section('title', 'Home')
 
 @section('content')
-    <h1 class="tit">Home</h1>
-    <h1 class="ba">Here's what's happening with your dormitory account.</h1>
-    <div class="now">
+@section('page_title', 'Home')
+@section('page_subtitle', "Here's what's happening with your dormitory account.")
+<div class="pangbaabbaaba">    <div class="now">
         <h1 class="tul">•</h1>
         <h1 class="nows">NOW ACCEPTING MOVE-INS FOR THIS TERM</h1>
     </div>
+   
+       
+        <h1 class="nowsr">Welcome Juelle Villarosa!</h1>
+   
     <div class="texss">
         <h1 class="ts">A room, a bed,<br> and a place that <br> feels like <span class="red">yours.</span> </h1>
     </div>
@@ -125,7 +129,8 @@
 
         </div>
 
-    </div>
+    </div></div>
+ 
     <h1 class="ov2">Overview</h1>
     <hr class="hw2">
     <div class="sixb">

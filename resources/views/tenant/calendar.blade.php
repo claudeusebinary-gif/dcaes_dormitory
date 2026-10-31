@@ -3,5 +3,5 @@
 @section('title', 'Calendar')
 
 @section('content')
-    <h1 class="tit">Calendar</h1>
+   @section('page_title', 'Calendar')
 @endsection

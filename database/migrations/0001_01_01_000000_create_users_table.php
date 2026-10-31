@@ -4,11 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-/**
- * Replaces Laravel's default users migration (same filename, so it overwrites it).
- * Keeps the columns from the original daces_db: full_name, email, role.
- * The old `password_hash` column is now Laravel's standard `password` column.
- */
+
 return new class extends Migration
 {
     public function up(): void

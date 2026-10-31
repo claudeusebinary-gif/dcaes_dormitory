@@ -9,7 +9,7 @@ class RoomRequest extends Model
 {
     protected $fillable = [
         'user_id', 'type', 'room_number', 'category', 'urgency',
-        'target_room', 'target_bed', 'target_deck', 'reason', 'details', 'status',
+       'target_room', 'target_bed', 'target_deck', 'reason', 'details', 'status', 'move_out_date',
     ];
 
     public function user(): BelongsTo

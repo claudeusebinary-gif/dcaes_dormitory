@@ -15,7 +15,6 @@ class Announcement extends Model
         'ends_at'   => 'datetime',
     ];
 
-    /** Active, already started, not yet expired - newest first. */
     public function scopeCurrent(Builder $query): Builder
     {
         return $query

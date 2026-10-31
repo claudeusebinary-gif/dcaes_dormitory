@@ -23,6 +23,7 @@
              <link rel="stylesheet" href="{{ asset('css/announcement.css') }}?v={{ filemtime(public_path('css/announcement.css')) }}">
               <link rel="stylesheet" href="{{ asset('css/location.css') }}?v={{ filemtime(public_path('css/location.css')) }}">
                <link rel="stylesheet" href="{{ asset('css/settings.css') }}?v={{ filemtime(public_path('css/settings.css')) }}">
+                <link rel="stylesheet" href="{{ asset('css/marketplace.css') }}?v={{ filemtime(public_path('css/marketplace.css')) }}">
     @stack('styles')
 </head>
 
@@ -30,13 +31,26 @@
     @include('partials.sidebar')
    @include('partials.logout-modal')
     <main class="main-content">
-        @unless(auth()->user()->isAdmin())
-    @include('partials.notification-bell')
-@endunless
+        <header class="topbar">
+            <div class="topbar-text">
+                <h1 class="topbar-title">@yield('page_title', trim($__env->yieldContent('title')))</h1>
+                <p class="topbar-sub">@yield('page_subtitle')</p>
+            </div>
+
+            <div class="topbar-actions">
+                @yield('page_action')
+
+                @unless(auth()->user()->isAdmin())
+                    @include('partials.notification-bell')
+                @endunless
+            </div>
+        </header>
 
         @yield('content')
     </main>
-
+    @unless(auth()->user()->isAdmin())
+        @include('partials.chatbox')
+    @endunless
     <script src="{{ asset('js/sidebar.js') }}"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
        <script src="{{ asset('js/logout-modal.js') }}"></script>

@@ -100,4 +100,40 @@ class RoomRequestController extends Controller
 
         return response()->json(['ok' => true, 'message' => 'Transfer request sent. Management will review it.']);
     }
+        public function moveOut(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->room_number) {
+            return response()->json(['message' => 'You do not have a room to leave.'], 422);
+        }
+
+        $data = $request->validate([
+            'move_out_date' => ['required', 'date', 'after_or_equal:' . now()->addDays(30)->toDateString()],
+            'reason'        => ['required', Rule::in(['graduating', 'transfer', 'moving_off', 'financial', 'family', 'other'])],
+            'details'       => ['nullable', 'string', 'max:1000'],
+        ], [
+            'move_out_date.required'        => 'Please choose your preferred move-out date.',
+            'move_out_date.after_or_equal'  => 'Requests must be submitted at least 30 days before your move-out date.',
+            'reason.required'               => 'Please select a reason.',
+        ]);
+
+        $pending = RoomRequest::where('user_id', $user->id)
+            ->where('type', 'move_out')->where('status', 'pending')->exists();
+
+        if ($pending) {
+            return response()->json(['message' => 'You already have a pending move-out request.'], 409);
+        }
+
+        RoomRequest::create([
+            'user_id'       => $user->id,
+            'type'          => 'move_out',
+            'room_number'   => $user->room_number,
+            'reason'        => $data['reason'],
+            'details'       => $data['details'] ?? null,
+            'move_out_date' => $data['move_out_date'],
+        ]);
+
+        return response()->json(['ok' => true, 'message' => 'Move-out request sent. Dorm management will follow up with clearance steps.']);
+    }
 }

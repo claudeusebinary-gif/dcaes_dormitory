@@ -14,6 +14,10 @@ use Illuminate\Support\Carbon;
 use App\Support\Billing;
 use App\Models\Payment;
 use Illuminate\Validation\Rule;
+use App\Models\RoomRequest;
+use App\Models\Notification;
+use App\Models\MarketplaceItem;
+use Illuminate\Support\Facades\Storage;
 
 class TenantController extends Controller
 {
@@ -258,6 +262,10 @@ public function sendMessage(Request $request): JsonResponse
         'billing'         => Billing::forUser($request->user()),
         'transferOptions' => $transferOptions,
         'myRoom' => Room::where('room_number', $request->user()->room_number)->first(),
+        'sessions' => $this->activeSessions($request),
+    'pendingMoveOut' => RoomRequest::where('user_id', $request->user()->id)
+->where('type', 'move_out')->where('status', 'pending')->latest()->first(),
+        
     ]);
 }
     public function updateGeneral(Request $request)
@@ -314,6 +322,211 @@ public function updateBillingEmail(Request $request): JsonResponse
         'email'   => $data['billing_email'],
     ]);
 }
-    public function marketplace(): View { return view('tenant.marketplace'); }
+public function updateNotifications(Request $request): JsonResponse
+{
+    $rules = [];
+    foreach (array_keys(User::NOTIFICATION_DEFAULTS) as $key) {
+        $rules[$key] = ['required', 'boolean'];
+    }
+    $data = $request->validate($rules);
+
+    $request->user()->update(['notification_prefs' => $data]);
+
+    return response()->json(['ok' => true, 'message' => 'Notification settings saved.']);
+}
+
+public function updatePassword(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'current_password' => ['required', 'current_password'],
+        'password'         => ['required', 'string', 'min:8', 'confirmed', 'different:current_password'],
+    ], [
+        'current_password.required'         => 'Please enter your current password.',
+        'current_password.current_password' => 'Your current password is incorrect.',
+        'password.required'                 => 'Please enter a new password.',
+        'password.min'                      => 'New password must be at least 8 characters.',
+        'password.confirmed'                => 'New passwords do not match.',
+        'password.different'                => 'New password must be different from the current one.',
+    ]);
+
+    $user = $request->user();
+    $user->update(['password' => $data['password']]);   // hashed by the model cast
+
+    // sign out every OTHER device
+    DB::table('sessions')
+        ->where('user_id', $user->id)
+        ->where('id', '!=', $request->session()->getId())
+        ->delete();
+
+    return response()->json(['ok' => true, 'message' => 'Password updated. Other devices were logged out.']);
+}
+
+public function logoutSession(Request $request, string $id): JsonResponse
+{
+    if ($id === $request->session()->getId()) {
+        return response()->json(['message' => 'Use the Log out button in the sidebar to sign out this device.'], 422);
+    }
+
+    DB::table('sessions')->where('id', $id)->where('user_id', $request->user()->id)->delete();
+
+    return response()->json(['ok' => true, 'message' => 'Device logged out.']);
+}
+
+private function activeSessions(Request $request)
+{
+    $currentId = $request->session()->getId();
+
+    return DB::table('sessions')
+        ->where('user_id', $request->user()->id)
+        ->orderByDesc('last_activity')
+        ->get()
+        ->map(fn ($s) => (object) [
+            'id'      => $s->id,
+            'current' => $s->id === $currentId,
+            'device'  => $this->describeAgent($s->user_agent),
+            'ip'      => $s->ip_address ?: 'Unknown IP',
+            'last'    => Carbon::createFromTimestamp($s->last_activity),
+        ]);
+}
+
+private function describeAgent(?string $ua): string
+{
+    $ua = (string) $ua;
+
+    $browser = match (true) {
+        str_contains($ua, 'Edg/')    => 'Edge',
+        str_contains($ua, 'OPR/')    => 'Opera',
+        str_contains($ua, 'Firefox') => 'Firefox',
+        str_contains($ua, 'Chrome')  => 'Chrome',
+        str_contains($ua, 'Safari')  => 'Safari',
+        default                      => 'Unknown browser',
+    };
+    $os = match (true) {
+        str_contains($ua, 'Windows')                              => 'Windows',
+        str_contains($ua, 'Android')                              => 'Android',
+        str_contains($ua, 'iPhone') || str_contains($ua, 'iPad')  => 'iOS',
+        str_contains($ua, 'Mac OS')                               => 'macOS',
+        str_contains($ua, 'Linux')                                => 'Linux',
+        default                                                   => 'Unknown OS',
+    };
+
+    return $browser . ' on ' . $os;
+}
+private function marketplacePayload(MarketplaceItem $m): array
+{
+    $s = $m->seller;
+
+    return [
+        'id'        => $m->id,
+        'category'  => $m->category,
+        'title'     => $m->title,
+        'price'     => $m->price,
+        'desc'      => $m->description ?: 'No description.',
+        'seller_id' => $s->id,
+        'seller'    => $s->full_name,
+        'initial'   => mb_strtoupper(mb_substr(trim($s->full_name), 0, 1)),
+        'room'      => $s->room_number ? 'Room ' . $s->room_number : 'No room yet',
+        'photos'    => collect($m->photos ?? [])->map(fn ($p) => asset('storage/' . $p))->values()->all(),
+    ];
+}
+
+public function marketplace(): View
+{
+    // First visit only: save the 9 sample listings, spread across the 6 seller accounts.
+    if (MarketplaceItem::count() === 0) {
+        $sellers = User::where('role', 'tenant')->orderBy('id')->take(6)->get();
+
+        if ($sellers->isNotEmpty()) {
+            $seed = [
+                ['Electronics',      'Mini Fridge (Small)',      500, 'Barely used, great for snacks and drinks. Pickup at the seller\'s room.'],
+                ['Furniture',        'Study Table + Chair',      900, 'Foldable study desk, good condition. Need gone by Friday.'],
+                ['Books & Supplies', 'College Algebra Textbook', 250, 'Used one semester, minimal highlights. 4th edition.'],
+                ['Furniture',        'Extra Blanket & Pillow',     0, 'Clean, just don\'t need two sets anymore. First come first served.'],
+                ['Electronics',      'Electric Kettle',          450, '1.5L capacity, auto shut-off. Works perfectly.'],
+                ['Clothing',         'Denim Jacket (M)',         350, 'Worn a few times, true to size medium.'],
+                ['Food',             'Instant Noodles (12 pcs)', 120, 'Unopened box, expires next year.'],
+                ['Electronics',      'Desk Lamp',                200, 'Adjustable arm, warm light. Bulb included.'],
+                ['Books & Supplies', 'Used Notebooks (5)',         0, 'Half-used, still plenty of pages. Free to anyone.'],
+            ];
+
+            // Insert in reverse so the first sample ends up first in the list (newest id = top).
+            foreach (array_reverse($seed, true) as $i => $row) {
+                MarketplaceItem::create([
+                    'seller_id'   => $sellers[$i % $sellers->count()]->id,
+                    'category'    => $row[0],
+                    'title'       => $row[1],
+                    'price'       => $row[2],
+                    'description' => $row[3],
+                ]);
+            }
+        }
+    }
+
+    $items = MarketplaceItem::with('seller')->latest('id')->get()
+        ->map(fn ($m) => $this->marketplacePayload($m))
+        ->values();
+
+    $u = auth()->user();
+
+    return view('tenant.marketplace', [
+        'items' => $items,
+        'me'    => [
+            'id'      => $u->id,
+            'name'    => $u->full_name,
+            'initial' => mb_strtoupper(mb_substr(trim($u->full_name), 0, 1)),
+            'room'    => $u->room_number ? 'Room ' . $u->room_number : 'No room yet',
+        ],
+    ]);
+}
+
+public function marketplaceStore(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'title'       => ['required', 'string', 'min:2', 'max:60'],
+        'category'    => ['required', Rule::in(['Furniture', 'Appliances', 'Electronics', 'Books & Supplies', 'Food', 'Clothing', 'Others'])],
+        'price'       => ['nullable', 'integer', 'min:0', 'max:1000000'],
+        'description' => ['nullable', 'string', 'max:200'],
+        'photos'      => ['nullable', 'array', 'max:4'],
+        'photos.*'    => ['image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+    ], [
+        'title.required'    => 'Please enter an item name.',
+        'category.required' => 'Please choose an item type.',
+        'category.in'       => 'Please choose a valid item type.',
+        'price.integer'     => 'Price must be a whole number.',
+        'photos.max'        => 'You can upload up to 4 photos.',
+        'photos.*.image'    => 'Photos must be image files.',
+        'photos.*.mimes'    => 'Photos must be JPG, PNG or WEBP.',
+        'photos.*.max'      => 'Each photo must be 2 MB or smaller.',
+    ]);
+
+    $paths = [];
+    foreach ($request->file('photos', []) as $file) {
+        $paths[] = $file->store('marketplace', 'public');
+    }
+
+    $item = MarketplaceItem::create([
+        'seller_id'   => $request->user()->id,
+        'category'    => $data['category'],
+        'title'       => trim($data['title']),
+        'price'       => (int) ($data['price'] ?? 0),
+        'description' => trim($data['description'] ?? '') ?: null,
+        'photos'      => $paths ?: null,
+    ]);
+
+    return response()->json($this->marketplacePayload($item->load('seller')));
+}
+public function marketplaceDestroy(Request $request, int $id): JsonResponse
+{
+    
+    $item = MarketplaceItem::where('seller_id', $request->user()->id)->findOrFail($id);
+
+    foreach ($item->photos ?? [] as $path) {
+        Storage::disk('public')->delete($path);
+    }
+
+    $item->delete();   
+
+    return response()->json(['ok' => true, 'message' => 'Listing deleted.']);
+}
     public function calendar(): View { return view('tenant.calendar'); }
 }

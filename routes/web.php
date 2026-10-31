@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\RoomRequestController;
+use App\Http\Controllers\MarketplaceChatController;
 
 
 // Public: landing page with login / sign-up panels 
@@ -40,7 +41,16 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::get('/settings', [TenantController::class, 'settings'])->name('settings');
         Route::put('/settings/general', [TenantController::class, 'updateGeneral'])->name('settings.general');
         Route::put('/settings/billing-email', [TenantController::class, 'updateBillingEmail'])->name('settings.billing-email');
+        Route::put('/settings/notifications', [TenantController::class, 'updateNotifications'])->name('settings.notifications');
+        Route::put('/settings/password', [TenantController::class, 'updatePassword'])->middleware('throttle:5,1')->name('settings.password');
+        Route::delete('/settings/sessions/{id}', [TenantController::class, 'logoutSession'])->where('id', '[A-Za-z0-9]+')->name('settings.sessions.destroy');
+        Route::post('/settings/move-out', [RoomRequestController::class, 'moveOut'])->middleware('throttle:10,1')->name('requests.move-out');
         Route::get('/marketplace', [TenantController::class, 'marketplace'])->name('marketplace');
+        Route::get('/marketplace/inbox', [MarketplaceChatController::class, 'inbox'])->name('marketplace.inbox');
+        Route::get('/marketplace/chat', [MarketplaceChatController::class, 'thread'])->name('marketplace.chat');
+        Route::post('/marketplace/chat', [MarketplaceChatController::class, 'send'])->middleware('throttle:30,1')->name('marketplace.chat.send');
+        Route::post('/marketplace/items', [TenantController::class, 'marketplaceStore'])->middleware('throttle:10,1')->name('marketplace.store');
+        Route::delete('/marketplace/items/{id}', [TenantController::class, 'marketplaceDestroy'])->whereNumber('id')->name('marketplace.destroy');
         Route::get('/calendar', [TenantController::class, 'calendar'])->name('calendar');
         Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');    
         Route::post('/suggestions', [SuggestionController::class, 'store'])->name('suggestions.store');

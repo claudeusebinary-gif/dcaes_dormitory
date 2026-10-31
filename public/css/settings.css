@@ -7,7 +7,61 @@ html {
     width: 16px;
     margin: 0;
 }
-
+.twopac {
+    width: 100%;
+    height: 80px;
+    border: 1px solid #0000001c;
+    border-radius: 6px;
+    margin-top: 15px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+.submitmoveoutreq{
+    width: 250px;
+    height: 40px;
+    border: 1px solid #672c2c;
+    background-color: transparent;
+    border-radius: 6px;
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #672c2c;
+    margin-top: 15px;
+    transition: all 0.23s ease;
+    cursor: pointer;
+}
+.submitmoveoutreq:hover{
+    background-color: #672c2c;
+    border: 1px solid #672c2c;
+    color: #ffffff;
+}
+.submitmoveoutreq2{
+    width: 250px;
+    height: 40px;
+    border: 1px solid #672c2c;
+    background-color: #672c2c;
+    border-radius: 6px;
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-top: 15px;
+    transition: all 0.23s ease;
+    cursor: pointer;
+}
+.submitmoveoutreq2:hover{
+    background-color: transparent;
+    border: 1px solid #672c2c;
+    color: #672c2c;
+}
+.submitrqmove{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+}
 .periodbalancestatus {
     display: flex;
     flex-direction: row;
@@ -25,7 +79,12 @@ html {
     width: 100px;
     text-align: center;
 }
-
+.reqwewqeqw{
+     font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #00000093;
+}
 .periodbalancestatus12 {
     font-family: 'Nunito Sans', sans-serif;
     font-size: .8rem;
@@ -34,7 +93,9 @@ html {
     width: 100px;
     text-align: center;
 }
-
+.ayawbumaba{
+    margin-top: 10px;
+}
 .periodbalancestatus>.periodbalancestatus1:first-child {
     text-align: left;
 }
@@ -338,6 +399,25 @@ html {
     border: 1px solid #672c2c;
     color: #672c2c;
 }
+.buttonparasave15 {
+    width: 165px;
+    height: 43px;
+    background-color: #672c2c;
+    border: 1px solid #672c2c;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    border-radius: 6px;
+    font-weight: 700;
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.buttonparasave15:hover {
+    background-color: #672c2c00;
+    border: 1px solid #672c2c;
+    color: #672c2c;
+}
 
 .buttonparasave2 {
     width: 120px;
@@ -501,7 +581,17 @@ html {
     font-weight: 600;
     color: #111;
 }
-
+.laglaggayan5 {
+    width: 100%;
+    height: 50px;
+    border: 1px solid #0000002a;
+    border-radius: 6px;
+    text-indent: 10px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #111;
+}
 input:focus {
     border-color: #672c2c;
     outline: none;
@@ -647,7 +737,14 @@ input:focus {
     gap: 16px;
     margin-top: 30px;
 }
-
+.autopayline3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+}
 .switch25 {
     position: relative;
     flex: none;
@@ -878,7 +975,26 @@ input:focus {
     margin: 0;
     text-indent: 0;
 }
-
+.persoge25 .spanish {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+    text-indent: 0;
+}
+.logallses{
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #672c2c;
+}
+.pantayinnnn{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
 .persoge25 span {
     font-family: 'Nunito Sans', sans-serif;
     font-size: .8rem;
@@ -1026,7 +1142,7 @@ input:focus {
 .st-main {
     flex: 1;
     min-width: 0;
-    height: 800px;
+    height: 850px;
     overflow-y: auto;
     box-sizing: border-box;
     padding: 30px;
@@ -1108,7 +1224,7 @@ input:focus {
     background: #672c2c;
 }
 
-/* ===== Billing tab: history pager + billing email ===== */
+
 .bh-row[hidden] {
     display: none;
 }
@@ -1151,6 +1267,22 @@ input:focus {
     transition: border-color .23s ease;
 }
 
+.moveout-date{
+    display: block;
+    box-sizing: border-box;     
+    width: 100%;
+    height: 44px;                
+    padding: 0 12px;
+    border: 1px solid #0000002a;
+    border-radius: 3px;
+    background: #fff;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #111;
+    cursor: pointer;
+}
+.moveout-date::-webkit-calendar-picker-indicator{ cursor: pointer; }
 .bemail.editing {
     border-color: #672c2c;
 }
@@ -1201,4 +1333,31 @@ input:focus {
 
 .bemail-edit[hidden] {
     display: none;
+}
+
+.st-panel.pop {
+    animation: panelPop .38s cubic-bezier(.2, .8, .3, 1) both;
+}
+
+.st-panel .st-panel.pop {
+    animation: none;            
+}
+
+@keyframes panelPop {
+    from {
+        opacity: 0;
+        translate: 0 16px;
+        scale: .98;
+    }
+    to {
+        opacity: 1;
+        translate: 0 0;
+        scale: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .st-panel.pop {
+        animation: none;
+    }
 }

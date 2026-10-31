@@ -3,10 +3,11 @@
 @section('title', 'Payments')
 
 @section('content')
-    <button id="makePaymentBtn" class="roomlist-btn" style="border: 1px solid #672C2C; cursor: pointer;">Make a
-        payment</button>
-    <h1 class="tit">Payments</h1>
-    <h1 class="ba">Complete your payment here</h1>
+    @section('page_title', 'Payments')
+@section('page_subtitle', 'Complete your payment here')
+@section('page_action')
+    <button id="makePaymentBtn" class="roomlist-btn" style="border: 1px solid #672C2C; cursor: pointer;">Make a payment</button>
+@endsection
     <div class="upatnaapatbox">
         <div class="upatnaapatbox1 clickcard" data-filter="overdue" role="button" tabindex="0" title="View balance due">
             <div class="currentbal">
@@ -153,7 +154,8 @@
 
                 <div class="inv-empty" id="invEmpty" hidden>No invoices to show here.</div>
             </div>
-            <a class="rightarrow" href="{{ route('tenant.settings') }}#payments">
+            <div class="ann-pager" id="invPager"></div>
+            <a class="rightarrow" href="{{ route('tenant.settings') }}#billing">
                 <h1 class="viewfullpay">View full payment history</h1>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -473,20 +475,61 @@
         }
 
         function applyFilter(filter) {
-            var shown = 0;
-            rows.forEach(function (row) {
-                var show = (filter === 'all') || (filter === 'unpaid' && statusOf(row) !== 'paid') || statusOf(row) === filter;
-                var hr = row.nextElementSibling;
-                row.style.display = show ? '' : 'none';
-                if (hr && hr.tagName === 'HR') hr.style.display = show ? '' : 'none';
-                if (show) shown++;
-            });
-            tabs.forEach(function (t) {
-                var on = txt(t) === filter;
-                t.style.border = on ? '1px solid #672C2C' : '';
-                t.style.backgroundColor = on ? '#672c2c2f' : '';
-            });
-            empty.style.display = shown ? 'none' : 'block';
+            var PER_PAGE = 4;    
+var page  = 1;
+var pager = document.getElementById('invPager');
+
+function renderPager(filter, pages, count, from, shown) {
+    pager.innerHTML = '';
+    if (pages <= 1) return;                   
+
+    function btn(label, target, disabled, current) {
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = label;
+        if (current) b.className = 'current';
+        b.disabled = !!disabled;
+        b.addEventListener('click', function () { page = target; applyFilter(filter, true); });
+        pager.appendChild(b);
+    }
+
+    btn('‹ Prev', page - 1, page === 1, false);
+    for (var p = 1; p <= pages; p++) btn(String(p), p, false, p === page);
+    btn('Next ›', page + 1, page === pages, false);
+
+    var info = document.createElement('span');
+    info.textContent = 'Showing ' + (from + 1) + '–' + (from + shown) + ' of ' + count;
+    pager.appendChild(info);
+}
+
+function applyFilter(filter, keepPage) {
+    if (!keepPage) page = 1;
+
+    var matches = rows.filter(function (row) {
+        return (filter === 'all') || (filter === 'unpaid' && statusOf(row) !== 'paid') || statusOf(row) === filter;
+    });
+
+    var pages = Math.max(1, Math.ceil(matches.length / PER_PAGE));
+    if (page > pages) page = pages;
+    var from = (page - 1) * PER_PAGE;
+
+    rows.forEach(function (row) {
+        var i    = matches.indexOf(row);
+        var show = i >= from && i < from + PER_PAGE;
+        var hr   = row.nextElementSibling;
+        row.style.display = show ? '' : 'none';
+        if (hr && hr.tagName === 'HR') hr.style.display = show ? '' : 'none';
+    });
+
+    tabs.forEach(function (t) {
+        var on = txt(t) === filter;
+        t.style.border = on ? '1px solid #672C2C' : '';
+        t.style.backgroundColor = on ? '#672c2c2f' : '';
+    });
+
+    empty.style.display = matches.length ? 'none' : 'block';
+    renderPager(filter, pages, matches.length, from, Math.min(PER_PAGE, matches.length - from));
+}
         }
 
         function bind(el, filter, scroll) {

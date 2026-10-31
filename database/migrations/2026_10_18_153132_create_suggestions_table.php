@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('room_number', 20)->nullable();
             $table->text('message');
-            $table->string('status', 20)->default('new');   // new | reviewed
+            $table->string('status', 20)->default('new');   
             $table->timestamps();
         });
     }

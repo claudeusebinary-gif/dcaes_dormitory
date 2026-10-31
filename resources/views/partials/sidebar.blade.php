@@ -122,7 +122,7 @@ $roleLine = $isAdmin ? 'Owner / Admin' : ($user->room_number ? 'Tenant · Room '
             @endforeach
         </div>
 
-        {{-- Logout must be a POST in Laravel; the link submits the hidden form. --}}
+       
         <a href="#" id="logoutLink" class="sb-link sb-logout" title="Logout">
             {!! $icon('logout') !!}
             <span class="sb-label">Logout</span>

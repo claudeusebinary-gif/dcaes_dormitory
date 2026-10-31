@@ -862,6 +862,20 @@
 
 }
 
+.invoice1 {
+    display: flex;
+    flex-direction: column;
+}
+
+.invoice1 .ann-pager {
+    margin: auto 0 10px;      
+}
+
+.invoice1 .rightarrow {
+    margin-top: 0;
+    padding-top: 10px;
+    border-top: 1px solid #00000013;
+}
 .ibosses34791 h1 {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 1rem;

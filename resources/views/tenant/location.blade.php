@@ -3,8 +3,8 @@
 @section('title', 'Location')
 
 @section('content')
-    <h1 class="tit">Location</h1>
-    <h1 class="ba"> Find D'aces Dormitory and get directions to our doorstep.</h1>
+   @section('page_title', 'Location')
+@section('page_subtitle', "Find D'aces Dormitory and get directions to our doorstep.")
     <div class="locatesa">
      <div class="locatesa1">
     <iframe

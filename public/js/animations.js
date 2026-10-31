@@ -24,7 +24,7 @@
         var t = findClickable(e.target);
         if (!t || t.disabled || t.getAttribute('aria-disabled') === 'true') return;
 
-        // 1) ripple at the click point
+
         var r = document.createElement('span');
         r.className = 'click-ripple';
         r.style.left = e.clientX + 'px';

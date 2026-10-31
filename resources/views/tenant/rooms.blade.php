@@ -3,8 +3,8 @@
 @section('title', 'Rooms')
 
 @section('content')
-    <h1 class="tit">Rooms</h1>
-    <h1 class="ba">Browse all available rooms and pick the one that fits you best.</h1>
+@section('page_title', 'Rooms')
+@section('page_subtitle', 'Browse all available rooms and pick the one that fits you best.')
     <div class="four">
         <div class="four4">
             <h1 class="namber9">{{ $summary['open'] }}</h1><span>Rooms open right now</span>
@@ -1880,7 +1880,7 @@
             const confirmModal = document.getElementById('confirmModal');
             const detailsForm = document.getElementById('detailsForm');
             let bookingData = {};
-            let selectedBed = null;   // { number, deck, both }
+            let selectedBed = null;   
             const deckPick = document.getElementById('deckPick');
             const bedHint = document.getElementById('bedHint');
 
@@ -1915,7 +1915,7 @@
                     : 'Bed ' + m[1] + ' (' + title + ') selected.';
             });
 
-            // choose the deck
+          
             deckPick.addEventListener('click', e => {
                 const btn = e.target.closest('button[data-deck]');
                 if (!btn || !selectedBed) return;

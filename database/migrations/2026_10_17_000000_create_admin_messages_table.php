@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('admin_messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('tenant_id')->constrained('users')->cascadeOnDelete();
-            $table->string('room_number', 10)->nullable();   // the room they were viewing
+            $table->string('room_number', 10)->nullable();   
             $table->text('message');
             $table->boolean('is_read')->default(false);
             $table->timestamps();

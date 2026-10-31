@@ -4,7 +4,7 @@
 
     const LIST_URL = root.dataset.listUrl;
     const READ_ALL_URL = root.dataset.readAllUrl;
-    const READ_URL = root.dataset.readUrl; // contains __ID__ placeholder
+    const READ_URL = root.dataset.readUrl; 
     const csrf = document.querySelector('meta[name="csrf-token"]').content;
 
     const btn = document.getElementById('notifBtn');
@@ -25,6 +25,7 @@
 
     function setUnread(n) {
         dot.hidden = n < 1;
+        btn.classList.toggle('has-unread', n > 0);
         dot.textContent = n > 9 ? '9+' : n;
     }
 

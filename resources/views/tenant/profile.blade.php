@@ -4,9 +4,8 @@
 
 @section('content')
     @php $u = auth()->user(); @endphp
-
-    <h1 class="tit">Profile</h1>
-    <h1 class="ba">Your info, your room, your bed, and who you're sharing it with.</h1>
+@section('page_title', 'Profile')
+@section('page_subtitle', "Your info, your room, your bed, and who you're sharing it with.")
 
     <div class="profilee">
         <div class="logbi">

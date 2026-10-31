@@ -6,7 +6,15 @@
     @php
         $u = auth()->user();
 
-        $fields = [$u->full_name, $u->email, $u->phone_number, $u->birthday, $u->sex, $u->address, $u->room_number, $u->move_in_date];
+      $nameParts = preg_split('/\s+/', trim($u->full_name ?? ''));
+$ecc = $u->emergencyContact;
+$fields = [
+    $nameParts[0] ?? null,                              
+    count($nameParts) > 1 ? end($nameParts) : null,     
+    $u->civil_status, $u->email, $u->phone_number, $u->sex,
+    $u->birthday, $u->occupation,
+    $ecc->name ?? null, $ecc->relationship ?? null, $ecc->phone ?? null,
+];
         $filled = count(array_filter($fields, fn($v) => filled($v)));
         $percent = (int) round($filled / count($fields) * 100);
 
@@ -20,8 +28,8 @@
         ];
     @endphp
 
-    <h1 class="tit">Settings</h1>
-    <h1 class="ba">Manage your account and keep it secure.</h1>
+  @section('page_title', 'Settings')
+@section('page_subtitle', 'Manage your account and keep it secure.')
 
     <div class="st-wrap">
 
@@ -32,7 +40,8 @@
                     <circle cx="11" cy="11" r="8" />
                     <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
-                <input type="text" id="stSearch" placeholder="Search settings..." autocomplete="off">
+            <input type="search" id="stSearch" name="settings_search_q" placeholder="Search settings..."
+    autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
             </label>
 
             <nav class="st-nav" id="stNav">
@@ -193,9 +202,9 @@
                             </div>
                         </div>
                     </fieldset>
-                    <div class="buttonparasave" id="saveBar" style="display:none">
-                        <button type="submit" class="buttonparasave1">Save Changes</button>
-                        <button type="button" class="buttonparasave2" id="cancelEdit">Cancel</button>
+                   <div class="buttonparasave5" id="saveBar">
+    <button type="submit" class="buttonparasave1" id="saveGeneral" disabled>Save Changes</button>
+    <button type="button" class="buttonparasave2" id="cancelEdit" disabled>Cancel</button>
                     </div>
                 </form>
             </div>
@@ -411,13 +420,54 @@
                 <p class="req-status" id="payStatus" hidden></p>
             </div>
 
-            <div class="st-panel" data-panel="notifications">
-                <h2 class="st-title">Notifications</h2>
-                <h1 class="yoursas">Choose what updates you receive and how.</h1>
+          <div class="st-panel" data-panel="notifications">
+    <h2 class="st-title">Notifications</h2>
+    <h1 class="yoursas">Choose what updates you receive and how.</h1>
 
+    @php
+        $prefs = $u->notificationPrefs();
+        $notifGroups = [
+            'Email notification' => [
+                'email_payment'       => ['Payment reminders', 'Get notified before rent is due'],
+                'email_announcements' => ['Dorm announcements', 'News and updates from dorm management'],
+                'email_maintenance'   => ['Maintenance updates', 'Status changes on your submitted requests'],
+                'push_due'            => ['Push notification', 'Push notification 3 days before rent due'],
+            ],
+            'SMS notification' => [
+                'sms_urgent' => ['Urgent alerts', 'Security or emergency notices sent to text'],
+                'sms_due'    => ['Payment due reminders', 'Text reminder 3 days before rent due'],
+            ],
+        ];
+    @endphp
+
+    @foreach ($notifGroups as $groupTitle => $rows)
+        <div class="persoge25" style="margin:0; margin-top: 20px;">
+            <h1 style="font-size:1rem ; color: #672c2c;">{{ $groupTitle }}</h1>
+        </div>
+        @foreach ($rows as $key => [$label, $desc])
+            <div class="autopayline">
+                <div class="persoge25" style="margin:0; margin-top: -10px;">
+                    <h1 style="font-size:.9rem;">{{ $label }}</h1>
+                    <span>{{ $desc }}</span>
+                </div>
+                <label class="switch25">
+                    <input type="checkbox" id="pref_{{ $key }}" data-pref="{{ $key }}" @checked($prefs[$key])>
+                    <span class="switch25-track" aria-hidden="true"></span>
+                    <span class="sr-only25">{{ $label }}</span>
+                </label>
             </div>
+            <hr class="padiretso23175927" style="margin-top:15px;">
+        @endforeach
+    @endforeach
 
-            <div class="st-panel" data-panel="billing">
+    <div class="buttonparasave5">
+        <button type="button" class="buttonparasave1" id="notifSave" disabled
+            data-url="{{ route('tenant.settings.notifications') }}">Save Changes</button>
+        <button type="button" class="buttonparasave2" id="notifCancel" disabled>Cancel</button>
+    </div>
+    <p class="req-status" id="notifStatus" hidden></p>
+</div>
+
                 <div class="st-panel" data-panel="billing">
                     <h2 class="st-title">Billing</h2>
                     <h1 class="yoursas">Track your payments, inquiries and account activity.</h1>
@@ -509,12 +559,106 @@
                         <button type="button" class="buttonparasave2" id="bCancel" disabled>Cancel</button>
                     </div>
                 </div>
-            </div>
+         
+         <div class="st-panel" data-panel="security">
+    <h2 class="st-title">Security</h2>
+    <h1 class="yoursas">Keep your account safe.</h1>
 
-            <div class="st-panel" data-panel="security">
-                <h2 class="st-title">Security</h2>
-                <h1 class="yoursas">Keep your admin account safe.</h1>
+    <div class="persoge25" style="margin:0; margin-top: 20px;">
+        <h1>Change password</h1>
+    </div>
+    <div class="pirsname29">
+        <div class="pirsname244">
+            <h1>ENTER CURRENT PASSWORD</h1>
+            <input type="password" id="pwCurrent" class="laglaggayan5" placeholder="Current password" autocomplete="current-password">
+        </div>
+    </div>
+    <div class="pirsname29">
+        <div class="pirsname24">
+            <h1>ENTER NEW PASSWORD</h1>
+            <input type="password" id="pwNew" class="laglaggayan5" placeholder="New password" autocomplete="new-password">
+        </div>
+        <div class="pirsname324">
+            <h1>CONFIRM NEW PASSWORD</h1>
+            <input type="password" id="pwConfirm" class="laglaggayan5" placeholder="Confirm new password" autocomplete="new-password">
+        </div>
+    </div>
+    <div class="buttonparasave5" style="margin-top: 25px">
+        <button type="button" class="buttonparasave15" id="pwSave"
+            data-url="{{ route('tenant.settings.password') }}">Update password</button>
+        <button type="button" class="buttonparasave2" id="pwCancel">Cancel</button>
+    </div>
+    <p class="req-status" id="pwStatus" hidden></p>
+
+    <hr class="padiretso23175927" style="margin-top:30px;">
+    <div class="persoge25" style="margin-top:20px;">
+        <h1>Active sessions</h1>
+    </div>
+    <div id="sessionList">
+        @foreach ($sessions as $s)
+            <div class="session-row">
+                <div class="pantayinnnn">
+                    <div class="persoge25" style="margin-top:15px;">
+                        <span class="spanish">{{ $s->device }}@if ($s->current) · <span style="font-size:.9rem; color: #255538;">This device</span>@endif</span>
+                        <span>{{ $s->ip }} · {{ $s->current ? 'Active now' : 'Last active ' . $s->last->diffForHumans() }}</span>
+                    </div>
+                    @unless ($s->current)
+                        <h1 class="logallses" role="button" tabindex="0" style="cursor:pointer" data-session-logout
+                            data-url="{{ route('tenant.settings.sessions.destroy', $s->id) }}">Log out</h1>
+                    @endunless
+                </div>
+                <hr class="padiretso23175927" style="margin-top:15px;">
             </div>
+        @endforeach
+    </div>
+    <p class="req-status" id="sessStatus" hidden></p>
+
+    <div class="persoge25" style="margin-top:20px;">
+        <h1 style="color:red;">Leave the dormitory</h1>
+        <span>Submit a move-out request if you plan to end your stay. Dorm management will review and follow up with clearance steps and your move-out date.</span>
+    </div>
+
+    @if ($pendingMoveOut)
+        <p class="req-status ok">
+            You have a pending move-out request for {{ $pendingMoveOut->move_out_date ? \Illuminate\Support\Carbon::parse($pendingMoveOut->move_out_date)->format('F j, Y') : 'a date to be confirmed' }}. Dorm management will contact you.
+        </p>
+    @endif
+
+    <div class="pirsname29">
+        <div class="pirsname24">
+            <h1>PREFERRED MOVE-OUT DATE</h1>
+            <input type="date" id="moveOutDate" class="moveout-date" min="{{ now()->addDays(30)->toDateString() }}">
+        </div>
+        <div class="pirsname324">
+            <h1>REASON</h1>
+            <select id="moReason" class="laglaggayan2">
+                <option value="">Select a reason</option>
+                <option value="graduating">Graduating / finished studies</option>
+                <option value="transfer">Transferring to another dorm</option>
+                <option value="moving_off">Moving-off campus</option>
+                <option value="financial">Financial reasons</option>
+                <option value="family">Family / personal reasons</option>
+                <option value="other">Other</option>
+            </select>
+        </div>
+    </div>
+    <div class="pirsname29">
+        <div class="pirsname2443">
+            <h1>ADDITIONAL NOTES (OPTIONAL)</h1>
+            <textarea id="moNotes" class="laglaggayan22" maxlength="1000"
+                placeholder="Anything dorm management should know"></textarea>
+        </div>
+    </div>
+    <div class="ayawbumaba">
+        <span class="reqwewqeqw" style="margin-top: 20px">Requests must be submitted at least 30 days before your move-out date, per dorm policy. Your deposit refund status will be shown here once processed.</span>
+    </div>
+    <div class="submitrqmove">
+        <button type="button" class="submitmoveoutreq" id="moSubmit"
+            data-url="{{ route('tenant.requests.move-out') }}" @disabled($pendingMoveOut)>Submit move-out request</button>
+        <button type="button" class="submitmoveoutreq2">Deactive account</button>
+    </div>
+    <p class="req-status" id="moStatus" hidden></p>
+</div>
 
         </section>
     </div>
@@ -527,15 +671,20 @@
             var none = document.getElementById('stNone');
             var ALIAS = { payments: 'payment' };
 
-            function show(key, updateHash) {
-                if (!items.some(function (i) { return i.dataset.tab === key; })) key = 'general';
-                items.forEach(function (i) { i.classList.toggle('active', i.dataset.tab === key); });
-                panels.forEach(function (p) { p.classList.toggle('active', p.dataset.panel === key); });
-                if (updateHash && history.replaceState) history.replaceState(null, '', '#' + key);
-            }
+          function show(key, updateHash, animate) {
+    if (!items.some(function (i) { return i.dataset.tab === key; })) key = 'general';
+    items.forEach(function (i) { i.classList.toggle('active', i.dataset.tab === key); });
+    panels.forEach(function (p) {
+        var on = p.dataset.panel === key;
+        p.classList.toggle('active', on);
+        p.classList.remove('pop');
+        if (on && animate) { void p.offsetWidth; p.classList.add('pop'); }   
+    });
+    if (updateHash && history.replaceState) history.replaceState(null, '', '#' + key);
+}
 
             items.forEach(function (i) {
-                i.addEventListener('click', function () { show(i.dataset.tab, true); });
+                i.addEventListener('click', function () { show(i.dataset.tab, true, true); });
             });
 
             search.addEventListener('input', function () {
@@ -550,33 +699,87 @@
 
             window.addEventListener('hashchange', function () {
                 var h = location.hash.replace('#', '');
-                show(ALIAS[h] || h, false);
+               show(ALIAS[h] || h, false, true);
             });
 
             var start = location.hash.replace('#', '');
             show(ALIAS[start] || start || 'general', false);
         });
     </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var fields = document.getElementById('generalFields');
-            var bar = document.getElementById('saveBar');
-            var form = document.getElementById('generalForm');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var items = Array.prototype.slice.call(document.querySelectorAll('.st-item'));
+        var panels = Array.prototype.slice.call(document.querySelectorAll('.st-panel'));
+        var search = document.getElementById('stSearch');
+        var none = document.getElementById('stNone');
+        var ALIAS = { payments: 'payment' };
 
-            function setEditing(on) {
-                fields.disabled = !on;
-                bar.style.display = on ? '' : 'none';
-                if (on) document.getElementById('firstName').focus();
+        function show(key, updateHash, animate) {
+            if (!items.some(function (i) { return i.dataset.tab === key; })) key = 'general';
+            items.forEach(function (i) { i.classList.toggle('active', i.dataset.tab === key); });
+            panels.forEach(function (p) {
+                var on = p.dataset.panel === key;
+                p.classList.toggle('active', on);
+                p.classList.remove('pop');
+                if (on && animate) { void p.offsetWidth; p.classList.add('pop'); }
+            });
+            if (updateHash && history.replaceState) history.replaceState(null, '', '#' + key);
+        }
+
+        items.forEach(function (i) {
+            i.addEventListener('click', function () { show(i.dataset.tab, true, true); });
+        });
+
+        
+        var index = {};
+        panels.forEach(function (p) {
+            index[p.dataset.panel] = p.textContent.toLowerCase().replace(/\s+/g, ' ');
+        });
+
+        var lastHit = null;   
+
+        search.addEventListener('input', function () {
+            var q = search.value.trim().toLowerCase().replace(/\s+/g, ' ');
+            var shown = 0, first = null, labelHit = null, activeKey = null;
+
+            if (lastHit) { lastHit.style.background = ''; lastHit = null; }
+
+            items.forEach(function (i) {
+                var key = i.dataset.tab;
+                var inLabel = i.textContent.toLowerCase().indexOf(q) !== -1;      
+                var match = !q || inLabel || index[key].indexOf(q) !== -1;        
+                i.style.display = match ? '' : 'none';
+                if (match) { shown++; if (!first) first = key; }
+                if (q && inLabel && !labelHit) labelHit = key;
+                if (i.classList.contains('active') && match) activeKey = key;
+            });
+            none.style.display = shown ? 'none' : 'block';
+            if (!q || !shown) return;
+
+            var target = labelHit || activeKey || first;
+            show(target, true, true);
+
+            var panel = document.querySelector('.st-panel[data-panel="' + target + '"]');
+            var els = panel.querySelectorAll('h1, h2, span, label, button, p');
+            for (var n = 0; n < els.length; n++) {
+                if (els[n].children.length === 0 && els[n].textContent.toLowerCase().indexOf(q) !== -1) {
+                    lastHit = els[n];
+                    lastHit.style.background = '#fff3b0';
+                    lastHit.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    break;
+                }
             }
+        });
 
-            document.getElementById('editGeneral').addEventListener('click', function () { setEditing(true); });
-            document.getElementById('cancelEdit').addEventListener('click', function () { form.reset(); setEditing(false); });
+        window.addEventListener('hashchange', function () {
+            var h = location.hash.replace('#', '');
+            show(ALIAS[h] || h, false, true);
+        });
 
-            @if ($errors->any())
-                setEditing(true);
-            @endif
+        var start = location.hash.replace('#', '');
+        show(ALIAS[start] || start || 'general', false);
     });
-    </script>
+</script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var data = @json($transferOptions);
@@ -901,4 +1104,121 @@
             refresh();
         });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var csrf = document.querySelector('meta[name="csrf-token"]').content;
+    var $ = function (id) { return document.getElementById(id); };
+
+    async function api(url, method, body) {
+        var res = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf },
+            body: body ? JSON.stringify(body) : undefined
+        });
+        var data = await res.json().catch(function () { return {}; });
+        if (res.status === 419) throw new Error('Your session expired. Refresh the page and try again.');
+        if (res.status === 429) throw new Error('Too many attempts. Please wait a moment.');
+        if (res.status === 422 && data.errors) throw new Error(Object.values(data.errors)[0][0]);
+        if (!res.ok) throw new Error(data.message || 'Something went wrong. Please try again.');
+        return data;
+    }
+    function say(el, text, kind) {
+        el.hidden = !text;
+        el.textContent = text || '';
+        el.className = 'req-status' + (kind ? ' ' + kind : '');
+    }
+    function fail(el, err) {
+        say(el, err instanceof TypeError ? 'No connection. Check your internet and try again.' : err.message, 'error');
+    }
+
+    (function () {
+        var toggles = Array.prototype.slice.call(document.querySelectorAll('[data-pref]'));
+        var save = $('notifSave'), cancel = $('notifCancel'), status = $('notifStatus');
+        function read() { var o = {}; toggles.forEach(function (t) { o[t.dataset.pref] = t.checked; }); return o; }
+        var saved = read();
+        function refresh() {
+            var now = read();
+            var changed = Object.keys(now).some(function (k) { return now[k] !== saved[k]; });
+            save.disabled = !changed; cancel.disabled = !changed;
+        }
+        toggles.forEach(function (t) { t.addEventListener('change', function () { say(status, ''); refresh(); }); });
+        cancel.addEventListener('click', function () {
+            toggles.forEach(function (t) { t.checked = saved[t.dataset.pref]; });
+            refresh();
+        });
+        save.addEventListener('click', async function () {
+            if (save.disabled) return;
+            var label = save.textContent;
+            save.disabled = true; cancel.disabled = true; save.textContent = 'Saving...';
+            try {
+                var data = await api(save.dataset.url, 'PUT', read());
+                saved = read();
+                say(status, data.message, 'ok');
+            } catch (err) { fail(status, err); }
+            finally { save.textContent = label; refresh(); }
+        });
+        refresh();
+    })();
+
+    (function () {
+        var save = $('pwSave'), cancel = $('pwCancel'), status = $('pwStatus');
+        var f = [$('pwCurrent'), $('pwNew'), $('pwConfirm')];
+        function clear() { f.forEach(function (i) { i.value = ''; }); }
+        cancel.addEventListener('click', function () { clear(); say(status, ''); });
+        save.addEventListener('click', async function () {
+            var label = save.textContent;
+            save.disabled = true; save.textContent = 'Updating...'; say(status, '');
+            try {
+                var data = await api(save.dataset.url, 'PUT', {
+                    current_password: f[0].value,
+                    password: f[1].value,
+                    password_confirmation: f[2].value
+                });
+                clear();
+                say(status, data.message, 'ok');
+            } catch (err) { fail(status, err); }
+            finally { save.disabled = false; save.textContent = label; }
+        });
+    })();
+
+    (function () {
+        var status = $('sessStatus');
+        document.querySelectorAll('[data-session-logout]').forEach(function (btn) {
+            async function go() {
+                if (!confirm('Log out this device?')) return;
+                try {
+                    var data = await api(btn.dataset.url, 'DELETE');
+                    btn.closest('.session-row').remove();
+                    say(status, data.message, 'ok');
+                } catch (err) { fail(status, err); }
+            }
+            btn.addEventListener('click', go);
+            btn.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+        });
+    })();
+
+    
+    (function () {
+        var btn = $('moSubmit'), status = $('moStatus');
+        btn.addEventListener('click', async function () {
+            if (btn.disabled) return;
+            var label = btn.textContent;
+            btn.disabled = true; btn.textContent = 'Sending...'; say(status, '');
+            try {
+                var data = await api(btn.dataset.url, 'POST', {
+                    move_out_date: $('moveOutDate').value,
+                    reason: $('moReason').value,
+                    details: $('moNotes').value.trim()
+                });
+                say(status, data.message, 'ok');
+                $('moveOutDate').value = ''; $('moReason').value = ''; $('moNotes').value = '';
+                btn.textContent = label;          
+            } catch (err) {
+                fail(status, err);
+                btn.disabled = false; btn.textContent = label;
+            }
+        });
+    })();
+});
+</script>
 @endsection

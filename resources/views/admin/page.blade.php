@@ -3,5 +3,5 @@
 @section('title', $title)
 
 @section('content')
-    <h1 class="tit">{{ $title }}</h1>
+   @section('page_title', $title)
 @endsection

@@ -59,8 +59,8 @@
     $expiring = count(array_filter($items, fn ($a) => $a['is_expiring']));
 @endphp
 
-    <h1 class="tit">Announcements</h1>
-     <h1 class="ba">View all announcement here.</h1>
+   @section('page_title', 'Announcements')
+@section('page_subtitle', 'View all announcement here.')
 
      <div class="fournafourbox">
         <div class="fournafourbox1 statcard active-stat" data-stat="all" role="button" tabindex="0" title="Show all announcements">

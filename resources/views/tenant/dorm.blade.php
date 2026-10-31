@@ -3,9 +3,11 @@
 @section('title', 'Dorm Information')
 
 @section('content')
+   @section('page_title', 'Dorm')
+@section('page_subtitle', 'Click a building or room on the map to view details.')
+@section('page_action')
     <a href="{{ route('tenant.rooms') }}" class="roomlist-btn">View room list</a>
-    <h1 class="tit">Dorm</h1>
-    <h1 class="ba">Click a building or room on the map to view details.</h1>
+@endsection
     <div class="up">
         <h1 class="over">OVERALL</h1>
         <h1 class="t">{{ $overview['total'] }} <span>Total Rooms</span></h1>
