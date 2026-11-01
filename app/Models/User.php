@@ -97,6 +97,15 @@ public function wantsNotification(string $key): bool
 {
     return (bool) ($this->notificationPrefs()[$key] ?? false);
 }
+    public function pendingBooking(): ?Approval
+    {
+        return Approval::where('user_id', $this->id)
+            ->where('type', 'new_tenant')
+            ->where('status', 'pending')
+            ->whereNotNull('room_number')
+            ->latest('id')
+            ->first();
+    }
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

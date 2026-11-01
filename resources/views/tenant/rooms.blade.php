@@ -1261,7 +1261,7 @@
                         aria-hidden="true">
                         <polyline points="20 6 9 17 4 12" />
                     </svg></div>
-                <h1>Booking Confirm!</h1>
+              <h1>Booking Submitted!</h1>
                 <span data-conf="headline">Room 100 is now reserved under your name. A copy of this receipt has been sent to
                     your email.</span>
                 <div class="dateofdating">
@@ -1295,7 +1295,7 @@
                         </div>
                         <div class="kakanan1">
                             <h1>Tenant name</h1>
-                            <span data-conf="tenant">Juelle Villarosa</span>
+                        <span data-conf="tenant">{{ auth()->user()->display_name }}</span>
                         </div>
                         <hr class="padiretso54">
                         <div class="kakanan1">
@@ -1926,6 +1926,7 @@
             const bookUrl = @json(route('tenant.rooms.book'));
             const bookCsrf = document.querySelector('meta[name="csrf-token"]').content;
             let myRoom = @json(auth()->user()->room_number);
+            const hasPending = @json((bool) auth()->user()->pendingBooking());
             let booked = false;
 
             const hasRoomModal = document.getElementById('hasRoomModal');
@@ -2010,6 +2011,7 @@
 
             function openPayment() {
                 if (myRoom) { showHasRoom(); return; }
+                if (hasPending) { alert('Your booking is still waiting for admin approval. You can book again after the admin decides.'); return; }
                 const bed = pickBed();
                 if (!bed) return;
 
@@ -2083,7 +2085,7 @@
             function openConfirm(r) {
                 const total = stepModal.querySelector('[data-pay="total"]').textContent;
 
-                setConf('headline', 'Room ' + r.room + ' is now reserved under your name. A copy of this receipt has been sent to your email.');
+                setConf('headline', 'Room ' + r.room + ', Bed ' + r.bed + ' is on hold for you. Waiting for admin approval - you will be notified once it is approved.');
                 setConf('confirmed-at', r.confirmed_at);
                 setConf('ref', 'Booking ref. #' + r.ref);
                 setConf('tenant', r.tenant);
@@ -2133,8 +2135,13 @@
                         showHasRoom();
                         return;
                     }
+                                        if (res.status === 409 && data.code === 'pending') {
+                        closePayment();
+                        alert(data.message);
+                        return;
+                    }
                     if (res.status === 422) {
-                        const first = data.errors ? Object.values(data.errors)[0][0] : data.message;
+                       const first = data.errors ? Object.values(data.errors)[0][0] : data.message;
                         throw new Error(first || 'Please check your details and try again.');
                     }
                     if (res.status === 419) throw new Error('Your session expired. Refresh the page and try again.');

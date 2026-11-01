@@ -404,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         box.addEventListener('click', () => {
             if (pinned) pinned.classList.remove('picked');
             pinned = box;
-            box.classList.add('picked');
+            box.classList.add('picked');    
             show(box);
             openModal(box);
         });

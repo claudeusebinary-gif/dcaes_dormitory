@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Complaint extends Model
 {
@@ -28,7 +29,10 @@ class Complaint extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+public function messages(): HasMany
+{
+    return $this->hasMany(ComplaintMessage::class);
+}
     public function getTypeLabelAttribute(): string
     {
         return self::TYPES[$this->type] ?? ucfirst($this->type);

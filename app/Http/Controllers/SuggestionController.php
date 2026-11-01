@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Suggestion;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\AdminNotification;
 
 class SuggestionController extends Controller
 {
@@ -22,7 +23,7 @@ class SuggestionController extends Controller
             'room_number' => $request->user()->room_number,
             'message'     => $data['message'],
         ]);
-
+        AdminNotification::fromTenant($request->user(), 'New suggestion', 'sent a suggestion.');
         return response()->json(['ok' => true]);
     }
 }

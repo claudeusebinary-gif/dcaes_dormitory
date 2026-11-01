@@ -846,7 +846,7 @@
     font-weight: 700;
     }
     .view:hover{
-        background-color: #672C2C;
+        background-color: #3b1616;
         color: #ffffff;
         transition: all 0.3s ease;
     }
@@ -864,14 +864,14 @@
         font-family: 'Inria Serif', serif;
         font-size: 1.5rem;
         font-weight: 700;
-        color: #672C2C;
+        color: #3b1616;
         margin-left: 40px;
         margin-top: 30px;
     }
     .change{
         width:220px;
         height: 50px;
-        background-color: #672C2C;
+        background-color: #3b1616;
         border-radius: 5px;
         border: 1px solid #672c2c67;
     margin-left: 40px;
@@ -884,7 +884,7 @@
     }
     .change:hover{
         background-color: #672c2c00;
-        color: #672C2C;
-        border: 1px solid #672C2C;
+        color: #3b1616;
+        border: 1px solid #3b1616;
         transition: all 0.3s ease;
     }

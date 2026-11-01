@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Models\AdminNotification;
 
 class RoomRequestController extends Controller
 {
@@ -29,11 +30,13 @@ class RoomRequestController extends Controller
             'details.required'  => 'Please describe the issue.',
         ]);
 
-        RoomRequest::create($data + [
+             RoomRequest::create($data + [
             'user_id'     => $user->id,
             'type'        => 'maintenance',
             'room_number' => $user->room_number,
         ]);
+
+        AdminNotification::fromTenant($user, 'Maintenance request', 'sent a ' . $data['urgency'] . ' urgency ' . $data['category'] . ' request.');
 
         return response()->json(['ok' => true, 'message' => 'Request sent. Dorm maintenance will follow up.']);
     }
@@ -86,7 +89,6 @@ class RoomRequestController extends Controller
         if ($hasPending) {
             return response()->json(['message' => 'You already have a pending transfer request.'], 409);
         }
-
         RoomRequest::create([
             'user_id'     => $user->id,
             'type'        => 'transfer',
@@ -97,6 +99,8 @@ class RoomRequestController extends Controller
             'reason'      => $data['reason'],
             'details'     => $data['details'] ?? null,
         ]);
+
+        AdminNotification::fromTenant($user, 'Transfer request', 'requested a transfer to Room ' . $data['room'] . '.');
 
         return response()->json(['ok' => true, 'message' => 'Transfer request sent. Management will review it.']);
     }
@@ -125,7 +129,7 @@ class RoomRequestController extends Controller
             return response()->json(['message' => 'You already have a pending move-out request.'], 409);
         }
 
-        RoomRequest::create([
+           RoomRequest::create([
             'user_id'       => $user->id,
             'type'          => 'move_out',
             'room_number'   => $user->room_number,
@@ -133,6 +137,8 @@ class RoomRequestController extends Controller
             'details'       => $data['details'] ?? null,
             'move_out_date' => $data['move_out_date'],
         ]);
+
+        AdminNotification::fromTenant($user, 'Move-out request', 'requested to move out on ' . $data['move_out_date'] . '.');
 
         return response()->json(['ok' => true, 'message' => 'Move-out request sent. Dorm management will follow up with clearance steps.']);
     }

@@ -6,6 +6,7 @@ use App\Models\Complaint;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Models\AdminNotification;
 
 class ComplaintController extends Controller
 {
@@ -22,7 +23,7 @@ class ComplaintController extends Controller
         $request->user()->complaints()->create($data + [
             'room_number' => $request->user()->room_number,
         ]);
-
+        AdminNotification::fromTenant($request->user(), 'New complaint', 'sent a complaint (' . $data['type'] . ').');
         return response()->json([
             'ok' => true,
             'message' => 'Complaint sent. We will get back to you soon.',

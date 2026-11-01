@@ -1221,4 +1221,75 @@ document.addEventListener('DOMContentLoaded', function () {
     })();
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var editBtn = document.getElementById('editGeneral');
+    var form    = document.getElementById('generalForm');
+    var fields  = document.getElementById('generalFields');
+    var save    = document.getElementById('saveGeneral');
+    var cancel  = document.getElementById('cancelEdit');
+    if (!editBtn || !form || !fields || !save || !cancel) return;
+
+    var HAS_ERRORS = @json($errors->any());   // if the server rejected the last save, stay in edit mode
+    var editing = false;
+    var forceDirty = false;
+    var original = {};
+
+    function controls() { return Array.prototype.slice.call(fields.querySelectorAll('input, select, textarea')); }
+
+    function snapshot() {
+        var o = {};
+        controls().forEach(function (el, i) { o[el.name || ('f' + i)] = el.value; });
+        return o;
+    }
+
+    function changed() {
+        var now = snapshot();
+        return Object.keys(now).some(function (k) { return now[k] !== original[k]; });
+    }
+
+    function refresh() {
+        save.disabled = !(editing && (forceDirty || changed()));
+        cancel.disabled = !editing;
+    }
+
+    function setEditing(on) {
+        editing = on;
+        fields.disabled = !on;
+        editBtn.style.opacity = on ? '.45' : '';
+        editBtn.style.pointerEvents = on ? 'none' : '';
+        if (on) {
+            original = snapshot();
+            var first = controls()[0];
+            if (first) first.focus();
+        }
+        refresh();
+    }
+
+    editBtn.setAttribute('role', 'button');
+    editBtn.setAttribute('tabindex', '0');
+    editBtn.addEventListener('click', function () { setEditing(true); });
+    editBtn.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEditing(true); }
+    });
+
+    form.addEventListener('input',  refresh);
+    form.addEventListener('change', refresh);
+
+    cancel.addEventListener('click', function () {
+        if (cancel.disabled) return;
+        if (forceDirty) { window.location.reload(); return; }   // drop the rejected values, show saved ones
+        controls().forEach(function (el, i) {
+            var key = el.name || ('f' + i);
+            if (key in original) el.value = original[key];
+        });
+        setEditing(false);
+    });
+
+    if (HAS_ERRORS) {
+        forceDirty = true;
+        setEditing(true);
+    }
+});
+</script>
 @endsection

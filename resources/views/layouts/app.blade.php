@@ -24,6 +24,9 @@
               <link rel="stylesheet" href="{{ asset('css/location.css') }}?v={{ filemtime(public_path('css/location.css')) }}">
                <link rel="stylesheet" href="{{ asset('css/settings.css') }}?v={{ filemtime(public_path('css/settings.css')) }}">
                 <link rel="stylesheet" href="{{ asset('css/marketplace.css') }}?v={{ filemtime(public_path('css/marketplace.css')) }}">
+                  <link rel="stylesheet" href="{{ asset('css/calendar.css') }}?v={{ filemtime(public_path('css/calendar.css')) }}">
+                   <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}?v={{ filemtime(public_path('css/dashboard.css')) }}">
+                  
     @stack('styles')
 </head>
 
@@ -40,17 +43,38 @@
             <div class="topbar-actions">
                 @yield('page_action')
 
-                @unless(auth()->user()->isAdmin())
+                               @if(auth()->user()->isAdmin())
+                    @include('partials.admin-notification-bell')
+                @else
                     @include('partials.notification-bell')
-                @endunless
+                @endif
             </div>
         </header>
-
+        @unless (auth()->user()->isAdmin())
+            @if ($pendingBooking = auth()->user()->pendingBooking())
+                <div class="pending-banner" role="status">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
+                    <div>
+                        <b>Waiting for admin approval</b>
+                        <span>Room {{ $pendingBooking->room_number }}, Bed {{ $pendingBooking->bed_number }} ({{ $pendingBooking->bed_deck }}) is on hold for you. It will show up in your details once the admin approves it.</span>
+                    </div>
+                                    <script>
+                    (function () {
+                        var banner = document.querySelector('.pending-banner');
+                        var main = document.querySelector('.main-content');
+                        if (!banner || !main) return;
+                        function set() { main.style.setProperty('--banner-h', (banner.offsetHeight + 16) + 'px'); }
+                        set();
+                        window.addEventListener('resize', set);
+                        window.addEventListener('load', set);
+                    })();
+                </script>
+                </div>
+            @endif
+        @endunless
         @yield('content')
     </main>
-    @unless(auth()->user()->isAdmin())
-        @include('partials.chatbox')
-    @endunless
+      @include('partials.chatbox')
     <script src="{{ asset('js/sidebar.js') }}"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
        <script src="{{ asset('js/logout-modal.js') }}"></script>

@@ -22,7 +22,12 @@
     line-height: 1;
     padding-right: 40px;
 }
-
+.scrollbaaa{
+    height: 580px;
+    width: 100%;
+    overflow: auto;
+    margin-top: -10px;
+}
 .t {
     font-family: 'Inria Serif', serif;
     font-weight: 800;

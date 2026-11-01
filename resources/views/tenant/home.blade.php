@@ -11,7 +11,7 @@
     </div>
    
        
-        <h1 class="nowsr">Welcome Juelle Villarosa!</h1>
+       <h1 class="nowsr">Welcome {{ auth()->user()->display_name }}!</h1>
    
     <div class="texss">
         <h1 class="ts">A room, a bed,<br> and a place that <br> feels like <span class="red">yours.</span> </h1>

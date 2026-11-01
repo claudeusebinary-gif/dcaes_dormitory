@@ -12,6 +12,8 @@ use App\Http\Controllers\ComplaintController;
 use App\Http\Controllers\SuggestionController;
 use App\Http\Controllers\RoomRequestController;
 use App\Http\Controllers\MarketplaceChatController;
+use App\Http\Controllers\AdminNotificationController;
+use App\Http\Controllers\ComplaintChatController;
 
 
 // Public: landing page with login / sign-up panels 
@@ -49,9 +51,15 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::get('/marketplace/inbox', [MarketplaceChatController::class, 'inbox'])->name('marketplace.inbox');
         Route::get('/marketplace/chat', [MarketplaceChatController::class, 'thread'])->name('marketplace.chat');
         Route::post('/marketplace/chat', [MarketplaceChatController::class, 'send'])->middleware('throttle:30,1')->name('marketplace.chat.send');
+        Route::get('/complaints/inbox', [ComplaintChatController::class, 'inbox'])->name('complaints.inbox');
+        Route::get('/complaints/chat', [ComplaintChatController::class, 'thread'])->name('complaints.chat');
+        Route::post('/complaints/chat', [ComplaintChatController::class, 'send'])->middleware('throttle:30,1')->name('complaints.chat.send');
         Route::post('/marketplace/items', [TenantController::class, 'marketplaceStore'])->middleware('throttle:10,1')->name('marketplace.store');
         Route::delete('/marketplace/items/{id}', [TenantController::class, 'marketplaceDestroy'])->whereNumber('id')->name('marketplace.destroy');
         Route::get('/calendar', [TenantController::class, 'calendar'])->name('calendar');
+        Route::post('/calendar/events', [TenantController::class, 'calendarStore'])->middleware('throttle:10,1')->name('calendar.store');
+        Route::post('/calendar/events/{id}/rsvp', [TenantController::class, 'calendarRsvp'])->whereNumber('id')->middleware('throttle:30,1')->name('calendar.rsvp');
+        Route::delete('/calendar/events/{id}', [TenantController::class, 'calendarDestroy'])->whereNumber('id')->name('calendar.destroy');
         Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');    
         Route::post('/suggestions', [SuggestionController::class, 'store'])->name('suggestions.store');
 
@@ -68,6 +76,9 @@ Route::middleware(['auth', NoStore::class])->group(function () {
     // Admin area (old Pages/Admin/admin.php)
     Route::middleware(EnsureAdmin::class)->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+                Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/read-all', [AdminNotificationController::class, 'readAll'])->name('notifications.read-all');
+        Route::post('/notifications/{id}/read', [AdminNotificationController::class, 'read'])->whereNumber('id')->name('notifications.read');
         Route::view('/tenants',      'admin.page', ['title' => 'Tenants'])->name('tenants');
 Route::view('/announcement', 'admin.page', ['title' => 'Announcement'])->name('announcement');
 Route::view('/rooms',        'admin.page', ['title' => 'Rooms'])->name('rooms');
@@ -75,5 +86,13 @@ Route::view('/payments',     'admin.page', ['title' => 'Payments'])->name('payme
 Route::view('/complaints',   'admin.page', ['title' => 'Complaints'])->name('complaints');
 Route::view('/approvals',    'admin.page', ['title' => 'Approvals'])->name('approvals');
 Route::view('/settings',     'admin.page', ['title' => 'Settings'])->name('settings');
+        Route::post('/approvals/{id}/approve', [AdminController::class, 'approve'])->whereNumber('id')->name('approvals.approve');
+        Route::post('/approvals/{id}/reject', [AdminController::class, 'reject'])->whereNumber('id')->name('approvals.reject');
+        Route::post('/announcements', [AdminController::class, 'announcementStore'])->name('announcements.store');
+        Route::put('/announcements/{id}', [AdminController::class, 'announcementUpdate'])->whereNumber('id')->name('announcements.update');
+        Route::delete('/announcements/{id}', [AdminController::class, 'announcementDestroy'])->whereNumber('id')->name('announcements.destroy');
+                Route::get('/complaints/inbox', [ComplaintChatController::class, 'adminInbox'])->name('complaints.inbox');
+        Route::get('/complaints/chat', [ComplaintChatController::class, 'thread'])->name('complaints.chat');
+        Route::post('/complaints/chat', [ComplaintChatController::class, 'send'])->middleware('throttle:30,1')->name('complaints.chat.send');
     });
 });

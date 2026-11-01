@@ -16,8 +16,12 @@ use App\Models\Payment;
 use Illuminate\Validation\Rule;
 use App\Models\RoomRequest;
 use App\Models\Notification;
+use App\Models\AdminNotification;
 use App\Models\MarketplaceItem;
 use Illuminate\Support\Facades\Storage;
+use App\Models\CalendarEvent;
+use App\Models\Approval;
+use App\Models\Announcement;
 
 class TenantController extends Controller
 {
@@ -39,30 +43,45 @@ class TenantController extends Controller
     ]);
 }
 
-   public function rooms(): View
+public function rooms(): View
 {
+    $tenants = User::where('role', 'tenant')->whereNotNull('room_number')->get();
+
+    // beds booked but still waiting for admin approval are shown as taken
+    $held = Approval::where('type', 'new_tenant')->where('status', 'pending')
+        ->whereNotNull('room_number')->get()
+        ->map(fn ($a) => new User([
+            'room_number' => $a->room_number,
+            'bed_number'  => $a->bed_number,
+            'bed_deck'    => $a->bed_deck,
+        ]));
+
     return view('tenant.rooms', [
         'summary' => DormStats::listing(),
-        'rooms' => Room::orderBy('room_number')->get(),
-         'fees'    => DormStats::fees(), 
-        'tenants' => User::where('role', 'tenant')
-            ->whereNotNull('room_number')
-            ->get()
-            ->groupBy('room_number'),
-            
+        'rooms'   => Room::orderBy('room_number')->get(),
+        'fees'    => DormStats::fees(),
+        'tenants' => $tenants->concat($held)->groupBy('room_number'),
     ]);
 }
 public function book(Request $request): JsonResponse
 {
     $user = $request->user();
 
-    // Already has a room
+    // Already has an approved room
     if ($user->room_number) {
         return response()->json([
             'ok' => false,
             'code' => 'has_room',
             'message' => 'You already have a room.',
             'room' => $user->room_number,
+        ], 409);
+    }
+
+    if ($user->pendingBooking()) {
+        return response()->json([
+            'ok' => false,
+            'code' => 'pending',
+            'message' => 'Your booking is still waiting for admin approval.',
         ], 409);
     }
 
@@ -93,57 +112,66 @@ public function book(Request $request): JsonResponse
             return response()->json(['ok' => false, 'message' => 'That bed does not exist.'], 422);
         }
 
-        
+        // approved tenants already on this bed
         $onBed = User::where('role', 'tenant')
             ->where('room_number', $room->room_number)
             ->where('bed_number', $data['bed'])
             ->lockForUpdate()->get();
 
-        $deckTaken = $onBed->contains(fn ($t) => strtolower((string) $t->bed_deck) === strtolower($data['deck']));
+        // beds other tenants booked that are still waiting for approval
+        $held = Approval::where('type', 'new_tenant')->where('status', 'pending')
+            ->where('room_number', $room->room_number)
+            ->where('bed_number', $data['bed'])
+            ->get();
 
-        if ($deckTaken || $onBed->count() >= 2) {
+        $deckTaken = $onBed->contains(fn ($t) => strtolower((string) $t->bed_deck) === strtolower($data['deck']))
+            || $held->contains(fn ($a) => strtolower((string) $a->bed_deck) === strtolower($data['deck']));
+
+        if ($deckTaken || ($onBed->count() + $held->count()) >= 2) {
             return response()->json(['ok' => false, 'message' => 'Sorry, that bed was just taken. Please pick another.'], 409);
         }
 
+        // Personal details are saved now. The ROOM is NOT given yet - it is held
+        // in the approvals table until the admin approves it.
         $user->update([
-            'full_name'      => trim($data['first_name'] . ' ' . $data['last_name']),
-            'room_number'    => $room->room_number,
-            'bed_number'     => $data['bed'],
-            'bed_deck'       => $data['deck'],
-            'phone_number'   => $data['mobile'],
-            'sex'            => $data['sex'],
-            'birthday'       => $data['date_of_birth'],
-            'address'        => $data['home_address'],
-            'move_in_date'   => $data['move_in_date'],
-            'monthly_rent'   => $room->price_per_bed,
-            'payment_status' => 'up_to_date',
+            'full_name'    => trim($data['first_name'] . ' ' . $data['last_name']),
+            'phone_number' => $data['mobile'],
+            'sex'          => $data['sex'],
+            'birthday'     => $data['date_of_birth'],
+            'address'      => $data['home_address'],
         ]);
 
-             $user->emergencyContact()->updateOrCreate([], [
+        $user->emergencyContact()->updateOrCreate([], [
             'name'         => $data['ec_full_name'],
             'relationship' => $data['ec_relationship'],
             'phone'        => $data['ec_contact_number'],
             'address'      => $data['ec_address'],
         ]);
 
-        // booking pays the first month
-        $first = collect(Billing::forUser($user)['invoices'])
-            ->firstWhere('period', Carbon::parse($data['move_in_date'])->format('Y-m'));
+        Approval::create([
+            'user_id'      => $user->id,
+            'type'         => 'new_tenant',
+            'title'        => 'Applied for Room ' . $room->room_number . ', Bed ' . $data['bed'] . ' (' . $data['deck'] . ')',
+            'room_number'  => $room->room_number,
+            'bed_number'   => $data['bed'],
+            'bed_deck'     => $data['deck'],
+            'move_in_date' => $data['move_in_date'],
+            'monthly_rent' => $room->price_per_bed,
+        ]);
 
-        if ($first) {
-            Payment::firstOrCreate(
-                ['user_id' => $user->id, 'period' => $first['period']],
-                [
-                    'amount'    => $first['amount'],
-                    'method'    => 'Booking',
-                    'reference' => $first['ref'],
-                    'paid_at'   => now(),
-                ]
-            );
-        }
+        // the tenant's bell: "waiting for admin approval"
+        Notification::create([
+            'tenant_id' => $user->id,
+            'title'     => 'Booking received - waiting for admin approval',
+            'message'   => 'Room ' . $room->room_number . ', Bed ' . $data['bed'] . ' (' . $data['deck'] . ') is on hold for you. '
+                         . 'It will appear in your details once the admin approves it.',
+        ]);
+
+        AdminNotification::fromTenant($user, 'New room booking', 'applied for Room ' . $room->room_number . ', Bed ' . $data['bed'] . ' (' . $data['deck'] . '). Please review it in Pending approvals.');
 
         return response()->json([
             'ok'           => true,
+            'pending'      => true,
             'ref'          => 'DAC-' . now()->year . '-' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
             'confirmed_at' => now()->format('M j, Y, g:i A'),
             'tenant'       => $user->full_name,
@@ -161,11 +189,13 @@ public function sendMessage(Request $request): JsonResponse
         'room'    => ['nullable', 'string', 'max:10'],
     ]);
 
-    AdminMessage::create([
+       AdminMessage::create([
         'tenant_id'   => $request->user()->id,
         'room_number' => $data['room'] ?? $request->user()->room_number,
         'message'     => trim($data['message']),
     ]);
+
+    AdminNotification::fromTenant($request->user(), 'New message', 'sent you a message.');
 
     return response()->json(['ok' => true]);
 }
@@ -213,16 +243,43 @@ public function sendMessage(Request $request): JsonResponse
             return response()->json(['ok' => false, 'message' => 'Nothing to pay.'], 422);
         }
 
-        // no overdue left -> tenant is up to date
+      
         $after = Billing::forUser($user);
         if (collect($after['invoices'])->where('status', 'overdue')->isEmpty()) {
             $user->update(['payment_status' => 'up_to_date']);
         }
 
+               AdminNotification::fromTenant($user, 'Payment received', 'paid ₱' . number_format($total) . ' via ' . $data['method'] . '.');
+                       Approval::create([
+            'user_id' => $user->id,
+            'type'    => 'payment',
+            'title'   => ucfirst($data['method']) . ' payment · ₱' . number_format($total, 2),
+        ]);
+
         return response()->json(['ok' => true, 'total' => $total]);
     }
 
-    public function announcement(): View { return view('tenant.announcement'); }
+       public function announcement(Request $request): View
+    {
+        $user   = $request->user();
+        $unpaid = $user->room_number && $user->payment_status !== 'up_to_date';
+
+        $items = Announcement::current()->get()
+            ->filter(fn ($a) => ($a->audience ?: 'All tenants') !== 'Unpaid only' || $unpaid)
+            ->map(fn ($a) => [
+                'category'   => 'general',
+                'title'      => $a->title ?: 'Announcement',
+                'body'       => $a->message,
+                'audience'   => strtoupper($a->audience ?: 'All tenants'),
+                'pinned'     => false,
+                'posted_ago' => max(0, (int) $a->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay())),
+                'expires_in' => $a->ends_at
+                    ? max(0, (int) now()->startOfDay()->diffInDays($a->ends_at->copy()->startOfDay()))
+                    : null,
+            ])->values()->all();
+
+        return view('tenant.announcement', ['announcementItems' => $items]);
+    }
     public function location(): View { return view('tenant.location'); }
     public function settings(Request $request): View
 {
@@ -528,5 +585,91 @@ public function marketplaceDestroy(Request $request, int $id): JsonResponse
 
     return response()->json(['ok' => true, 'message' => 'Listing deleted.']);
 }
-    public function calendar(): View { return view('tenant.calendar'); }
+  private function eventPayload(CalendarEvent $e, int $meId): array
+{
+    $people = $e->attendees;
+
+    return [
+        'id'          => $e->id,
+        'title'       => $e->title,
+        'type'        => $e->type,
+        'date'        => $e->event_date->format('Y-m-d'),
+        'time'        => substr($e->event_time, 0, 5),
+        'time_label'  => Carbon::parse($e->event_time)->format('g:i A'),
+        'location'    => $e->location,
+        'description' => $e->description,
+        'mine'        => (int) $e->user_id === $meId,
+        'going'       => $people->contains('id', $meId),
+        'count'       => $people->count(),
+        'people'      => $people->take(4)
+            ->map(fn ($u) => mb_strtoupper(mb_substr(trim($u->full_name), 0, 1)))
+            ->values(),
+    ];
+}
+
+public function calendar(): View
+{
+    $meId = (int) auth()->id();
+
+    $events = CalendarEvent::with('attendees:id,full_name')
+        ->orderBy('event_date')->orderBy('event_time')
+        ->get()
+        ->map(fn ($e) => $this->eventPayload($e, $meId))
+        ->values();
+
+    return view('tenant.calendar', ['events' => $events]);
+}
+
+public function calendarStore(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'title'       => ['required', 'string', 'min:2', 'max:80'],
+        'type'        => ['required', Rule::in(['Social', 'Meeting'])],
+        'event_date'  => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+        'event_time'  => ['required', 'date_format:H:i'],
+        'location'    => ['nullable', 'string', 'max:80'],
+        'description' => ['nullable', 'string', 'max:200'],
+    ], [
+        'title.required'            => 'Please enter an event title.',
+        'type.in'                   => 'Please choose a valid event type.',
+        'event_date.required'       => 'Please pick a date.',
+        'event_date.after_or_equal' => 'The date cannot be in the past.',
+        'event_time.required'       => 'Please pick a time.',
+    ]);
+
+    $event = CalendarEvent::create([
+        'user_id'     => $request->user()->id,
+        'title'       => trim($data['title']),
+        'type'        => $data['type'],
+        'event_date'  => $data['event_date'],
+        'event_time'  => $data['event_time'],
+        'location'    => trim($data['location'] ?? '') ?: 'Whole Dormitory',
+        'description' => trim($data['description'] ?? '') ?: null,
+    ]);
+
+    $event->attendees()->attach($request->user()->id);   
+
+    return response()->json($this->eventPayload($event->load('attendees:id,full_name'), $request->user()->id));
+}
+
+public function calendarRsvp(Request $request, int $id): JsonResponse
+{
+    $event = CalendarEvent::findOrFail($id);
+
+  abort_if(Carbon::parse($event->event_date)->lt(today()), 422, 'This event has already passed.');
+
+    $event->attendees()->toggle($request->user()->id);
+
+    return response()->json($this->eventPayload($event->load('attendees:id,full_name'), $request->user()->id));
+}
+
+public function calendarDestroy(Request $request, int $id): JsonResponse
+{
+    $event = CalendarEvent::where('user_id', $request->user()->id)->findOrFail($id);
+
+    $event->attendees()->detach();
+    $event->delete();
+
+    return response()->json(['ok' => true]);
+}
 }

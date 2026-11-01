@@ -1232,3 +1232,13 @@
         transform: translateY(16px) scale(.96);
     }
 }
+
+#payModal .duhakagatos {
+    flex: 1;                        
+    justify-content: flex-start;     
+    padding-bottom: 24px;           
+}
+
+#payModal .padiretso231591 {
+    margin-top: auto;               
+}

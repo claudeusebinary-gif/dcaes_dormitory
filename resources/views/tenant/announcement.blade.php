@@ -4,35 +4,7 @@
 
 @section('content')
 @php
-    $items = [
-        ['category' => 'payment', 'title' => 'Rent Due Reminder',
-         'body' => 'Friendly reminder that rent is due on the 5th. Message admin if you need an extension.',
-         'audience' => 'ALL TENANTS', 'pinned' => true,  'posted_ago' => 7, 'expires_in' => 9],
-        ['category' => 'event',   'title' => 'Weekend Building Cleaning',
-         'body' => 'General cleaning of hallways and common areas this Saturday, 7–9 AM. Please keep the corridor clear.',
-         'audience' => 'UNPAID ONLY', 'pinned' => false, 'posted_ago' => 1, 'expires_in' => 3],
-        ['category' => 'utility', 'title' => 'Water Interruption — Nov 3',
-         'body' => 'Scheduled water interruption from 8:00 AM to 12:00 PM. Please store water in advance.',
-         'audience' => 'ALL TENANTS', 'pinned' => false, 'posted_ago' => 2, 'expires_in' => 9],
-        ['category' => 'safety',  'title' => 'New CCTV Cameras Installed',
-         'body' => "Additional CCTV coverage added near the garage and laundry area for everyone's safety.",
-         'audience' => 'UNPAID ONLY', 'pinned' => false, 'posted_ago' => 5, 'expires_in' => 12],
-        ['category' => 'utility', 'title' => 'Aircon Cleaning Schedule',
-         'body' => 'Aircon units will be cleaned room by room this week. Please be present or leave your room unlocked.',
-         'audience' => 'ALL TENANTS', 'pinned' => false, 'posted_ago' => 3, 'expires_in' => 5],
-        ['category' => 'general', 'title' => 'Quiet Hours Reminder',
-         'body' => 'Quiet hours are from 10:00 PM to 6:00 AM. Please keep noise down in the rooms and hallways.',
-         'audience' => 'ALL TENANTS', 'pinned' => false, 'posted_ago' => 4, 'expires_in' => null],
-        ['category' => 'event',   'title' => 'Movie Night in the Lounge',
-         'body' => 'Join us this Friday at 7:00 PM in the lounge. Bring your own snacks and keep the volume friendly.',
-         'audience' => 'ALL TENANTS', 'pinned' => false, 'posted_ago' => 0, 'expires_in' => 2],
-        ['category' => 'safety',  'title' => 'Fire Drill Schedule',
-         'body' => 'A fire drill will be held next week. Please learn the nearest exit and gather at the front gate.',
-         'audience' => 'ALL TENANTS', 'pinned' => true,  'posted_ago' => 6, 'expires_in' => 20],
-        ['category' => 'general', 'title' => 'Laundry Room Schedule',
-         'body' => 'To avoid crowding, laundry use is by room number: odd rooms on weekdays, even rooms on weekends.',
-         'audience' => 'ALL TENANTS', 'pinned' => false, 'posted_ago' => 10, 'expires_in' => null],
-    ];
+    $items = $announcementItems;
 
     $colors = ['payment' => '#C98A2C', 'event' => '#2D7248', 'utility' => '#1060BC', 'safety' => '#672c2c', 'general' => '#1F7A8C'];
 
