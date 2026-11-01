@@ -58,9 +58,11 @@ public function getMoveInDateLabelAttribute(): string
 
 public function getMonthlyRentLabelAttribute(): string
 {
-    return $this->monthly_rent !== null
-        ? '₱' . number_format((float) $this->monthly_rent)
-        : 'Not set';
+    if (! $this->room_number) {
+        return 'Not set';
+    }
+
+    return \App\Support\Billing::money(\App\Support\Billing::rentFor($this));
 }
 public function roommates(): HasMany
 {
@@ -113,6 +115,10 @@ public function wantsNotification(string $key): bool
 public function complaints(): HasMany
 {
     return $this->hasMany(Complaint::class);
+}
+public function payments()
+{
+    return $this->hasMany(Payment::class);
 }
     public function tenantNotifications(): HasMany
     {

@@ -3142,3 +3142,556 @@ width: 16px;
 .needtooo .needtao span:hover{
     opacity: .75;
 }
+
+
+/* ===================== ADMIN ROOMS ===================== */
+
+/* top-right "Add new room" button */
+.addroombtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 45px;
+    padding: 0 20px;
+    background-color: #672C2C;
+    border: 1px solid #672C2C;
+    border-radius: 6px;
+    color: #ffffff;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.addroombtn:hover {
+    background-color: transparent;
+    color: #672C2C;
+}
+
+.addroombtn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* summary cards with icon on the right */
+.adminrooms .four4 {
+    position: relative;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    box-sizing: border-box;
+}
+
+.adminrooms .four4 span {
+    font-size: .8rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: #672C2C;
+}
+
+.four4ico {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background-color: #672c2c1f;
+    color: #672C2C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-indent: 0;
+}
+
+.four4ico svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ---------- modal layout ---------- */
+/* the modal itself never scrolls */
+.adminrooms .roommodals {
+    overflow: hidden;
+}
+
+/* red photo side stays fixed */
+.adminrooms .wala {
+    flex: 0 0 40%;
+    height: 100%;
+}
+
+/* only the white side scrolls */
+.adminrooms .tuo {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow-y: auto;
+    padding: 56px 64px 48px;
+}
+
+.adminrooms .pagsamasama {
+    gap: 20px;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.titlerow {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.editpill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 36px;
+    padding: 0 18px;
+    background-color: #ffffff;
+    border: 1px solid #0000001f;
+    border-radius: 20px;
+    color: #672C2C;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.editpill svg {
+    width: 14px;
+    height: 14px;
+}
+
+.editpill.on {
+    background-color: #672C2C;
+    border-color: #672C2C;
+    color: #ffffff;
+}
+
+.typeedit {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.typeedit[hidden] {
+    display: none;
+}
+
+.typeedit .laglaggayan2 {
+    width: 200px;
+}
+
+.priceedit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pesoo {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;
+    color: #672C2C;
+}
+
+.priceinput {
+    width: 150px;
+    height: 52px;
+    padding: 0 12px;
+    border: 1px solid #672C2C;
+    border-radius: 6px;
+    text-align: center;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: #672C2C;
+}
+
+/* ---------- photo side (left) ---------- */
+.adminrooms .tuowala {
+    gap: 16px;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.adminrooms .bilog999 {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    max-width: 780px;
+    height: 480px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: 3px solid #ffffff;
+    overflow: hidden;
+}
+
+.adminrooms .bilog999.is-empty {
+    border-color: transparent;
+}
+
+.adminrooms .bilog999 img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.adminrooms .bilog999 img[hidden],
+.coverempty[hidden] {
+    display: none;
+}
+
+.coverempty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.coverempty .circ {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    background-color: #ffffff30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.adminrooms .coverempty svg {
+    width: 34px;
+    height: 34px;
+    color: #ffffffcc;
+}
+
+.coverempty b {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 800;
+}
+
+.coverempty span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    opacity: .75;
+}
+
+.adminrooms .namber999 {
+    left: 30px;
+    right: 30px;
+    bottom: 30px;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.adminrooms .namber999 h1 {
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.adminrooms .fourputi {
+    position: relative;
+    flex: none;
+    width: 64px;
+    height: 64px;
+    border-radius: 6px;
+}
+
+.photox {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #672C2C;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.fourputi.plustile {
+    border: 1px dashed #ffffff;
+    background-color: #ffffff55;
+    color: #ffffff;
+    font-size: 1.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* beds in the modal are view-only for admin */
+.adminrooms [data-beds] .sixulit.free {
+    cursor: default;
+}
+
+.adminrooms [data-beds] .sixulit.free:hover {
+    transform: none;
+}
+
+/* ---------- amenities ---------- */
+.adminrooms .amemitiesbox {
+    flex-wrap: wrap;
+}
+
+.adminrooms .boxame {
+    flex: 1 1 200px;
+    width: auto;
+    padding: 0 20px;
+    color: #000000;
+}
+
+.boxame.is-off {
+    opacity: .4;
+    background-color: transparent;
+}
+
+.boxame svg {
+    width: 20px;
+    height: 20px;
+    flex: none;
+}
+
+.amenadd {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+}
+
+.addameni {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 22px;
+    background-color: transparent;
+    border: 1px dashed #672C2C;
+    border-radius: 30px;
+    color: #000000;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.addameni[hidden] {
+    display: none;
+}
+
+.amenin {
+    width: 240px;
+    height: 44px;
+    padding: 0 18px;
+    border: 1px solid #672C2C;
+    border-radius: 30px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+}
+
+.amenin[hidden] {
+    display: none;
+}
+
+/* ---------- action buttons (edit modal) ---------- */
+.adminrooms .adminme {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.adminrooms .adminme .bookthis,
+.adminrooms .adminme .messageadmin,
+.adminrooms .adminme .deleteroom {
+    width: auto;
+    height: 50px;
+    padding: 0 22px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.adminrooms .bookthis:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.deleteroom {
+    background-color: transparent;
+    border: 1px solid #b3261e;
+    border-radius: 5px;
+    color: #b3261e;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.deleteroom:hover {
+    background-color: #b3261e;
+    color: #ffffff;
+}
+
+/* ---------- add-a-room form ---------- */
+.addgrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 18px;
+    margin-top: 20px;
+}
+
+.adminrooms .laglaggayan {
+    height: 44px;
+}
+
+.pesofield {
+    position: relative;
+}
+
+.pesofield span {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 800;
+    color: #672C2C;
+}
+
+.pesofield .laglaggayan {
+    text-indent: 24px;
+}
+
+.bedshead {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.bedshead .ameties {
+    margin: 0;
+}
+
+.bedsnote {
+    display: block;
+    margin-top: 4px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #0000008c;
+}
+
+.sixulit {
+    position: relative;
+}
+
+.bedx {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background-color: #ffffffcc;
+    color: #672C2C;
+    font-size: 14px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.addbedcard {
+    min-height: 100px;
+    border: 1px dashed #00000070;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #00000099;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.addbedcard:hover {
+    border-color: #672C2C;
+    color: #672C2C;
+}
+
+.addfoot {
+    display: flex;
+    gap: 14px;
+    margin-top: 26px;
+    padding-top: 20px;
+    border-top: 1px solid #00000012;
+}
+
+.draftbtn {
+    flex: 0 0 38%;
+    height: 50px;
+    background-color: #ffffff;
+    border: 1px solid #672C2C;
+    border-radius: 30px;
+    color: #672C2C;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.draftbtn:hover {
+    background-color: #672c2c14;
+}
+
+.publishbtn {
+    flex: 1;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background-color: #672C2C;
+    border: 1px solid #672C2C;
+    border-radius: 30px;
+    color: #ffffff;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .18s ease;
+}
+
+.publishbtn:hover {
+    background-color: #4e2020;
+}
+
+.draftbtn:disabled,
+.publishbtn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+}

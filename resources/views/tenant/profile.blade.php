@@ -3,10 +3,17 @@
 @section('title', 'Profile')
 
 @section('content')
-    @php $u = auth()->user(); @endphp
+  @php $u = $profileUser ?? auth()->user(); @endphp
 @section('page_title', 'Profile')
 @section('page_subtitle', "Your info, your room, your bed, and who you're sharing it with.")
-
+    @isset($profileUser)
+        <a href="{{ route('admin.tenants') }}" class="backtenants">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Back to tenants
+        </a>
+    @endisset
     <div class="profilee">
         <div class="logbi">
             <span class="namesa">{{ $u->initial }}</span>
@@ -55,6 +62,30 @@
             {{ ucfirst($u->role) === 'Tenant' ? 'Active Tenant' : ucfirst($u->role) }}
         </div>
     </div>
+        @isset($profileUser)
+        <div class="roombedmove adm-stats">
+            <div class="roombedmove1">
+                <h1>MONTHLY RENT</h1>
+                <h2>{{ $stats['rent'] }}</h2>
+                <span>{{ $stats['due_text'] }}</span>
+            </div>
+            <div class="roombedmove1">
+                <h1>TOTAL PAID</h1>
+                <h2>{{ $stats['total'] }}</h2>
+                <span>Since move-in</span>
+            </div>
+            <div class="roombedmove1">
+                <h1>ON-TIME RATE</h1>
+                <h2>{{ $stats['ontime'] }}</h2>
+                <span>{{ $stats['ontime_sub'] }}</span>
+            </div>
+            <div class="roombedmove1">
+                <h1>OPEN COMPLAINTS</h1>
+                <h2>{{ $stats['open'] }}</h2>
+                <span>{{ $stats['resolved'] }} resolved this year</span>
+            </div>
+        </div>
+    @endisset
     <div class="lepat">
         <nav class="rights" aria-label="Main navigation">
             <a href="#overview" class="tab active" data-tab="overview">
@@ -88,6 +119,21 @@
                 </svg>
                 <h3>Documents</h3>
             </a>
+                        @isset($profileUser)
+                <a href="#payments" class="tab" data-tab="payments">
+                    <svg viewBox="0 0 24 24">
+                        <rect x="2" y="5" width="20" height="14" rx="2" />
+                        <path d="M2 10h20" />
+                    </svg>
+                    <h3>Payment History</h3>
+                </a>
+                <a href="#activity" class="tab" data-tab="activity">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                    <h3>Activity Log</h3>
+                </a>
+            @endisset
         </nav>
     </div>
 
@@ -160,7 +206,7 @@
         </div>
         <div class="sicsons">
             <h1 class="stays">Stay Details<br><span>A quick snapshot of your lease</span></h1>
-            @php $u = auth()->user(); @endphp
+          @php $u = $profileUser ?? auth()->user(); @endphp
 
             <div class="threbox">
                 <div class="bxas">
@@ -193,6 +239,7 @@
             </div>
 
         </div>
+        @unless(isset($profileUser))
         <div class="acson">
             <h1 class="stays">Quick Actions<br><span>Things you might need right now</span></h1>
             <div class="fur">
@@ -223,6 +270,7 @@
             </div>
 
         </div>
+        @endunless
     </section>
 
     <section class="panel" id="panel-details">
@@ -286,7 +334,7 @@
     <section class="panel" id="panel-roommates">
        <div class="mates">
     @php
-        $u = auth()->user();
+        $u = $profileUser ?? auth()->user();
         $occupants = collect([$u])->merge($u->roommates)
             ->keyBy(fn ($p) => $p->bed_number . '-' . strtolower($p->bed_deck));
     @endphp
@@ -366,12 +414,55 @@
             </div>
 
         </div>
+        @unless(isset($profileUser))
         <div class="lease1">
 <h1 class="stays">Account Security<br><span>Change your password or manage account access.</span></h1>
 <input type="button" class="change" value="Change Password">
         </div>
+        @endunless
     </section>
+    @isset($profileUser)
+        <section class="panel" id="panel-payments">
+            <div class="adm-box">
+                <h1 class="stays">Payment History<br><span>Every payment this tenant has made</span></h1>
 
+                <div class="adm-row adm-head">
+                    <div>Period</div><div>Amount</div><div>Method</div><div>Paid on</div><div>Status</div>
+                </div>
+
+                @forelse ($payHistory as $h)
+                    <div class="adm-row">
+                        <div>{{ $h['label'] }}</div>
+                        <div>₱{{ number_format($h['paid_amount'], 2) }}</div>
+                        <div>{{ $h['method'] }}</div>
+                        <div>{{ $h['paid_at_text'] }}</div>
+                        <div><div class="anostatbayad"><h1>Paid</h1></div></div>
+                    </div>
+                @empty
+                    <p class="bh-empty">No payments yet.</p>
+                @endforelse
+            </div>
+        </section>
+
+        <section class="panel" id="panel-activity">
+            <div class="adm-box">
+                <h1 class="stays">Activity Log<br><span>The latest things this tenant did</span></h1>
+
+                @forelse ($activity as $e)
+                    <div class="adm-act">
+                        <i class="adm-dot adm-dot-{{ $e['type'] }}"></i>
+                        <div class="adm-act-text">
+                            <b>{{ $e['title'] }}</b>
+                            @if ($e['detail'])<span>{{ $e['detail'] }}</span>@endif
+                        </div>
+                        <small title="{{ $e['at']->format('M j, Y g:i A') }}">{{ $e['at']->diffForHumans() }}</small>
+                    </div>
+                @empty
+                    <p class="bh-empty">No activity yet.</p>
+                @endforelse
+            </div>
+        </section>
+    @endisset
     @include('partials.footer')
 @endsection
 @push('scripts')

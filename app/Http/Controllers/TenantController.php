@@ -267,11 +267,11 @@ public function sendMessage(Request $request): JsonResponse
         $items = Announcement::current()->get()
             ->filter(fn ($a) => ($a->audience ?: 'All tenants') !== 'Unpaid only' || $unpaid)
             ->map(fn ($a) => [
-                'category'   => 'general',
+               'category'   => $a->category ?: 'general',
                 'title'      => $a->title ?: 'Announcement',
                 'body'       => $a->message,
                 'audience'   => strtoupper($a->audience ?: 'All tenants'),
-                'pinned'     => false,
+               'pinned'     => (bool) $a->pinned,
                 'posted_ago' => max(0, (int) $a->created_at->copy()->startOfDay()->diffInDays(now()->startOfDay())),
                 'expires_in' => $a->ends_at
                     ? max(0, (int) now()->startOfDay()->diffInDays($a->ends_at->copy()->startOfDay()))

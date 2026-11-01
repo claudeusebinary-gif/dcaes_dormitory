@@ -457,11 +457,422 @@
     font-weight: 800;
     color: #000;
 }
-.sixnabelog{
+
+.sixnabelog {
     align-items: center;
-    flex-wrap: wrap;          
+    flex-wrap: wrap;
 }
-.sixnabelog .ann-pager{
-    margin: 0 0 0 auto;        
+
+.sixnabelog .ann-pager {
+    margin: 0 0 0 auto;
     justify-content: flex-end;
+}
+
+.topbar .gawangannbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #672C2C;  
+    cursor: pointer;
+}
+
+.gawangannbtn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.editdeletesaann {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    display: flex;
+    gap: 8px;
+    text-indent: 0;
+    z-index: 3;
+}
+
+.pangeditann,
+.pangburatann {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #0000001a;
+    border-radius: 6px;
+    background-color: #F7F1EE;
+    color: #534949;
+    cursor: pointer;
+    transition: all .23s ease;
+}
+
+.pangeditann svg,
+.pangburatann svg {
+    width: 15px;
+    height: 15px;
+}
+
+.pangeditann:hover {
+    background-color: #672c2c1f;
+    border-color: #672c2c55;
+    color: #672c2c;
+}
+
+.pangburatann:hover {
+    background-color: #b3261e;
+    border-color: #b3261e;
+    color: #ffffff;
+}
+
+.pangadminkard .pinned-mark {
+    top: 16px;
+    right: 88px;
+}
+
+.pangadminkard.lipasnaann {
+    opacity: .6;
+}
+
+.bagongannoverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgba(40, 30, 30, .45);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.bagongannoverlay[hidden] {
+    display: none;
+}
+
+.bagongannmodal {
+    position: relative;
+    width: 100%;
+    max-width: 660px;
+    max-height: 94vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 34px 46px 30px;
+    background-color: #FFFCF8;
+    border-radius: 0 12px 12px 12px;
+    font-family: 'Nunito Sans', sans-serif;
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.08),
+        0 12px 24px rgba(0, 0, 0, 0.12),
+        0 24px 48px rgba(0, 0, 0, 0.14);
+    animation: bagongannpasok .2s ease;
+}
+
+.bagongannmodal::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background-color: #7B3D3B;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.sarahanann {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: #00000099;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .2s ease;
+}
+
+.sarahanann:hover {
+    background-color: #0000001a;
+}
+
+.sarahanann svg {
+    width: 22px;
+    height: 22px;
+}
+
+.pamagatnamodal {
+    margin: 0 0 14px;
+    padding-right: 40px;
+    font-family: 'Inria Serif', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #7B3D3B;
+}
+
+.labelnaann {
+    display: block;
+    margin: 18px 0 8px;
+    font-size: .85rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: #7B3D3B;
+}
+
+.pamagatnamodal+.labelnaann {
+    margin-top: 6px;
+}
+
+.kahonnaann {
+    width: 100%;
+    height: 48px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border: 1px solid #0000000d;
+    border-radius: 10px;
+    background-color: #F9F5EE;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .95rem;
+    font-weight: 600;
+    color: #000000;
+    transition: border-color .2s ease, background-color .2s ease;
+}
+
+.kahonnaann::placeholder {
+    color: #0000004d;
+}
+
+.kahonnaann:focus {
+    outline: none;
+    border-color: #7B3D3B;
+    background-color: #ffffff;
+}
+
+.kahonnaannmalaki {
+    height: 112px;
+    padding: 14px 20px;
+    line-height: 1.4;
+    resize: none;
+}
+
+select.kahonnaann {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 14px;
+    cursor: pointer;
+}
+
+.pilikategorya {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.pilikategorya1 {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 38px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background-color: #F9F5EE;
+    color: var(--c, #7B3D3B);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.pilikategorya1 i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--c, #7B3D3B);
+    display: inline-block;
+}
+
+.pilikategorya1:hover {
+    border-color: #7b3d3b55;
+}
+
+.pilikategorya1.is-pili {
+    border-color: #7B3D3B;
+    background-color: #ffffff;
+}
+
+.dalawahangkahon {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 20px;
+}
+
+.pinnasaitaas {
+    margin-top: 18px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background-color: #F9F5EE;
+    border: 1px solid #0000000d;
+    border-radius: 10px;
+}
+
+.pinnasaitaas h1 {
+    margin: 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 800;
+    color: #000000;
+}
+
+.pinnasaitaas span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 600;
+    color: #00000090;
+}
+
+.switchnapin {
+    position: relative;
+    width: 54px;
+    height: 28px;
+    flex-shrink: 0;
+    cursor: pointer;
+}
+
+.switchnapin input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.switchnapin1 {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background-color: #D9D9D9;
+    transition: background-color .23s ease;
+}
+
+.switchnapin1::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    transition: transform .23s ease;
+}
+
+.switchnapin input:checked+.switchnapin1 {
+    background-color: #7B3D3B;
+}
+
+.switchnapin input:checked+.switchnapin1::after {
+    transform: translateX(26px);
+}
+
+.switchnapin input:focus-visible+.switchnapin1 {
+    outline: 2px solid #A87C5F;
+    outline-offset: 2px;
+}
+
+.annmali {
+    margin: 14px 0 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #b3261e;
+}
+
+/* Cancel + Post */
+.butonsaibaba {
+    margin-top: 22px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+}
+
+.kanselaann,
+.ipostann {
+    height: 46px;
+    padding: 0 30px;
+    border-radius: 8px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .95rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.kanselaann {
+    background-color: #FFFCF8;
+    border: 1px solid #0000001a;
+    color: #7B3D3B;
+}
+
+.kanselaann:hover {
+    background-color: #7b3d3b14;
+}
+
+.ipostann {
+    background-color: #7B3D3B;
+    border: 1px solid #7B3D3B;
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(123, 61, 59, .35);
+}
+
+.ipostann:hover {
+    background-color: #6a3230;
+}
+
+.ipostann:disabled {
+    opacity: .6;
+    cursor: default;
+}
+
+@keyframes bagongannpasok {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 600px) {
+    .bagongannmodal {
+        padding: 30px 22px 24px;
+    }
+
+    .dalawahangkahon {
+        grid-template-columns: 1fr;
+    }
 }

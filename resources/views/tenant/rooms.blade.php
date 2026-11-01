@@ -91,14 +91,14 @@
                 $tenantCount = $inRoom->count();
                 $split = $tenantCount > 1;
                 $share = $split ? (float) $room->price_per_bed / $tenantCount : (float) $room->price_per_bed;
-                $photoList = $room->photo
-                    ? [asset($room->photo)]
-                    : [
-                        asset('images/rooms/sample-room-1.svg'),
-                        asset('images/rooms/sample-room-2.svg'),
-                        asset('images/rooms/sample-room-3.svg'),
-                        asset('images/rooms/sample-room-4.svg'),
-                    ];
+               $photoList = $room->photo_paths
+    ? array_map(fn ($p) => asset($p), $room->photo_paths)
+    : [
+        asset('images/rooms/sample-room-1.svg'),
+        asset('images/rooms/sample-room-2.svg'),
+        asset('images/rooms/sample-room-3.svg'),
+        asset('images/rooms/sample-room-4.svg'),
+    ];
             @endphp
 
             <div class="roomstart"

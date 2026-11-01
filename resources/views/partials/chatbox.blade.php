@@ -39,15 +39,19 @@
 
 <script>
 (function () {
-         var IS_ADMIN = @json($admin);
+    var IS_ADMIN = @json($admin);
     var URLS = {
-        inbox:      @json(route('tenant.marketplace.inbox')),
-        thread:     @json(route('tenant.marketplace.chat')),
-        send:       @json(route('tenant.marketplace.chat.send')),
-        ctInbox:    @json(route('tenant.complaints.inbox')),
-        ctThread:   @json(route($admin ? 'admin.complaints.chat' : 'tenant.complaints.chat')),
-        ctSend:     @json(route($admin ? 'admin.complaints.chat.send' : 'tenant.complaints.chat.send')),
-        adminInbox: @json(route('admin.complaints.inbox'))
+        inbox:        @json(route('tenant.marketplace.inbox')),
+        thread:       @json(route('tenant.marketplace.chat')),
+        send:         @json(route('tenant.marketplace.chat.send')),
+        ctInbox:      @json(route('tenant.complaints.inbox')),
+        ctThread:     @json(route($admin ? 'admin.complaints.chat' : 'tenant.complaints.chat')),
+        ctSend:       @json(route($admin ? 'admin.complaints.chat.send' : 'tenant.complaints.chat.send')),
+        adminInbox:   @json(route('admin.complaints.inbox')),
+        dmInbox:      @json(route('tenant.dm.inbox')),
+        dmAdminInbox: @json(route('admin.dm.inbox')),
+        dmThread:     @json(route($admin ? 'admin.dm.chat' : 'tenant.dm.chat')),
+        dmSend:       @json(route($admin ? 'admin.dm.chat.send' : 'tenant.dm.chat.send'))
     };
     var CSRF = document.querySelector('meta[name="csrf-token"]').content;
     var $ = function (id) { return document.getElementById(id); };
@@ -81,13 +85,12 @@
     function remember() {
         try {
             if (cur) sessionStorage.setItem('daceChat', JSON.stringify({
-               kind: cur.kind, item_id: cur.item_id, with_id: cur.with_id, min: box.classList.contains('is-min')
+                kind: cur.kind, item_id: cur.item_id, with_id: cur.with_id, min: box.classList.contains('is-min')
             }));
             else sessionStorage.removeItem('daceChat');
         } catch (e) {}
     }
 
-   
     function setThumb(url) {
         var t = $('cbThumb');
         t.style.backgroundImage = url ? 'url("' + url + '")' : '';
@@ -101,7 +104,6 @@
         if (d.photo !== undefined) setThumb(d.photo);
     }
 
-  
     function render(list, force) {
         var near = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 60;
         msgs.innerHTML = '';
@@ -128,12 +130,14 @@
 
     async function loadThread(force) {
         if (!cur) return;
-         var mine = cur;
+        var mine = cur;
         var peek = box.classList.contains('is-min') ? '&peek=1' : '';
         try {
             var url = mine.kind === 'complaint'
                 ? URLS.ctThread + '?complaint_id=' + mine.item_id + peek
-                : URLS.thread + '?item_id=' + mine.item_id + '&with=' + mine.with_id + peek;
+                : mine.kind === 'direct'
+                    ? URLS.dmThread + '?tenant_id=' + mine.item_id + peek
+                    : URLS.thread + '?item_id=' + mine.item_id + '&with=' + mine.with_id + peek;
             var res = await fetch(url, {
                 headers: { 'Accept': 'application/json' }, credentials: 'same-origin', cache: 'no-store'
             });
@@ -155,7 +159,7 @@
     }
 
     function open(d) {
-              cur = { kind: d.kind || 'item', item_id: Number(d.item_id), with_id: Number(d.with_id) };
+        cur = { kind: d.kind || 'item', item_id: Number(d.item_id), with_id: Number(d.with_id) };
         lastId = 0; count = 0;
         fill({ with_name: '', with_room: '', item_title: '', item_price: '', photo: '' });
         fill(d);
@@ -182,12 +186,12 @@
         if (!text || !cur || sending) return;
         sending = true; sendBtn.disabled = true; say('');
         try {
-                       var isC = cur.kind === 'complaint';
-            var res = await fetch(isC ? URLS.ctSend : URLS.send, {
+            var isC = cur.kind === 'complaint', isD = cur.kind === 'direct';
+            var res = await fetch(isC ? URLS.ctSend : isD ? URLS.dmSend : URLS.send, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
                 credentials: 'same-origin',
-                               body: JSON.stringify(isC ? { complaint_id: cur.item_id, body: text } : { item_id: cur.item_id, recipient_id: cur.with_id, body: text })
+                body: JSON.stringify(isC ? { complaint_id: cur.item_id, body: text } : isD ? { tenant_id: cur.item_id, body: text } : { item_id: cur.item_id, recipient_id: cur.with_id, body: text })
             });
             var data = await res.json().catch(function () { return {}; });
             if (res.status === 419) throw new Error('Session expired. Refresh the page.');
@@ -216,7 +220,6 @@
     });
     $('cbClose').addEventListener('click', close);
 
-   
     function setBadge(n) {
         mDot.hidden = n < 1;
         mDot.textContent = n > 9 ? '9+' : n;
@@ -225,7 +228,7 @@
 
     function renderInbox() {
         if (!threads.length) {
-            mList.innerHTML = '<p class="notif-empty">' + (IS_ADMIN ? 'No conversations yet. Click Message on a complaint.' : 'No messages yet. Message a seller from the Marketplace.') + '</p>';
+            mList.innerHTML = '<p class="notif-empty">' + (IS_ADMIN ? 'No conversations yet. Click Message on a complaint or a tenant.' : 'No messages yet. Message a seller from the Marketplace.') + '</p>';
             return;
         }
         mList.innerHTML = threads.map(function (t, i) {
@@ -236,28 +239,25 @@
         }).join('');
     }
 
-          async function refreshInbox() {
+    async function refreshInbox() {
         if (!mBtn) return;
         try {
             var o = { headers: { 'Accept': 'application/json' }, credentials: 'same-origin', cache: 'no-store' };
-            var none = { unread: 0, threads: [] }, a = none, b = none;
+            var none = { unread: 0, threads: [] };
+            var urls = IS_ADMIN ? [URLS.adminInbox, URLS.dmAdminInbox] : [URLS.inbox, URLS.ctInbox, URLS.dmInbox];
+            var rs = await Promise.all(urls.map(function (u) { return fetch(u, o); }));
+            var parts = await Promise.all(rs.map(function (r) { return r.ok ? r.json() : none; }));
 
-            if (IS_ADMIN) {
-                var r = await fetch(URLS.adminInbox, o);
-                b = r.ok ? await r.json() : none;
-            } else {
-                var rs = await Promise.all([fetch(URLS.inbox, o), fetch(URLS.ctInbox, o)]);
-                a = rs[0].ok ? await rs[0].json() : none;
-                b = rs[1].ok ? await rs[1].json() : none;
-            }
+            threads = []; var unread = 0;
+            parts.forEach(function (p) { threads = threads.concat(p.threads); unread += p.unread; });
+            threads.sort(function (x, y) { return new Date(y.at) - new Date(x.at); });
 
-            threads = a.threads.concat(b.threads).sort(function (x, y) { return new Date(y.at) - new Date(x.at); });
-            setBadge(a.unread + b.unread);
+            setBadge(unread);
             if (!mPanel.hidden) renderInbox();
         } catch (e) {}
     }
 
-       if (mBtn) mBtn.addEventListener('click', function () {
+    if (mBtn) mBtn.addEventListener('click', function () {
         mPanel.hidden = !mPanel.hidden;
         mBtn.setAttribute('aria-expanded', String(!mPanel.hidden));
         if (!mPanel.hidden) { renderInbox(); refreshInbox(); }
@@ -272,10 +272,7 @@
                item_title: t.item_title, item_price: t.item_price, photo: t.photo || '' });
     });
     if (mRoot) document.addEventListener('click', function (e) { if (!mRoot.contains(e.target)) mPanel.hidden = true; }, true);
-  
-   
 
-   
     setInterval(function () {
         if (cur && !box.hidden && !box.classList.contains('is-min') && !document.hidden) loadThread(false);
     }, 4000);
@@ -283,10 +280,9 @@
 
     window.DaceChat = { open: open, refresh: refreshInbox };
 
-  
     try {
         var s = JSON.parse(sessionStorage.getItem('daceChat') || 'null');
-               if (s && s.item_id) open({ kind: s.kind, item_id: s.item_id, with_id: s.with_id || 0, min: s.min, quiet: true });
+        if (s && s.item_id) open({ kind: s.kind, item_id: s.item_id, with_id: s.with_id || 0, min: s.min, quiet: true });
     } catch (e) {}
 
     refreshInbox();

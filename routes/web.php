@@ -14,6 +14,7 @@ use App\Http\Controllers\RoomRequestController;
 use App\Http\Controllers\MarketplaceChatController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\ComplaintChatController;
+use App\Http\Controllers\DirectChatController;
 
 
 // Public: landing page with login / sign-up panels 
@@ -26,7 +27,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware(['auth', NoStore::class])->group(function () {
 
     // Generic landing spot (old dashboard.php) - bounces by role.
-    Route::get('/dashboard', fn () => auth()->user()->isAdmin()
+    Route::get('/dashboard', fn() => auth()->user()->isAdmin()
         ? redirect()->route('admin.dashboard')
         : redirect()->route('tenant.home'));
 
@@ -51,6 +52,9 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::get('/marketplace/inbox', [MarketplaceChatController::class, 'inbox'])->name('marketplace.inbox');
         Route::get('/marketplace/chat', [MarketplaceChatController::class, 'thread'])->name('marketplace.chat');
         Route::post('/marketplace/chat', [MarketplaceChatController::class, 'send'])->middleware('throttle:30,1')->name('marketplace.chat.send');
+                Route::get('/dm/inbox', [DirectChatController::class, 'inbox'])->name('dm.inbox');
+        Route::get('/dm/chat', [DirectChatController::class, 'thread'])->name('dm.chat');
+        Route::post('/dm/chat', [DirectChatController::class, 'send'])->middleware('throttle:30,1')->name('dm.chat.send');
         Route::get('/complaints/inbox', [ComplaintChatController::class, 'inbox'])->name('complaints.inbox');
         Route::get('/complaints/chat', [ComplaintChatController::class, 'thread'])->name('complaints.chat');
         Route::post('/complaints/chat', [ComplaintChatController::class, 'send'])->middleware('throttle:30,1')->name('complaints.chat.send');
@@ -60,7 +64,7 @@ Route::middleware(['auth', NoStore::class])->group(function () {
         Route::post('/calendar/events', [TenantController::class, 'calendarStore'])->middleware('throttle:10,1')->name('calendar.store');
         Route::post('/calendar/events/{id}/rsvp', [TenantController::class, 'calendarRsvp'])->whereNumber('id')->middleware('throttle:30,1')->name('calendar.rsvp');
         Route::delete('/calendar/events/{id}', [TenantController::class, 'calendarDestroy'])->whereNumber('id')->name('calendar.destroy');
-        Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');    
+        Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
         Route::post('/suggestions', [SuggestionController::class, 'store'])->name('suggestions.store');
 
         // Notification bell JSON API (old includes/notifications.php)
@@ -76,22 +80,32 @@ Route::middleware(['auth', NoStore::class])->group(function () {
     // Admin area (old Pages/Admin/admin.php)
     Route::middleware(EnsureAdmin::class)->prefix('admin')->name('admin.')->group(function () {
         Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
-                Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
         Route::post('/notifications/read-all', [AdminNotificationController::class, 'readAll'])->name('notifications.read-all');
         Route::post('/notifications/{id}/read', [AdminNotificationController::class, 'read'])->whereNumber('id')->name('notifications.read');
-        Route::view('/tenants',      'admin.page', ['title' => 'Tenants'])->name('tenants');
-Route::view('/announcement', 'admin.page', ['title' => 'Announcement'])->name('announcement');
-Route::view('/rooms',        'admin.page', ['title' => 'Rooms'])->name('rooms');
-Route::view('/payments',     'admin.page', ['title' => 'Payments'])->name('payments');
-Route::view('/complaints',   'admin.page', ['title' => 'Complaints'])->name('complaints');
-Route::view('/approvals',    'admin.page', ['title' => 'Approvals'])->name('approvals');
-Route::view('/settings',     'admin.page', ['title' => 'Settings'])->name('settings');
+
+      Route::get('/tenants',      [AdminController::class, 'tenants'])->name('tenants');
+              Route::get('/tenants/{id}', [AdminController::class, 'tenantShow'])->whereNumber('id')->name('tenants.show');
+Route::get('/announcement', [AdminController::class, 'announcements'])->name('announcement');
+Route::get('/rooms',        [AdminController::class, 'rooms'])->name('rooms');
+Route::post('/rooms',          [AdminController::class, 'roomStore'])->name('rooms.store');
+Route::put('/rooms/{id}',      [AdminController::class, 'roomUpdate'])->whereNumber('id')->name('rooms.update');
+Route::post('/rooms/{id}/maintenance', [AdminController::class, 'roomMaintenance'])->whereNumber('id')->name('rooms.maintenance');
+Route::delete('/rooms/{id}',   [AdminController::class, 'roomDestroy'])->whereNumber('id')->name('rooms.destroy');
+Route::get('/payments',     [AdminController::class, 'payments'])->name('payments');
+Route::get('/complaints',   [AdminController::class, 'complaints'])->name('complaints');
+Route::get('/approvals',    [AdminController::class, 'approvals'])->name('approvals');
+Route::get('/settings',     [AdminController::class, 'settings'])->name('settings');
         Route::post('/approvals/{id}/approve', [AdminController::class, 'approve'])->whereNumber('id')->name('approvals.approve');
         Route::post('/approvals/{id}/reject', [AdminController::class, 'reject'])->whereNumber('id')->name('approvals.reject');
         Route::post('/announcements', [AdminController::class, 'announcementStore'])->name('announcements.store');
         Route::put('/announcements/{id}', [AdminController::class, 'announcementUpdate'])->whereNumber('id')->name('announcements.update');
         Route::delete('/announcements/{id}', [AdminController::class, 'announcementDestroy'])->whereNumber('id')->name('announcements.destroy');
-                Route::get('/complaints/inbox', [ComplaintChatController::class, 'adminInbox'])->name('complaints.inbox');
+        Route::get('/complaints/inbox', [ComplaintChatController::class, 'adminInbox'])->name('complaints.inbox');
+                Route::get('/dm/inbox', [DirectChatController::class, 'adminInbox'])->name('dm.inbox');
+        Route::get('/dm/chat', [DirectChatController::class, 'thread'])->name('dm.chat');
+        Route::post('/dm/chat', [DirectChatController::class, 'send'])->middleware('throttle:30,1')->name('dm.chat.send');
+        Route::delete('/tenants/{id}', [AdminController::class, 'tenantDestroy'])->whereNumber('id')->name('tenants.destroy');
         Route::get('/complaints/chat', [ComplaintChatController::class, 'thread'])->name('complaints.chat');
         Route::post('/complaints/chat', [ComplaintChatController::class, 'send'])->middleware('throttle:30,1')->name('complaints.chat.send');
     });

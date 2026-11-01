@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
 {
-    protected $fillable = ['title', 'audience', 'message', 'is_active', 'starts_at', 'ends_at'];
+   protected $fillable = ['title', 'audience', 'message', 'category', 'pinned', 'is_active', 'starts_at', 'ends_at'];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'pinned'    => 'boolean',
         'starts_at' => 'datetime',
         'ends_at'   => 'datetime',
     ];

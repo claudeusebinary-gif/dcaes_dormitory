@@ -888,3 +888,139 @@
         border: 1px solid #3b1616;
         transition: all 0.3s ease;
     }
+.backtenants {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 16px;
+    margin-bottom: 16px;
+    border: 1px solid #672C2C;
+    border-radius: 6px;
+    background: transparent;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 800;
+    color: #672C2C;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.backtenants:hover {
+    background: #672C2C;
+    color: #ffffff;
+}
+
+.backtenants svg {
+    width: 16px;
+    height: 16px;
+}
+.adm-stats {
+    margin: 0 0 20px;
+}
+
+.adm-box {
+    background: #ffffff;
+    border: 1px solid #0000001a;
+    border-radius: 12px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.adm-row {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr 1fr 1.4fr 1fr;
+    align-items: center;
+    column-gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #0000000f;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #000000;
+}
+
+.adm-row:last-child {
+    border-bottom: none;
+}
+
+.adm-head {
+    margin-top: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid #0000001a;
+    font-size: .75rem;
+    font-weight: 800;
+    letter-spacing: .02em;
+    text-transform: uppercase;
+    color: #00000069;
+}
+
+.adm-row .anostatbayad {
+    margin: 0;
+}
+
+.adm-act {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid #0000000f;
+}
+
+.adm-act:last-child {
+    border-bottom: none;
+}
+
+.adm-dot {
+    width: 10px;
+    height: 10px;
+    margin-top: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: #672C2C;
+}
+
+.adm-dot-payment    { background: #2D7248; }
+.adm-dot-complaint  { background: #AB1210; }
+.adm-dot-request    { background: #C98A2C; }
+.adm-dot-suggestion { background: #6E7A5D; }
+.adm-dot-market     { background: #A87C5F; }
+
+.adm-act-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.adm-act-text b {
+    font-size: .9rem;
+    font-weight: 800;
+    color: #000000;
+}
+
+.adm-act-text span {
+    font-size: .8rem;
+    font-weight: 600;
+    color: #00000085;
+}
+
+.adm-act small {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #00000070;
+    white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+    .adm-stats {
+        flex-wrap: wrap;
+    }
+
+    .adm-stats .roombedmove1 {
+        width: calc(50% - 10px);
+    }
+}

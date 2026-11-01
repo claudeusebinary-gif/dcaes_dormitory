@@ -125,7 +125,7 @@ return [
             'paid_count'    => count($paid),
         ];
     }
- private static function rentFor(User $user): float
+  public static function rentFor(User $user): float
     {
         if (! $user->room_number) {
             return 0;
