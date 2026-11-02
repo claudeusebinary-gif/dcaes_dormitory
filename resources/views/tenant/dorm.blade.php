@@ -264,7 +264,7 @@
     </span>
 
     <div class="toobt">
-        <a href="#" target="_blank" class="askk">
+       <a href="#" id="askAdminBtn" class="askk" role="button">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             Ask Admin
         </a>
@@ -410,5 +410,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+</script>
+<script>
+    document.getElementById('askAdminBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+
+        if (!window.DaceChat) { window.location.href = @json(route('login')); return; }
+
+        window.DaceChat.open({
+            kind: 'direct',
+            item_id: {{ (int) auth()->id() }},
+            with_id: 0,
+            with_name: 'Dorm Admin',
+            with_room: 'Management',
+            item_title: 'Direct message',
+            item_price: 'Dorm management',
+            photo: ''
+        });
+    });
 </script>
 @endpush

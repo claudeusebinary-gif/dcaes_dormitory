@@ -504,6 +504,7 @@
      margin-bottom: 25px;
      background: #fff;
      border-bottom: 2px solid #837878;
+     gap: 12px;
  }
 
  .inputs {
@@ -540,7 +541,7 @@
      font-size: 18px;
      color: #494848;
      width: 100%;
-     padding-top: 10px;
+     padding: 10px 0 0 0;
  }
 
  .inputr label {
@@ -601,7 +602,7 @@
 
  .inputr1 label {
      position: absolute;
-     left: 12px;
+     left: 0;
      top: 50%;
      transform: translateY(-50%);
      font-family: 'Inria Serif', serif;
@@ -1105,4 +1106,24 @@
      color: #672C2C;
      box-shadow: 0 7px 6px rgba(0, 0, 0, 0.2);
      border: 1px solid #672C2C;
+ }
+
+ .inputr input:-webkit-autofill,
+ .inputr1 input:-webkit-autofill {
+     -webkit-box-shadow: 0 0 0 1000px #fff inset;
+     -webkit-text-fill-color: #494848;
+     transition: background-color 9999s ease-in-out 0s;
+ }
+
+ .inputr input:-webkit-autofill+label,
+ .inputr1 input:-webkit-autofill+label {
+     top: -2px;
+     font-size: 15px;
+     color: #000000;
+ }
+
+ .ags label a {
+     color: #672C2C;
+     font-weight: 800;
+     text-decoration: underline;
  }

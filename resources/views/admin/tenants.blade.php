@@ -74,7 +74,6 @@
     </div>
 </div>
 
-{{-- ===== SEARCH BAR ===== --}}
 <div class="breakdownsearch">
     <input type="search" placeholder="Search tenant, room or email..." class="breakdownsearchBOX" id="tnSearch" autocomplete="off">
 
@@ -122,7 +121,6 @@
 
 <div class="tn-panel">
 
-    {{-- ===== LIST VIEW: header stays, rows are filled in by the script ===== --}}
     <div class="listnaetonangbreakdown" id="tnList">
         <div class="breakdownpahabarow breakdownhead">
             <input type="checkbox" class="breakdowncheckbox" id="tnAll" aria-label="Select all on this page">
@@ -135,10 +133,8 @@
         <div id="tnRows"></div>
     </div>
 
-    {{-- ===== GRID VIEW: cards appear here ===== --}}
     <div class="tn-grid" id="tnGrid" hidden></div>
 
-    {{-- ===== FOOTER (inside the box, shared by both views) ===== --}}
     <div class="parightbreakdown">
         <h1 id="tnInfo"></h1>
         <div class="onetwobreakdown" id="tnPager"></div>
@@ -146,7 +142,6 @@
 
 </div>
 
-{{-- ===== DELETE CONFIRMATION ===== --}}
 <div class="tn-modal" id="tnModal" hidden>
     <div class="tn-box" role="dialog" aria-modal="true" aria-labelledby="tnModalTitle">
         <h2 id="tnModalTitle">Delete tenant?</h2>
@@ -209,7 +204,6 @@
         });
     }
 
-    /* ---------- icons ---------- */
     var SV = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
     var EYE   = SV + '><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
     var MSG   = SV + '><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
@@ -226,7 +220,6 @@
         return '<div class="colorbreak ' + (t.status === 'paid' ? '' : t.status) + '"><h1 class="textbreakdown56">' + LABEL[t.status] + '</h1></div>';
     }
 
-    /* ---------- one row / one card ---------- */
     function row(t) {
         return '<div class="breakdownpahabarow43" data-id="' + t.id + '">'
             + '<input type="checkbox" class="breakdowncheckbox tn-chk" data-id="' + t.id + '"' + (sel[t.id] ? ' checked' : '') + '>'
@@ -245,7 +238,6 @@
             + '<div class="tn-foot">' + pill(t) + actions(t.id) + '</div></div>';
     }
 
-    /* ---------- search + filter + sort ---------- */
     function filtered() {
         var s = st.q.trim().toLowerCase();
         var out = T.filter(function (t) {
@@ -263,7 +255,6 @@
         return out;
     }
 
-    /* ---------- render ---------- */
     function render() {
         var list = filtered();
         var pages = Math.max(1, Math.ceil(list.length / PER));
@@ -300,7 +291,6 @@
 
     function update() { st.page = 1; render(); }
 
-    /* ---------- summary cards (kept in sync after a delete) ---------- */
     function summary() {
         var c = { paid: 0, due: 0, overdue: 0 }, n = T.length;
         T.forEach(function (t) { c[t.status]++; });
@@ -318,7 +308,6 @@
         $('tnOcc').textContent = (BEDS ? Math.round(n / BEDS * 100) : 0) + '% occupied';
     }
 
-    /* ---------- events: search, filter panel, legend, view toggle ---------- */
     $('tnSearch').addEventListener('input', function (e) { st.q = e.target.value; update(); });
 
     var floors = {};
@@ -363,7 +352,6 @@
         render();
     });
 
-    /* ---------- pager + checkboxes ---------- */
     $('tnPager').addEventListener('click', function (e) {
         var b = e.target.closest('[data-p]');
         if (!b || b.disabled) return;
@@ -381,7 +369,6 @@
         if (c) { sel[c.dataset.id] = c.checked; render(); }
     });
 
-    /* ---------- view / message / delete ---------- */
     function onAction(e) {
         var b = e.target.closest('[data-act]');
         if (!b) return;
@@ -400,7 +387,7 @@
             return;
         }
 
-        delTarget = t;   // delete: ask for permission first
+        delTarget = t;   
         $('tnModalText').textContent = 'You are about to permanently delete ' + t.name + ' (Room ' + t.room + '). '
             + 'Their account, payments, complaints, messages and marketplace listings will be removed. This cannot be undone.';
         $('tnModal').hidden = false;

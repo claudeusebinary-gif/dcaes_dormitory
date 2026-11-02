@@ -575,7 +575,7 @@
         padding: 18px 40px;
     }
 
-   
+
     .personal .ruw5 .val {
         font-family: 'Nunito Sans', sans-serif;
         font-size: .9rem;
@@ -644,7 +644,7 @@
     }
 
 
- .personal .ruw5 .lab {
+    .personal .ruw5 .lab {
         font-family: 'Nunito Sans', sans-serif;
         font-size: .8rem;
         font-weight: 600;
@@ -658,10 +658,12 @@
         color: #000;
         text-align: right;
     }
-.personal.emergency{
-    margin-top: 25px;    
-    min-height: auto;      
-}
+
+    .personal.emergency {
+        margin-top: 25px;
+        min-height: auto;
+    }
+
     .mates {
         position: relative;
         width: 100%;
@@ -745,10 +747,11 @@
     .belogs svg {
         width: 22px;
         height: 22px;
-    margin-top:3    px;
+        margin-top: 3 px;
 
     }
-    .lease{
+
+    .lease {
         position: relative;
         width: 100%;
         background-color: #ffffff;
@@ -757,6 +760,7 @@
         display: flow-root;
         margin-top: 25px;
     }
+
     .lease .stays {
         font-family: 'Inria Serif', serif;
         font-size: 1.5rem;
@@ -765,23 +769,26 @@
         margin-left: 40px;
         margin-top: 30px;
     }
-    .tulo{
+
+    .tulo {
         margin-top: 10px;
-        width:100% ;
+        width: 100%;
         height: 70px;
         border-radius: 7px;
         background-color: rgba(124, 88, 46, 0.034);
-        border: 1px solid rgba(99, 67, 31, 0.068) ;
+        border: 1px solid rgba(99, 67, 31, 0.068);
         display: flex;
         align-items: center;
         cursor: pointer;
 
     }
-    .tulo:hover{
+
+    .tulo:hover {
         background-color: rgba(124, 88, 46, 0.068);
         transition: all 0.3s ease;
     }
-    .pababa{
+
+    .pababa {
         margin: 0 40px 40px 40px;
         display: grid;
         height: 290px;
@@ -789,33 +796,38 @@
         grid-template-rows: repeat(5, 1fr);
         gap: 10px;
     }
-    .lugos{
+
+    .lugos {
         height: 40px;
         width: 40px;
         background-color: #672c2c1f;
-        border-radius: 5px; 
+        border-radius: 5px;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-left: 20px;
     }
-    .lugos:hover{
+
+    .lugos:hover {
         background-color: #672c2c4b;
         color: #ffffff;
         transition: all 0.3s ease;
     }
-    .lugos svg{
+
+    .lugos svg {
         width: 20px;
         height: 20px;
-        color: #672C2C; 
+        color: #672C2C;
     }
-    .stays3{
+
+    .stays3 {
         font-family: 'Nunito Sans';
         font-size: .9rem;
         font-weight: 800;
         color: #000000;
         margin-left: 20px;
     }
+
     .stays3 span {
         font-family: 'Nunito Sans', sans-serif;
         font-size: .8rem;
@@ -823,7 +835,7 @@
         color: #0d6129cc;
     }
 
-    .view{
+    .view {
         margin-left: auto;
         margin-right: 30px;
         gap: 6px;
@@ -835,22 +847,25 @@
         height: 30px;
         width: 60px;
         display: flex;
-        justify-content: center;   
-        line-height: 30px; 
+        justify-content: center;
+        line-height: 30px;
         border-radius: 3px;
         cursor: pointer;
     }
-    .view h2{
+
+    .view h2 {
         margin: 0;
-    font-size: .8rem;
-    font-weight: 700;
+        font-size: .8rem;
+        font-weight: 700;
     }
-    .view:hover{
+
+    .view:hover {
         background-color: #3b1616;
         color: #ffffff;
         transition: all 0.3s ease;
     }
-    .lease1{
+
+    .lease1 {
         position: relative;
         width: 100%;
         background-color: #ffffff;
@@ -860,167 +875,195 @@
         margin-top: 25px;
         height: 200px;
     }
+
     .lease1 .stays {
         font-family: 'Inria Serif', serif;
         font-size: 1.5rem;
         font-weight: 700;
-        color: #3b1616;
+        color: #672C2C;
         margin-left: 40px;
         margin-top: 30px;
     }
-    .change{
-        width:220px;
+
+    .change {
+        width: 220px;
         height: 50px;
-        background-color: #3b1616;
+        background-color: #672C2C;
         border-radius: 5px;
         border: 1px solid #672c2c67;
-    margin-left: 40px;
+        margin-left: 40px;
         margin-top: 10px;
-    font-family: 'Nunito Sans', sans-serif;
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 700;
-    cursor: pointer;
+        font-family: 'Nunito Sans', sans-serif;
+        color: #ffffff;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
     }
-    .change:hover{
+
+    .change:hover {
         background-color: #672c2c00;
         color: #3b1616;
         border: 1px solid #3b1616;
         transition: all 0.3s ease;
     }
-.backtenants {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    height: 38px;
-    padding: 0 16px;
-    margin-bottom: 16px;
-    border: 1px solid #672C2C;
-    border-radius: 6px;
-    background: transparent;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: .85rem;
-    font-weight: 800;
-    color: #672C2C;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.23s ease;
-}
 
-.backtenants:hover {
-    background: #672C2C;
-    color: #ffffff;
-}
+    .backtenants {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 38px;
+        padding: 0 16px;
+        margin-bottom: 16px;
+        border: 1px solid #672C2C;
+        border-radius: 6px;
+        background: transparent;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: .85rem;
+        font-weight: 800;
+        color: #672C2C;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.23s ease;
+    }
 
-.backtenants svg {
-    width: 16px;
-    height: 16px;
-}
-.adm-stats {
-    margin: 0 0 20px;
-}
+    .backtenants:hover {
+        background: #672C2C;
+        color: #ffffff;
+    }
 
-.adm-box {
-    background: #ffffff;
-    border: 1px solid #0000001a;
-    border-radius: 12px;
-    padding: 24px;
-    box-sizing: border-box;
-}
+    .backtenants svg {
+        width: 16px;
+        height: 16px;
+    }
 
-.adm-row {
-    display: grid;
-    grid-template-columns: 1.3fr 1fr 1fr 1.4fr 1fr;
-    align-items: center;
-    column-gap: 12px;
-    padding: 14px 0;
-    border-bottom: 1px solid #0000000f;
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: .85rem;
-    font-weight: 700;
-    color: #000000;
-}
-
-.adm-row:last-child {
-    border-bottom: none;
-}
-
-.adm-head {
-    margin-top: 14px;
-    padding: 10px 0;
-    border-bottom: 1px solid #0000001a;
-    font-size: .75rem;
-    font-weight: 800;
-    letter-spacing: .02em;
-    text-transform: uppercase;
-    color: #00000069;
-}
-
-.adm-row .anostatbayad {
-    margin: 0;
-}
-
-.adm-act {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 14px 0;
-    border-bottom: 1px solid #0000000f;
-}
-
-.adm-act:last-child {
-    border-bottom: none;
-}
-
-.adm-dot {
-    width: 10px;
-    height: 10px;
-    margin-top: 5px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: #672C2C;
-}
-
-.adm-dot-payment    { background: #2D7248; }
-.adm-dot-complaint  { background: #AB1210; }
-.adm-dot-request    { background: #C98A2C; }
-.adm-dot-suggestion { background: #6E7A5D; }
-.adm-dot-market     { background: #A87C5F; }
-
-.adm-act-text {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    font-family: 'Nunito Sans', sans-serif;
-}
-
-.adm-act-text b {
-    font-size: .9rem;
-    font-weight: 800;
-    color: #000000;
-}
-
-.adm-act-text span {
-    font-size: .8rem;
-    font-weight: 600;
-    color: #00000085;
-}
-
-.adm-act small {
-    font-family: 'Nunito Sans', sans-serif;
-    font-size: .75rem;
-    font-weight: 700;
-    color: #00000070;
-    white-space: nowrap;
-}
-
-@media (max-width: 900px) {
     .adm-stats {
-        flex-wrap: wrap;
+        margin: 0 0 20px;
     }
 
-    .adm-stats .roombedmove1 {
-        width: calc(50% - 10px);
+    .adm-box {
+        background: #ffffff;
+        border: 1px solid #0000001a;
+        border-radius: 12px;
+        padding: 24px;
+        box-sizing: border-box;
     }
-}
+
+    .adm-row {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr 1.4fr 1fr;
+        align-items: center;
+        column-gap: 12px;
+        padding: 14px 0;
+        border-bottom: 1px solid #0000000f;
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: .85rem;
+        font-weight: 700;
+        color: #000000;
+    }
+
+    .adm-row:last-child {
+        border-bottom: none;
+    }
+
+    .adm-head {
+        margin-top: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid #0000001a;
+        font-size: .75rem;
+        font-weight: 800;
+        letter-spacing: .02em;
+        text-transform: uppercase;
+        color: #00000069;
+    }
+
+    .adm-row .anostatbayad {
+        margin: 0;
+    }
+
+    .adm-act {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid #0000000f;
+    }
+
+    .adm-act:last-child {
+        border-bottom: none;
+    }
+
+    .adm-dot {
+        width: 10px;
+        height: 10px;
+        margin-top: 5px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: #672C2C;
+    }
+
+    .adm-dot-payment {
+        background: #2D7248;
+    }
+
+    .adm-dot-complaint {
+        background: #AB1210;
+    }
+
+    .adm-dot-request {
+        background: #C98A2C;
+    }
+
+    .adm-dot-suggestion {
+        background: #6E7A5D;
+    }
+
+    .adm-dot-market {
+        background: #A87C5F;
+    }
+
+    .adm-act-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-family: 'Nunito Sans', sans-serif;
+    }
+
+    .adm-act-text b {
+        font-size: .9rem;
+        font-weight: 800;
+        color: #000000;
+    }
+
+    .adm-act-text span {
+        font-size: .8rem;
+        font-weight: 600;
+        color: #00000085;
+    }
+
+    .adm-act small {
+        font-family: 'Nunito Sans', sans-serif;
+        font-size: .75rem;
+        font-weight: 700;
+        color: #00000070;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 900px) {
+        .adm-stats {
+            flex-wrap: wrap;
+        }
+
+        .adm-stats .roombedmove1 {
+            width: calc(50% - 10px);
+        }
+    }
+
+    .acsun[data-contact] {
+        cursor: pointer;
+    }
+
+    .acsun[data-contact]:focus-visible {
+        outline: 2px solid #672C2C;
+        outline-offset: 2px;
+    }

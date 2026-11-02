@@ -1,0 +1,530 @@
+.complaintboxesa {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 20px;
+}
+
+.complaintboxesa1 {
+    width: 100%;
+    height: 120px;
+    background-color: #ffffff;
+    border: 1px solid #00000023;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    padding: 30px;
+    box-sizing: border-box;
+    gap: 20px;
+}
+
+.complainpangayos h1 {
+    font-family: 'Inria Serif', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0;
+    margin-top: -10px;
+}
+
+.complainpangayos {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.complaintboxpola {
+    width: 40px;
+    height: 40px;
+    background-color: #672c2c4b;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.complaintboxpola svg {
+    height: 20px;
+    width: 20px;
+    color: #672c2c;
+}
+
+.complaintboxesa .OPENCASE {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    font-size: .8rem;
+    color: #672c2c;
+    margin: 0;
+}
+
+.boxhabacomplaint {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.boxhabacomplaint1 {
+    width: 100%;
+    height: 280px;
+    background-color: #ffffff;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.06),
+        0 4px 8px -2px rgba(0, 0, 0, 0.08);
+    border-radius: 0 8px 8px 15px;
+    border-left: 17px solid #A62020;
+    cursor: pointer;
+    transition: all 0.23s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    box-sizing: border-box;
+
+}
+
+.boxhabacomplaint1:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.06),
+        0 8px 14px -4px rgba(0, 0, 0, 0.12);
+}
+
+.comjuelleplaints {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -10px;
+}
+
+.comhi {
+    width: 65px;
+    height: 32px;
+    background-color: #DF9E9E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+
+.comjuelleplaints .h1com {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 800;
+    font-size: .9rem;
+    color: #672c2c;
+    margin: 0;
+
+}
+
+.comhi .OPENCOMd {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    color: #672c2c;
+    margin: 0;
+}
+
+.boxhabacomplaint1 h3 {
+    font-family: 'Inria Serif', serif;
+    font-weight: 700;
+    font-size: 1.7rem;
+    color: #000000;
+    margin: 0;
+}
+
+.boxhabacomplaint1 h2 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #0000008e;
+    margin: 0;
+    margin-top: 15px
+}
+
+.notifsacomplaint {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.notifsacomplaint1 {
+    width: 130px;
+    height: 35px;
+    background-color: #E2ECF7;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notifsacomplaint1 h4 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    color: #79A6D9;
+}
+
+.parightcomjueplaint {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: -5px;
+}
+
+.parightcomjueplaint h5 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    color: #0000008e;
+}
+
+.padiretso231759274 {
+    flex-shrink: 0;
+    display: block;
+    width: 100%;
+    height: 1px;
+    border: none;
+    background-color: #00000010;
+}
+
+.cutoncom {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.cutoncom1 {
+    width: 160px;
+    height: 40px;
+    border: 1px solid #00000007;
+    border-radius: 6px;
+    background-color: #FAF6F4;
+    color: #672c2c;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.cutoncom1:hover {
+    background-color: #672c2c;
+    color: #ffffff;
+}
+
+.cutoncom2 {
+    width: 160px;
+    height: 40px;
+    border: 1px solid #00000007;
+    border-radius: 6px;
+    background-color: #672c2c;
+    color: #ffffff;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.cutoncom2:hover {
+    background-color: #FAF6F4;
+    color: #672c2c;
+}
+
+#cViewModal .bagongannmodal {
+    max-width: 690px;
+    padding: 0;
+}
+
+.cv-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 28px 32px 18px;
+    border-bottom: 1px solid #0000000f;
+}
+
+.cv-head>div {
+    flex: 1;
+}
+
+.cv-who {
+    margin: 0 0 6px;
+    font-size: .78rem;
+    font-weight: 800;
+    color: #672c2c;
+    letter-spacing: .03em;
+}
+
+.cv-title {
+    margin: 0;
+    font-family: 'Inria Serif', serif;
+    font-size: 1.7rem;
+    color: #000;
+}
+
+.cv-pill {
+    background: #DF9E9E;
+    color: #672c2c;
+    font-size: .75rem;
+    font-weight: 800;
+    padding: 8px 14px;
+    border-radius: 3px;
+}
+
+.cv-pill.st-progress {
+    background: #c98a2c54;
+    color: #C98A2C;
+}
+
+.cv-pill.st-resolved {
+    background: #3e8e5a2e;
+    color: #3E8E5A;
+}
+
+.cv-x {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    color: #555;
+}
+
+.cv-x svg {
+    width: 100%;
+    height: 100%;
+}
+
+.cv-body {
+    padding: 20px 32px 28px;
+}
+
+.cv-chips {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+
+.cv-chip {
+    font-size: .82rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 3px;
+}
+
+.cv-blue {
+    background: #E2ECF7;
+    color: #79A6D9;
+}
+
+.cv-gold {
+    background: #F7F0E4;
+    color: #D5A45A;
+}
+
+.cv-grey {
+    background: #f3efe9;
+    color: #0000008e;
+}
+
+.cv-label {
+    font-family: 'Nunito Sans', sans-serif;
+    margin: 0 0 8px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #0000008e;
+    letter-spacing: .05em;
+}
+
+.cv-box {
+    background: #f9f6ef;
+    border: 1px solid #0000000f;
+    border-radius: 8px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    font-weight: 700;
+}
+
+.cv-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.cv-grid b {
+    font-size: .95rem;
+    word-break: break-all;
+}
+
+.cv-time {
+    list-style: none;
+    margin: 0 0 22px;
+    padding: 0;
+}
+
+.cv-time li {
+    position: relative;
+    padding: 0 0 18px 34px;
+    opacity: .45;
+}
+
+.cv-time li.done {
+    opacity: 1;
+}
+
+.cv-time i {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #f3e9d6;
+}
+
+.cv-time li.done i {
+    background: #8e4a4a;
+}
+
+.cv-time li:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 22px;
+    bottom: 2px;
+    width: 2px;
+    background: #f0e4cc;
+}
+
+.cv-time b {
+    display: block;
+    font-size: .95rem;
+}
+
+.cv-time small {
+    display: block;
+    color: #0000008e;
+    font-weight: 700;
+    font-size: .78rem;
+}
+
+.cv-foot {
+    display: flex;
+    gap: 14px;
+}
+
+.cv-foot button {
+    flex: 1;
+    height: 46px;
+}
+
+.cv-foot button[hidden],
+.cutoncom2[hidden] {
+    display: none !important;
+}
+
+.boxhabacomplaint1.st-open {
+    border-left-color: #A62020;
+}
+
+.boxhabacomplaint1.st-progress {
+    border-left-color: #C98A2C;
+}
+
+.boxhabacomplaint1.st-resolved {
+    border-left-color: #3E8E5A;
+}
+
+.comhi {
+    width: auto;
+    padding: 0 14px;
+}
+
+.st-progress .comhi {
+    background: #c98a2c54;
+}
+
+.st-progress .OPENCOMd {
+    color: #C98A2C;
+}
+
+.st-resolved .comhi {
+    background: #3e8e5a2e;
+}
+
+.st-resolved .OPENCOMd {
+    color: #3E8E5A;
+}
+
+.notifsacomplaint1 {
+    width: auto;
+    padding: 0 14px;
+}
+
+.notifsacomplaint1.chip-high {
+    background: #F7F0E4;
+}
+
+.notifsacomplaint1.chip-high h4 {
+    color: #D5A45A;
+}
+
+.cutoncom1,
+.cutoncom2 {
+    width: auto;
+    min-width: 160px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.cutoncom1 svg,
+.cutoncom2 svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.boxhabacomplaint1 {
+    position: relative;
+    --bar: #A62020;
+}
+
+.boxhabacomplaint1.st-open {
+    --bar: #A62020;
+}
+
+.boxhabacomplaint1.st-progress {
+    --bar: #C98A2C;
+}
+
+.boxhabacomplaint1.st-resolved {
+    --bar: #3E8E5A;
+}
+
+.boxhabacomplaint1::before {
+    content: "";
+    position: absolute;
+    top: -3px;
+    left: -12px;
+    width: 7px;
+    height: 7px;
+    background: var(--bar);
+    border-radius: 4px 4px 0 0;
+}

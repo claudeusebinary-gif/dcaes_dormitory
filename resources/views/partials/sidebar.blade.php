@@ -3,6 +3,9 @@
    $isAdmin  = $user->isAdmin();
 $active   = str_replace(['tenant.', 'admin.'], '', (string) request()->route()?->getName());
 $roleLine = $isAdmin ? 'Owner / Admin' : ($user->room_number ? 'Tenant · Room ' . $user->room_number : 'Tenant');
+if ($user->isGuest()) {
+    $roleLine = 'Browsing as guest';
+}
 
     $icons = [
         'menu' => '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
@@ -123,11 +126,18 @@ $roleLine = $isAdmin ? 'Owner / Admin' : ($user->room_number ? 'Tenant · Room '
         </div>
 
        
-        <a href="#" id="logoutLink" class="sb-link sb-logout" title="Logout">
-            {!! $icon('logout') !!}
-            <span class="sb-label">Logout</span>
-        </a>
-        <form id="logoutForm" action="{{ route('logout') }}" method="POST" hidden>@csrf</form>
+      @if ($user->isGuest())
+            <a href="{{ route('login') }}" class="sb-link sb-logout" title="Log in">
+                {!! $icon('logout') !!}
+                <span class="sb-label">Log in</span>
+            </a>
+        @else
+            <a href="#" id="logoutLink" class="sb-link sb-logout" title="Logout">
+                {!! $icon('logout') !!}
+                <span class="sb-label">Logout</span>
+            </a>
+            <form id="logoutForm" action="{{ route('logout') }}" method="POST" hidden>@csrf</form>
+        @endif
     </div>
 </aside>
 <div class="sb-backdrop" id="sbBackdrop"></div>

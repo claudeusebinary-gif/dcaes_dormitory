@@ -10,20 +10,20 @@
         <div class="bah">
             <div class="fota">
                 <h1 class="fotatitle">Dormitory</h1>
-                <a href="#">Rooms</a>
+                <a href="{{ route('tenant.rooms') }}">Rooms</a>
                 <a href="#">Location</a>
-                <a href="#">House rules</a>
+                <a href="#" data-legal="rules">House rules</a>
             </div>
             <div class="fota">
                 <h1 class="fotatitle">Support</h1>
                 <a href="#">Message admin</a>
-                <a href="#">FAQs</a>
+               <a href="#" data-legal="faqs">FAQs</a>
                 <a href="#">Contact us</a>
             </div>
             <div class="fota">
-                <h1 class="fotatitle">Legal</h1>
-                <a href="#">Terms of stay</a>
-                <a href="#">Privacy policy</a>
+                <h1 class="fotatitle">Legal</h1>    
+                <a href="#" data-legal="terms">Terms of stay</a>
+                <a href="#" data-legal="privacy">Privacy policy</a>
             </div>
         </div>
         <hr class="foothr">
@@ -50,3 +50,4 @@
             </a>
         </div>
     </div>
+    @include('partials.legal-modal')

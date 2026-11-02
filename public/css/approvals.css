@@ -1,0 +1,441 @@
+.approvalsboxsix {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.approvalsboxsix1 {
+    width: 100%;
+    height: 290px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.06),
+        0 4px 8px -2px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    transition: all 0.23s ease;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.approvalsboxsix1:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.06),
+        0 8px 14px -4px rgba(0, 0, 0, 0.12);
+}
+
+.jvlog {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+}
+
+.jvlog1 {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #672c2c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.jvlog1 h1 {
+    font-family: 'Inria Serif', serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin: 0;
+}
+
+.juelogapprove {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    gap: 3px;
+}
+
+.juelogapprove h1 {
+    font-family: 'Inria Serif', serif;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #000000;
+    margin: 0;
+}
+
+.juelogapprove span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    color: #00000085;
+    margin: 0;
+}
+
+.pendingjueapproved {
+    width: 110px;
+    height: 33px;
+    background-color: #A9711E;
+    border-radius: 10px 0 10px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pendingjueapproved h1 {
+    font-family: 'Inria Serif', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #ffffff;
+    margin: 0;
+}
+
+.jvlogjueaprove {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.jvlogjueaprove1 {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.viewapprovejue {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .9rem;
+    color: #672c2c;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: start;
+    gap: 5px;
+    margin-left: 70px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.viewapprovejue svg {
+    height: 17px;
+    width: 17px;
+}
+
+.boxessaapproved {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    margin-top: 8px;
+
+}
+
+.boxessaapproved1 {
+    width: 85px;
+    height: 27px;
+    background-color: #E7F0F9;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boxessaapproved1 h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    color: #2b5a8a;
+}
+
+.mgarequirmentsbox {
+    background-color: #FAF8F4;
+    width: 100%;
+    height: 50px;
+    margin-top: 20px;
+    border-radius: 6px;
+    border: 1px solid #00000013;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.requireapprove1 {
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    margin-left: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.requireapprove1 h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .7rem;
+    color: #000000;
+    margin: 0;
+}
+
+.hrge {
+    width: 100%;
+    border: none;
+    border-top: 2px dotted #999;
+    margin: 1em 0;
+}
+
+.submmietedsa {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    color: #00000077;
+}
+
+.rejectapprovedapproval {
+    display: flex;
+    flex-direction: row;
+    gap: 9px;
+}
+
+.rejectapprovedapproval1 {
+    width: 120px;
+    height: 40px;
+    background-color: #FAF6F4;
+    color: #672c2c;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    border: 1px solid #0000000c;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.rejectapprovedapproval1:hover {
+    background-color: #672c2c;
+    color: #ffffff;
+    border: 1px solid #0000000c;
+}
+
+.rejectapprovedapproval2 {
+    width: 120px;
+    height: 40px;
+    background-color: #2D7248;
+    color: #ffffff;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    border: 1px solid #0000000c;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.rejectapprovedapproval2:hover {
+    background-color: #FAF6F4;
+    color: #672c2c;
+    border: 1px solid #0000000c;
+}
+
+.rejectsabaysubmmit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.pendingjueapproved.st-approved {
+    background-color: #2D7248;
+}
+
+.pendingjueapproved.st-rejected {
+    background-color: #C15553;
+}
+
+.boxessaapproved1 {
+    width: auto;
+    min-width: 85px;
+    padding: 0 12px;
+}
+
+.requireapprove1 {
+    cursor: pointer;
+}
+
+.requireapprove {
+    accent-color: #2D7248;
+    cursor: pointer;
+}
+
+.requireapprove:disabled {
+    cursor: not-allowed;
+    opacity: .85;
+}
+
+.viewapprovejue:hover {
+    text-decoration: underline;
+}
+
+#aViewModal .bagongannmodal {
+    max-width: 760px;
+    padding: 0;
+}
+
+#aViewModal .cv-title {
+    text-transform: uppercase;
+    font-size: 1.5rem;
+}
+
+#aViewModal .cv-who {
+    margin: 4px 0 0;
+}
+
+#aViewModal .cv-pill.st-pending {
+    background: #c98a2c2e;
+    color: #A9711E;
+}
+
+#aViewModal .cv-pill.st-approved {
+    background: #3e8e5a2e;
+    color: #2D7248;
+}
+
+#aViewModal .cv-pill.st-rejected {
+    background: #C1555326;
+    color: #C15553;
+}
+
+.av-body {
+    padding: 4px 32px 20px;
+}
+
+.av-card {
+    border: 1px solid #00000011;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 16px;
+    background-color: #ffffff;
+}
+
+.av-card-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 20px;
+    background-color: #F8F3EA;
+    border-bottom: 1px solid #0000000d;
+}
+
+.av-card-head h3 {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inria Serif', serif;
+    font-size: 1.05rem;
+    color: #672c2c;
+}
+
+.av-card-head h3 span {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .75rem;
+    font-weight: 700;
+    color: #0000009f;
+}
+
+.av-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 20px;
+    padding: 16px 20px 20px;
+}
+
+.av-fields.one {
+    grid-template-columns: 1fr;
+}
+
+.av-field small {
+    display: block;
+    margin-bottom: 3px;
+    font-size: .68rem;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #00000080;
+}
+
+.av-field b {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #000000;
+    word-break: break-word;
+}
+
+.av-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.av-ok {
+    color: #2D7248 !important;
+}
+
+.av-no {
+    color: #C15553 !important;
+}
+
+.av-foot {
+    display: flex;
+    gap: 14px;
+    padding: 0 32px 28px;
+}
+
+.av-foot[hidden],
+.av-decided[hidden] {
+    display: none;
+}
+
+.av-foot button {
+    flex: 1;
+    width: auto;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.av-foot svg {
+    width: 16px;
+    height: 16px;
+}
+
+.av-decided {
+    margin: 0;
+    padding: 0 32px 26px;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #00000080;
+}
+
+@media (max-width: 700px) {
+
+    .av-two,
+    .av-fields {
+        grid-template-columns: 1fr;
+    }
+}

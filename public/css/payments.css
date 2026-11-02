@@ -1242,3 +1242,73 @@
 #payModal .padiretso231591 {
     margin-top: auto;               
 }
+/* ===== late fee + half payment ===== */
+.payfeenote {
+    margin: -6px 0 8px 16px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .78rem;
+    font-weight: 800;
+    color: #A72121;
+}
+
+.payhalf {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -2px 0 10px 16px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #000000b0;
+    cursor: pointer;
+}
+
+.payhalf input:disabled + * ,
+.payhalf:has(input:disabled) {
+    opacity: .5;
+    cursor: default;
+}
+/* ===== payment modal: invoice row layout fix ===== */
+#payModal .invoice-pick {
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#payModal .invoice-pick .duhakagatos1 {
+    width: 100%;
+    height: auto;
+    min-height: 70px;
+    padding: 10px 14px;
+    box-sizing: border-box;
+}
+
+#payModal .invoice-pick .tempo {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+}
+
+#payModal .invoice-pick .ibosses34791 h1 {
+    white-space: nowrap;
+}
+
+#payModal .invoice-pick .ibosses34791 span {
+    white-space: normal;
+}
+
+#payModal .invoice-pick .samodapid {
+    margin-right: 0;
+    flex-shrink: 0;
+}
+
+#payModal .invoice-pick .pidbayad {
+    width: 90px;
+    flex-shrink: 0;
+}
+
+#payModal .invoice-pick .payfeenote,
+#payModal .invoice-pick .payhalf {
+    margin: 0 0 0 4px;
+}

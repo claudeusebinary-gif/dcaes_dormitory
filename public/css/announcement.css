@@ -876,3 +876,18 @@ select.kahonnaann {
         grid-template-columns: 1fr;
     }
 }
+.filtering.payfilterbar {
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filtering.payfilterbar .fiveb {
+    width: auto;
+    flex: 0 0 112px;
+}
+
+.filtering.payfilterbar .ann-pager {
+    margin: 0 0 0 auto;
+    justify-content: flex-end;
+}

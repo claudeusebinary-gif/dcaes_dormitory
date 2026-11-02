@@ -100,7 +100,7 @@
                         <hr>
                     </div>
                     <div>
-                        <button type="button" class="loginbo2">
+                        <button type="submit" form="guestForm" class="loginbo2">
                             <svg class="guestsicon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"
                                 aria-hidden="true">
@@ -256,7 +256,7 @@
                         </div>
                         <div class="ags">
                             <input type="checkbox" name="agree" id="agree" class="radi" required>
-                            <label for="agree">I agree to the Term of Service and Privacy Policy.</label>
+                        <label for="agree">I agree to the &nbsp; <a href="#" data-legal="terms">Term of Service</a> &nbsp;and&nbsp; <a href="#" data-legal="privacy">Privacy Policy</a>.</label>
                         </div>
                         <div><input type="submit" value="Sign Up" class="loginbo"></div>
                         <p class="have1">Already have an account? &nbsp;<a href="#" class="crea1" id="showLogin">Log
@@ -276,7 +276,7 @@
             <a href="#room">
                 <h3>Room</h3>
             </a>
-            <a href="#settings">
+            <a href="#settings">    
                 <h3>Settings</h3>
             </a>
         </nav>
@@ -357,8 +357,8 @@
             <h1 class="lks">Log in to use this feature</h1>
             <h1 class="lks1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Log in to book and manage your reservations,<br> or continue
                 as a guest to view the available rooms.</h1>
-            <div class="but"><button type="button" class="but1">Log In</button> <button type="button"
-                    class="but2">Continue as Guest</button></div>
+            <div class="but"><button type="button" class="but1">Log In</button> 
+                <button type="submit" form="guestForm" class="but2">Continue as Guest</button></div>
         </div>
     </section>
 
@@ -374,10 +374,12 @@
             <h1 class="lks">Log in to use this feature</h1>
             <h1 class="lks1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Log in to book and manage your reservations,<br> or continue
                 as a guest to view the available rooms.</h1>
-            <div class="but"><button type="button" class="but1">Log In</button> <button type="button"
-                    class="but2">Continue as Guest</button></div>
+            <div class="but"><button type="button" class="but1">Log In</button> 
+                <button type="submit" form="guestForm" class="but2">Continue as Guest</button></div>
         </div>
     </section>
+        <form id="guestForm" action="{{ route('guest') }}" method="POST" hidden>@csrf</form>
+            @include('partials.legal-modal', ['withAgree' => true])
 </body>
 <script>
 

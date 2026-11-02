@@ -100,6 +100,13 @@ public function book(Request $request): JsonResponse
         'ec_contact_number' => ['required', 'string', 'max:20'],
         'ec_address'        => ['required', 'string', 'max:500'],
         'move_in_date'      => ['required', 'date', 'after_or_equal:today'],
+        'occupation'        => ['nullable', 'in:Student,Employed,Other'],
+        'civil_status'      => ['nullable', 'string', 'max:20'],
+        'school_employer'   => ['nullable', 'string', 'max:150'],
+        'id_type'           => ['nullable', 'string', 'max:50'],
+        'id_number'         => ['nullable', 'string', 'max:50'],
+        'length_of_stay'    => ['nullable', 'string', 'max:30'],
+        'agree'             => ['nullable'],
     ]);
 
     return DB::transaction(function () use ($user, $data) {
@@ -157,6 +164,13 @@ public function book(Request $request): JsonResponse
             'bed_deck'     => $data['deck'],
             'move_in_date' => $data['move_in_date'],
             'monthly_rent' => $room->price_per_bed,
+            'occupation'     => $data['occupation'] ?? null,
+            'civil_status'   => $data['civil_status'] ?? null,
+            'school'         => $data['school_employer'] ?? null,
+            'id_type'        => $data['id_type'] ?? null,
+            'id_number'      => $data['id_number'] ?? null,
+            'length_of_stay' => $data['length_of_stay'] ?? null,
+            'agreed'         => ! empty($data['agree']),
         ]);
 
         // the tenant's bell: "waiting for admin approval"
@@ -204,38 +218,52 @@ public function sendMessage(Request $request): JsonResponse
         return view('tenant.payments', ['billing' => Billing::forUser($request->user())]);
     }
 
-    public function pay(Request $request): JsonResponse
+     public function pay(Request $request): JsonResponse
     {
         $data = $request->validate([
             'periods'   => ['required', 'array', 'min:1'],
             'periods.*' => ['required', 'regex:/^\d{4}-\d{2}$/'],
+            'half'      => ['nullable', 'array'],
+            'half.*'    => ['regex:/^\d{4}-\d{2}$/'],
             'method'    => ['required', 'in:GCash'],
         ]);
 
-           $user    = $request->user();
+        $user = $request->user();
 
-        // only the next two unpaid invoices can be paid
-        $unpaid  = collect(Billing::forUser($user)['invoices'])
+        // overdue invoices come first; skip the ones already sent to the admin
+        $unpaid = collect(Billing::forUser($user)['invoices'])
             ->where('status', '!=', 'paid')
+            ->where('awaiting', false)
             ->values()
             ->take(2)
             ->keyBy('period');
-        $total   = 0;
+
+        $total = 0;
+
         DB::transaction(function () use ($data, $user, $unpaid, &$total) {
             foreach (array_unique($data['periods']) as $period) {
                 $inv = $unpaid->get($period);
-                if (! $inv) continue;                      
+                if (! $inv) continue;
 
-                Payment::firstOrCreate(
-                    ['user_id' => $user->id, 'period' => $period],
-                    [
-                        'amount'    => $inv['amount'],
-                        'method'    => $data['method'],
-                        'reference' => $inv['ref'],
-                        'paid_at'   => now(),
-                    ]
-                );
-                $total += $inv['amount'];
+                $half = in_array($period, $data['half'] ?? [], true) && $inv['can_half'];
+                $pay  = $half ? (float) $inv['half'] : (float) $inv['amount'];
+                $fee  = (float) $inv['fee'];
+
+                // sent to the admin, NOT recorded yet
+                Approval::create([
+                    'user_id' => $user->id,
+                    'type'    => 'payment',
+                    'status'  => 'pending',
+                    'period'  => $period,
+                    'amount'  => $pay,
+                    'fee'     => $fee,
+                    'partial' => $pay + 0.01 < (float) $inv['amount'],
+                    'title'   => $data['method'] . ' payment · ' . Billing::money($pay + $fee)
+                               . ' · ' . $inv['label'] . ($half ? ' (half)' : '')
+                               . ($fee > 0 ? ' · incl. ' . Billing::money($fee) . ' late fee' : ''),
+                ]);
+
+                $total += $pay + $fee;
             }
         });
 
@@ -243,18 +271,7 @@ public function sendMessage(Request $request): JsonResponse
             return response()->json(['ok' => false, 'message' => 'Nothing to pay.'], 422);
         }
 
-      
-        $after = Billing::forUser($user);
-        if (collect($after['invoices'])->where('status', 'overdue')->isEmpty()) {
-            $user->update(['payment_status' => 'up_to_date']);
-        }
-
-               AdminNotification::fromTenant($user, 'Payment received', 'paid ₱' . number_format($total) . ' via ' . $data['method'] . '.');
-                       Approval::create([
-            'user_id' => $user->id,
-            'type'    => 'payment',
-            'title'   => ucfirst($data['method']) . ' payment · ₱' . number_format($total, 2),
-        ]);
+        AdminNotification::fromTenant($user, 'Payment to verify', 'sent ' . Billing::money($total) . ' via ' . $data['method'] . '. Please check it and record it.');
 
         return response()->json(['ok' => true, 'total' => $total]);
     }

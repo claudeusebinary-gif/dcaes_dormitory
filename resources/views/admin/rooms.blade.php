@@ -222,6 +222,7 @@
             @endforelse
         </div>
         <p class="no-rooms" id="noRooms" hidden>No rooms match your search.</p>
+                <div class="ann-pager" id="roomPager"></div>
         <div class="roommodals" id="roomModal" role="dialog" aria-modal="true" aria-hidden="true">
             <div class="wala">
                 <button type="button" class="goback" data-close-modal>
@@ -489,7 +490,9 @@
             const fBed = document.getElementById('fBed');
             const fFree = document.getElementById('fFree');
             const none = document.getElementById('noRooms');
-            let status = 'all';
+            const pager = document.getElementById('roomPager');
+            const PER_PAGE = 6;
+            let status = 'all', page = 1;
 
             const rules = {
                 all: () => true,
@@ -499,29 +502,62 @@
                 maintenance: c => c.dataset.maintenance === '1',
             };
 
-            function apply() {
+            function renderPager(pages, total, from, shown) {
+                pager.innerHTML = '';
+                if (pages <= 1) return;
+
+                function pbtn(label, target, disabled, current) {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.textContent = label;
+                    if (current) b.className = 'current';
+                    b.disabled = !!disabled;
+                    b.addEventListener('click', () => { page = target; apply(true); });
+                    pager.appendChild(b);
+                }
+
+                pbtn('‹ Prev', page - 1, page === 1, false);
+                for (let p = 1; p <= pages; p++) pbtn(String(p), p, false, p === page);
+                pbtn('Next ›', page + 1, page === pages, false);
+
+                const info = document.createElement('span');
+                info.textContent = 'Showing ' + (from + 1) + '–' + (from + shown) + ' of ' + total;
+                pager.appendChild(info);
+            }
+
+            function apply(keepPage) {
+                if (!keepPage) page = 1;
+
                 const words = search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
                 const maxP = parseFloat(fPrice.value);
                 const bed = fBed.value;
                 const minFree = +fFree.value || 0;
-                let shown = 0;
+
+                const list = cards.filter(c =>
+                    rules[status](c)
+                    && words.every(w => c.dataset.search.includes(w))
+                    && (isNaN(maxP) || +c.dataset.price <= maxP)
+                    && (!bed || c.dataset.bedtype === bed)
+                    && +c.dataset.free >= minFree
+                );
+
+                const pages = Math.max(1, Math.ceil(list.length / PER_PAGE));
+                if (page > pages) page = pages;
+                const from = (page - 1) * PER_PAGE;
 
                 cards.forEach(c => {
-                    const ok = rules[status](c)
-                        && words.every(w => c.dataset.search.includes(w))
-                        && (isNaN(maxP) || +c.dataset.price <= maxP)
-                        && (!bed || c.dataset.bedtype === bed)
-                        && +c.dataset.free >= minFree;
-                    c.classList.toggle('is-hidden', !ok);
-                    if (ok) shown++;
+                    const i = list.indexOf(c);
+                    c.classList.toggle('is-hidden', !(i >= from && i < from + PER_PAGE));
                 });
 
-                none.hidden = shown > 0;
+                none.hidden = list.length > 0;
                 const active = (fPrice.value !== '' ? 1 : 0) + (bed ? 1 : 0) + (minFree ? 1 : 0);
                 btn.value = active ? 'Filter (' + active + ')' : 'Filter';
+
+                renderPager(pages, list.length, from, Math.min(PER_PAGE, list.length - from));
             }
 
-            search.addEventListener('input', apply);
+            search.addEventListener('input', () => apply());
             tabs.forEach(t => t.addEventListener('click', () => {
                 status = t.dataset.filter;
                 tabs.forEach(x => x.classList.toggle('active', x === t));
@@ -532,7 +568,7 @@
             btn.addEventListener('click', e => { e.stopPropagation(); setPanel(pop.hidden); });
             pop.addEventListener('click', e => e.stopPropagation());
             document.addEventListener('click', () => setPanel(false));
-            [fPrice, fBed, fFree].forEach(el => el.addEventListener('input', apply));
+            [fPrice, fBed, fFree].forEach(el => el.addEventListener('input', () => apply()));
             document.getElementById('fReset').addEventListener('click', () => {
                 fPrice.value = ''; fBed.value = ''; fFree.value = '0'; apply();
             });

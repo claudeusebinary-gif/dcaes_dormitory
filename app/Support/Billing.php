@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 
 class Billing
 {
+        public const LATE_FEE_PER_DAY = 10;
     public static function money(float $amount): string
     {
         return '₱' . number_format($amount, fmod($amount, 1) == 0 ? 0 : 2);
@@ -25,25 +26,33 @@ class Billing
         $today  = now()->startOfDay();
         $moveIn = Carbon::parse($user->move_in_date ?? $user->created_at)->startOfDay();
         $dueDay = $moveIn->day;
-        $paidPeriods = \App\Models\Payment::where('user_id', $user->id)->pluck('period')->all();
-        $paymentRows = \App\Models\Payment::where('user_id', $user->id)->get()->keyBy('period');
+       $paymentRows = \App\Models\Payment::where('user_id', $user->id)->get()->keyBy('period');
+$paidPeriods = $paymentRows->reject(fn ($p) => $p->partial)->keys()->all();   
+        $awaiting = \App\Models\Approval::where('user_id', $user->id)
+            ->where('type', 'payment')->where('status', 'pending')
+            ->whereNotNull('period')->pluck('period')->all();
 
        
         $all  = [];
 $last = $moveIn->copy()->startOfMonth()->addMonths(2);
 $window = $today->copy()->startOfMonth()->addMonths(2);
-if ($window->gt($last)) $last = $window;     // keeps sliding forward as months pass
+if ($window->gt($last)) $last = $window;     
         for ($m = $moveIn->copy()->startOfMonth(); $m->lte($last); $m->addMonthNoOverflow()) {
             $due = $m->copy()->day(min($dueDay, $m->daysInMonth));
             $period = $m->format('Y-m');
+            $part   = $paymentRows->get($period);
+$isPart = $part && $part->partial;
 $all[] = [
-    'label'  => $m->format('F Y'),
-    'period' => $period,
-    'due'    => $due,
-    'amount' => $rent,
-    'status' => in_array($period, $paidPeriods, true)
+    'label'    => $m->format('F Y'),
+    'period'   => $period,
+    'due'      => $due,
+    'rent'     => $rent,
+    'amount'   => $isPart ? max(0, $rent - (float) $part->amount) : $rent,
+    'fee_paid' => $part ? (float) $part->fee : 0,
+    'awaiting' => in_array($period, $awaiting, true),
+    'status'   => in_array($period, $paidPeriods, true)
         ? 'paid'
-        : ($due->gt($today) ? 'pending' : 'paid'),
+        : (($due->gt($today) || $isPart) ? 'pending' : 'paid'),
 ];
         }
 
@@ -62,14 +71,23 @@ $all[] = [
             };
         }
 
-     
+             foreach ($all as $i => $inv) {
+            $late = ($inv['status'] !== 'paid' && $inv['due']->lt($today))
+                ? (int) $inv['due']->diffInDays($today, true)
+                : 0;
+
+            $all[$i]['late_days'] = $late;
+            $all[$i]['fee']       = max(0, round($late * self::LATE_FEE_PER_DAY - $inv['fee_paid'], 2));
+            $all[$i]['half']      = round($rent / 2, 2);
+            $all[$i]['can_half']  = $inv['status'] !== 'paid' && abs($inv['amount'] - $rent) < 0.01 && $rent >= 2;
+        }
         $overdue = array_filter($all, fn ($i) => $i['status'] === 'overdue');
         $paid    = array_filter($all, fn ($i) => $i['status'] === 'paid' && $i['due']->year === $today->year);
         $pending = array_values(array_filter($all, fn ($i) => $i['status'] === 'pending'));
 
-        $overdueTotal = array_sum(array_column($overdue, 'amount'));
+               $overdueTotal = array_sum(array_map(fn ($i) => $i['amount'] + $i['fee'], $overdue));
         $nextPending  = $pending[0] ?? null;
-        $balance      = $overdueTotal + ($nextPending['amount'] ?? 0);
+                $balance      = $overdueTotal + (($nextPending['amount'] ?? 0) + ($nextPending['fee'] ?? 0));
         $firstUnpaid  = $overdue ? reset($overdue) : $nextPending;
 
         $unpaid     = array_values(array_filter($all, fn ($i) => $i['status'] !== 'paid'));
@@ -84,7 +102,7 @@ $all[] = [
             $i['paid_on']  = $i['due']->format('M j, Y');
             $i['ref']      = 'DAC-' . $i['due']->format('Ym') . '-' . str_pad($user->id, 4, '0', STR_PAD_LEFT);
             $p = $paymentRows->get($i['period']);
-$i['paid_amount']  = $p ? (float) $p->amount : $i['amount'];
+$i['paid_amount']  = $p ? (float) $p->amount + (float) $p->fee : $i['amount'];
 $i['method']       = $p->method ?? 'Recorded by dorm';
 $i['paid_at_text'] = $p ? $p->paid_at->format('M j, Y g:i A') : $i['due']->format('M j, Y');
             $i['color']    = match ($i['status']) {

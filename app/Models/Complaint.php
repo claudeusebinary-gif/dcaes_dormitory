@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Complaint extends Model
 {
@@ -23,7 +24,22 @@ class Complaint extends Model
         'other'              => 'Others',
     ];
 
-    protected $fillable = ['user_id', 'room_number', 'type', 'message', 'status'];
+   protected $fillable = ['user_id', 'room_number', 'type', 'message', 'status', 'in_progress_at', 'resolved_at'];
+
+protected $casts = ['in_progress_at' => 'datetime', 'resolved_at' => 'datetime'];
+
+public const HIGH_TYPES = ['plumbing', 'electrical', 'security', 'pests'];
+
+public function getIsHighAttribute(): bool
+{
+    return in_array($this->type, self::HIGH_TYPES);
+}
+
+public function getTitleAttribute(): string
+{
+    $first = preg_split('/[.!?\n]/', trim($this->message))[0] ?? '';
+    return Str::limit(trim($first), 60);
+}
 
     public function user(): BelongsTo
     {

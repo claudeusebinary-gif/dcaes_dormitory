@@ -3210,19 +3210,19 @@ width: 16px;
     height: 18px;
 }
 
-/* ---------- modal layout ---------- */
-/* the modal itself never scrolls */
+
+
 .adminrooms .roommodals {
     overflow: hidden;
 }
 
-/* red photo side stays fixed */
+
 .adminrooms .wala {
     flex: 0 0 40%;
     height: 100%;
 }
 
-/* only the white side scrolls */
+
 .adminrooms .tuo {
     flex: 1;
     min-width: 0;
@@ -3311,7 +3311,6 @@ width: 16px;
     color: #672C2C;
 }
 
-/* ---------- photo side (left) ---------- */
 .adminrooms .tuowala {
     gap: 16px;
     width: 100%;
@@ -3441,7 +3440,6 @@ width: 16px;
     justify-content: center;
 }
 
-/* beds in the modal are view-only for admin */
 .adminrooms [data-beds] .sixulit.free {
     cursor: default;
 }
@@ -3450,7 +3448,6 @@ width: 16px;
     transform: none;
 }
 
-/* ---------- amenities ---------- */
 .adminrooms .amemitiesbox {
     flex-wrap: wrap;
 }
@@ -3513,7 +3510,6 @@ width: 16px;
     display: none;
 }
 
-/* ---------- action buttons (edit modal) ---------- */
 .adminrooms .adminme {
     justify-content: flex-end;
     flex-wrap: wrap;
@@ -3553,7 +3549,6 @@ width: 16px;
     color: #ffffff;
 }
 
-/* ---------- add-a-room form ---------- */
 .addgrid {
     display: grid;
     grid-template-columns: 1fr 1fr;

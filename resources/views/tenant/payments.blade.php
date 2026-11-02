@@ -132,11 +132,11 @@
                             </div>
                             <div class="ibosses3">
                                 <h1>{{ $inv['label'] }} — Room {{ $billing['room'] }}</h1>
-                                <span>· Due {{ $inv['due_text'] }}</span>
+                                                               <span>· Due {{ $inv['due_text'] }}@if ($inv['late_days'] > 0) · {{ $inv['late_days'] }} {{ $inv['late_days'] === 1 ? 'day' : 'days' }} late @endif @if (! empty($inv['awaiting'])) · Waiting for admin to confirm @endif</span>
                             </div>
                         </div>
                         <div class="ungprice">
-                            <h1>₱{{ number_format($inv['amount'], 2) }}</h1>
+                                                       <h1>₱{{ number_format($inv['amount'] + $inv['fee'], 2) }}</h1>
                             <div class="lubidog" style="{{ $inv['color'] }}">
                                 <h1>{{ ucfirst($inv['status']) }}</h1>
                             </div>
@@ -304,26 +304,42 @@
     $unpaid = array_values(array_filter(
         $billing['invoices'],
         fn ($i) => $i['status'] !== 'paid'
-            && in_array($i['period'], [$thisMonth, $nextMonth], true)
+            && empty($i['awaiting'])
+            && ($i['status'] === 'overdue'
+                || $i['due']->lte(now())
+                || in_array($i['period'], [$thisMonth, $nextMonth], true))
     ));
 @endphp
 
 @forelse ($unpaid as $inv)
-    <label class="duhakagatos1 invoice-pick" data-amount="{{ $inv['amount'] }}">
-        <div class="tempo">
-            <input type="checkbox" class="radi invoice-check" value="{{ $inv['period'] }}">
-            <div class="ibosses34791">
-                <h1>{{ $inv['label'] }}</h1>
-                <span>Due {{ $inv['paid_on'] }}</span>
+    <div class="invoice-pick" data-amount="{{ $inv['amount'] }}" data-fee="{{ $inv['fee'] }}" data-half="{{ $inv['half'] }}">
+        <label class="duhakagatos1">
+            <div class="tempo">
+                <input type="checkbox" class="radi invoice-check" value="{{ $inv['period'] }}">
+                <div class="ibosses34791">
+                    <h1>{{ $inv['label'] }}</h1>
+                    <span>Due {{ $inv['paid_on'] }}@if ($inv['late_days'] > 0) · {{ $inv['late_days'] }} {{ $inv['late_days'] === 1 ? 'day' : 'days' }} late @endif</span>
+                </div>
             </div>
-        </div>
-        <div class="samodapid">
-            <div class="pidbayad {{ $inv['status'] }}">
-                <h1>{{ ucfirst($inv['status']) }}</h1>
+            <div class="samodapid">
+                <div class="pidbayad {{ $inv['status'] }}">
+                    <h1>{{ ucfirst($inv['status']) }}</h1>
+                </div>
+                <h1 class="samodal">₱{{ number_format($inv['amount'], 2) }}</h1>
             </div>
-            <h1 class="samodal">₱{{ number_format($inv['amount'], 2) }}</h1>
-        </div>
-    </label>
+        </label>
+
+        @if ($inv['fee'] > 0)
+            <p class="payfeenote">+ ₱{{ number_format($inv['fee'], 2) }} late fee (₱10 for every day late)</p>
+        @endif
+
+        @if ($inv['can_half'])
+            <label class="payhalf">
+                <input type="checkbox" class="half-check" value="{{ $inv['period'] }}" disabled>
+                Pay half only (₱{{ number_format($inv['half'], 2) }})
+            </label>
+        @endif
+    </div>
 @empty
     <p style="text-align:center;font-weight:700;color:#00000086;">No unpaid invoices.</p>
 @endforelse
@@ -469,67 +485,65 @@
         empty.style.cssText = 'display:none;text-align:center;padding:50px 0;font-weight:700;color:#00000086;font-family:Nunito Sans,sans-serif';
         if (list) list.appendChild(empty);
 
-        function statusOf(row) {
+               function statusOf(row) {
             var badge = row.querySelector('.lubidog h1');
             return badge ? txt(badge) : '';
         }
 
-        function applyFilter(filter) {
-            var PER_PAGE = 4;    
-var page  = 1;
-var pager = document.getElementById('invPager');
+        var PER_PAGE = 4;
+        var page  = 1;
+        var pager = document.getElementById('invPager');
 
-function renderPager(filter, pages, count, from, shown) {
-    pager.innerHTML = '';
-    if (pages <= 1) return;                   
+        function renderPager(filter, pages, count, from, shown) {
+            pager.innerHTML = '';
+            if (pages <= 1) return;
 
-    function btn(label, target, disabled, current) {
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = label;
-        if (current) b.className = 'current';
-        b.disabled = !!disabled;
-        b.addEventListener('click', function () { page = target; applyFilter(filter, true); });
-        pager.appendChild(b);
-    }
+            function btn(label, target, disabled, current) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.textContent = label;
+                if (current) b.className = 'current';
+                b.disabled = !!disabled;
+                b.addEventListener('click', function () { page = target; applyFilter(filter, true); });
+                pager.appendChild(b);
+            }
 
-    btn('‹ Prev', page - 1, page === 1, false);
-    for (var p = 1; p <= pages; p++) btn(String(p), p, false, p === page);
-    btn('Next ›', page + 1, page === pages, false);
+            btn('‹ Prev', page - 1, page === 1, false);
+            for (var p = 1; p <= pages; p++) btn(String(p), p, false, p === page);
+            btn('Next ›', page + 1, page === pages, false);
 
-    var info = document.createElement('span');
-    info.textContent = 'Showing ' + (from + 1) + '–' + (from + shown) + ' of ' + count;
-    pager.appendChild(info);
-}
+            var info = document.createElement('span');
+            info.textContent = 'Showing ' + (from + 1) + '–' + (from + shown) + ' of ' + count;
+            pager.appendChild(info);
+        }
 
-function applyFilter(filter, keepPage) {
-    if (!keepPage) page = 1;
+        function applyFilter(filter, keepPage) {
+            if (!keepPage) page = 1;
 
-    var matches = rows.filter(function (row) {
-        return (filter === 'all') || (filter === 'unpaid' && statusOf(row) !== 'paid') || statusOf(row) === filter;
-    });
+            var matches = rows.filter(function (row) {
+                return (filter === 'all') || (filter === 'unpaid' && statusOf(row) !== 'paid') || statusOf(row) === filter;
+            });
 
-    var pages = Math.max(1, Math.ceil(matches.length / PER_PAGE));
-    if (page > pages) page = pages;
-    var from = (page - 1) * PER_PAGE;
+            var pages = Math.max(1, Math.ceil(matches.length / PER_PAGE));
+            if (page > pages) page = pages;
+            var from = (page - 1) * PER_PAGE;
 
-    rows.forEach(function (row) {
-        var i    = matches.indexOf(row);
-        var show = i >= from && i < from + PER_PAGE;
-        var hr   = row.nextElementSibling;
-        row.style.display = show ? '' : 'none';
-        if (hr && hr.tagName === 'HR') hr.style.display = show ? '' : 'none';
-    });
+            rows.forEach(function (row) {
+                var i    = matches.indexOf(row);
+                var show = i >= from && i < from + PER_PAGE;
+                var hr   = row.nextElementSibling;
+                row.style.display = show ? '' : 'none';
+                if (hr && hr.tagName === 'HR') hr.style.display = show ? '' : 'none';
+            });
 
-    tabs.forEach(function (t) {
-        var on = txt(t) === filter;
-        t.style.border = on ? '1px solid #672C2C' : '';
-        t.style.backgroundColor = on ? '#672c2c2f' : '';
-    });
+            tabs.forEach(function (t) {
+                var on = txt(t) === filter;
+                t.style.border = on ? '1px solid #672C2C' : '';
+                t.style.backgroundColor = on ? '#672c2c2f' : '';
+            });
 
-    empty.style.display = matches.length ? 'none' : 'block';
-    renderPager(filter, pages, matches.length, from, Math.min(PER_PAGE, matches.length - from));
-}
+            empty.style.display = matches.length ? 'none' : 'block';
+            renderPager(filter, pages, matches.length, from, Math.min(PER_PAGE, matches.length - from));
         }
 
         function bind(el, filter, scroll) {
@@ -617,6 +631,7 @@ if (addBtn) {
         var unavailModal = document.getElementById('unavailModal');
 
         var checks     = document.querySelectorAll('#payModal .invoice-check');
+                var halves     = document.querySelectorAll('#payModal .half-check');
         var methodRows = document.querySelectorAll('#payModal2 .method-pick');
         var selectedTotal = 0, selectedCount = 0, method = 'GCash';
              
@@ -643,21 +658,29 @@ if (addBtn) {
         }
 
      
-        function updateTotal() {
+              function updateTotal() {
             selectedTotal = 0;
             selectedCount = 0;
             checks.forEach(function (c) {
-                var row = c.closest('.duhakagatos1');
-                row.classList.toggle('selected', c.checked);
+                var pick = c.closest('.invoice-pick');
+                var half = pick.querySelector('.half-check');
+
+                pick.querySelector('.duhakagatos1').classList.toggle('selected', c.checked);
+                if (half) {
+                    half.disabled = !c.checked;
+                    if (!c.checked) half.checked = false;
+                }
                 if (c.checked) {
                     selectedCount++;
-                    selectedTotal += parseFloat(row.dataset.amount);
+                    var base = (half && half.checked) ? parseFloat(pick.dataset.half) : parseFloat(pick.dataset.amount);
+                    selectedTotal += base + parseFloat(pick.dataset.fee);
                 }
             });
             totalLabel.textContent = 'Total (' + selectedCount + ' invoice' + (selectedCount === 1 ? '' : 's') + ')';
             totalAmount.textContent = money(selectedTotal);
-            contopayBtn.disabled = selectedCount === 0;   
+            contopayBtn.disabled = selectedCount === 0;
         }
+        halves.forEach(function (h) { h.addEventListener('change', updateTotal); });
         checks.forEach(function (c) { c.addEventListener('change', updateTotal); });
 
         function openPay() {
@@ -716,8 +739,9 @@ if (addBtn) {
 
         
        payNowBtn.addEventListener('click', function () {
-    var periods = [];
+        var periods = [], half = [];
     checks.forEach(function (c) { if (c.checked) periods.push(c.value); });
+    halves.forEach(function (h) { if (h.checked) half.push(h.value); });
 
     payNowBtn.disabled = true;
     fetch("{{ route('tenant.payments.pay') }}", {
@@ -727,7 +751,7 @@ if (addBtn) {
             'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({ periods: periods, method: method })
+               body: JSON.stringify({ periods: periods, half: half, method: method })
     })
     .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
     .then(function (res) {
@@ -736,7 +760,7 @@ if (addBtn) {
             alert(res.d.message || 'Payment failed. Please try again.');
             return;
         }
-        successText.textContent = money(selectedTotal) + ' paid via ' + method;
+               successText.textContent = money(selectedTotal) + ' sent via ' + method;
         payModal2.hidden = true;
         payModal3.hidden = false;
     })

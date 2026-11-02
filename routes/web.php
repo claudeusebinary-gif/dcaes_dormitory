@@ -6,6 +6,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TenantController;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsureTenant;
+use App\Http\Middleware\AuthOrGuest;
 use App\Http\Middleware\NoStore;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ComplaintController;
@@ -21,10 +22,15 @@ use App\Http\Controllers\DirectChatController;
 Route::get('/', [AuthController::class, 'show'])->middleware(NoStore::class)->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup');
+Route::post('/guest', [AuthController::class, 'guest'])->name('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
+// Legal pages (public)
+Route::view('/terms',       'legal', ['page' => 'terms'])->name('legal.terms');
+Route::view('/privacy',     'legal', ['page' => 'privacy'])->name('legal.privacy');
+Route::view('/faqs',        'legal', ['page' => 'faqs'])->name('legal.faqs');
+Route::view('/house-rules', 'legal', ['page' => 'rules'])->name('legal.rules');
 // Authenticated
-Route::middleware(['auth', NoStore::class])->group(function () {
+Route::middleware([AuthOrGuest::class, NoStore::class])->group(function () {
 
     // Generic landing spot (old dashboard.php) - bounces by role.
     Route::get('/dashboard', fn() => auth()->user()->isAdmin()
@@ -93,11 +99,17 @@ Route::put('/rooms/{id}',      [AdminController::class, 'roomUpdate'])->whereNum
 Route::post('/rooms/{id}/maintenance', [AdminController::class, 'roomMaintenance'])->whereNumber('id')->name('rooms.maintenance');
 Route::delete('/rooms/{id}',   [AdminController::class, 'roomDestroy'])->whereNumber('id')->name('rooms.destroy');
 Route::get('/payments',     [AdminController::class, 'payments'])->name('payments');
+Route::post('/payments',    [AdminController::class, 'paymentStore'])->name('payments.store');
+Route::post('/payments/{id}/remind', [AdminController::class, 'paymentRemind'])->whereNumber('id')->middleware('throttle:30,1')->name('payments.remind');
 Route::get('/complaints',   [AdminController::class, 'complaints'])->name('complaints');
+Route::post('/complaints',  [AdminController::class, 'complaintStore'])->name('complaints.store');
+Route::post('/complaints/{id}/status', [AdminController::class, 'complaintStatus'])->whereNumber('id')->name('complaints.status');
 Route::get('/approvals',    [AdminController::class, 'approvals'])->name('approvals');
 Route::get('/settings',     [AdminController::class, 'settings'])->name('settings');
         Route::post('/approvals/{id}/approve', [AdminController::class, 'approve'])->whereNumber('id')->name('approvals.approve');
         Route::post('/approvals/{id}/reject', [AdminController::class, 'reject'])->whereNumber('id')->name('approvals.reject');
+                Route::post('/approvals', [AdminController::class, 'approvalStore'])->name('approvals.store');
+        Route::post('/approvals/{id}/check', [AdminController::class, 'approvalCheck'])->whereNumber('id')->name('approvals.check');
         Route::post('/announcements', [AdminController::class, 'announcementStore'])->name('announcements.store');
         Route::put('/announcements/{id}', [AdminController::class, 'announcementUpdate'])->whereNumber('id')->name('announcements.update');
         Route::delete('/announcements/{id}', [AdminController::class, 'announcementDestroy'])->whereNumber('id')->name('announcements.destroy');

@@ -208,8 +208,12 @@
                 our upcoming app</p>
         </div>
     </div>
-    <div class="wiabut"><input type="button" value="Book Now" class="bababut" href="#"><input type="button" value="View Rooms"
-            class="bababut1"></div>
+   <div class="wiabut">
+    <input type="button" value="Book Now" class="bababut"
+        onclick="window.location.href='{{ route('tenant.rooms') }}'">
+    <input type="button" value="View Rooms" class="bababut1"
+        onclick="window.location.href='{{ route('tenant.rooms') }}'">
+</div>
     
  @include('partials.footer')
 @endsection

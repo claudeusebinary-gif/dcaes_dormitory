@@ -1,0 +1,317 @@
+.collectedthismonth{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 10px;
+}
+.collectedthismonth1{
+    width: 100%;
+    height: 120px;
+    background-color: #ffffff;
+    border-radius: 6px;
+    border: 1px solid #0000001f;
+    display: flex;
+    gap: 15px;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    padding:20px;
+    box-sizing: border-box;
+}
+.collectedbreak{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+.collectedbreak .collectpay{
+      font-family: 'Inria Serif', serif;
+     font-size: 1.5rem;
+     color: #000000;
+     font-weight: 700;
+      margin: 0;
+}
+.boxbreakdowncollected{
+    width: 40px;
+    height: 40px;
+    background-color: #F8F1E5;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.boxbreakdowncollected svg{
+    height: 17px;
+    width: 17px;
+    color: #684d1f;
+}
+.collectedthismonth1 .collectedthismonthbreakkssk{
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 800;
+     font-size: .8rem;
+     color: #672c2c;
+     margin: 0;
+}
+.tickercollected{
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    width: 100%;
+}
+.tickercollected1{
+    width: 100%;
+    height: 280px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #00000018;
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;   
+    transition: all 0.23s ease;
+    cursor: pointer;
+}
+.tickercollected1:hover{
+    transform: translateY(-2px);
+    box-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.06),
+        0 8px 14px -4px rgba(0, 0, 0, 0.12);
+}
+.tickercollected1 h1{
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 800;
+     font-size: .8rem;
+     color: #672c2c;
+     margin: 0;
+}
+.tickercollected1 h2{
+      font-family: 'Inria Serif', serif;
+     font-weight: 800;
+     font-size: 1.4rem;
+     color: #000000;
+     margin: 0;
+}
+.tickercollected1 span{
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 600;
+     font-size: .8rem;
+     color: #672c2cc0;
+     margin: 0;
+}
+.dashed-line {
+    width: 100%;
+    height: 0;
+    margin: 16px 0;
+    border: 0;
+    border-top: 2px dashed #e2bcac;
+}
+.roomjuelmont{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+    gap: 3px;
+}
+.tickercollected1 .amountoaudjue{
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 800;
+     font-size: .8rem;
+     color: #672c2c94;
+     margin: 0;
+}
+.tickercollected1 .perajue{
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 800;
+     font-size: 1.8rem;
+     color: #000000;
+     margin: 0;
+}
+.tickercollected1 .duejue{
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 600;
+     font-size: .8rem;
+     color: #00000075;
+     margin: 0;
+}
+.paidjuesakapaid{
+    display: flex;
+    flex-direction: column;
+
+}
+.paidinriajuepaid{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.paidinria{
+    width: 90px;
+    height: 35px;
+    background-color: #F8FAF9;
+    border: 2px solid #2D7248;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.paidinria .inriapaidna{
+     font-family: 'Inria Serif', serif;
+     font-weight: 800;
+     font-size: 1.1rem;
+     color: #2D7248;
+     margin: 0;
+}
+.buttonpaidjue{
+    display: flex;
+    flex-direction: row;
+    gap: 7px;
+    width:100% ;
+    margin-top: 12px;
+}
+.buttonpaidjue1{    
+    width: 50%;
+    height: 44px;
+    background-color: #672c2c;
+    border: 1px solid #672c2c;
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 700;
+     font-size: .9rem;
+     color: #ffffff;
+     border-radius: 6px;
+     cursor: pointer;
+     transition: all 0.23s ease;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+}
+.buttonpaidjue2 svg{
+    height: 20px;
+    width: 20px;
+}
+.buttonpaidjue1:hover{
+    background-color: transparent;
+    border: 1px solid #672c2c;
+    color: #672c2c;
+}
+.buttonpaidjue2{    
+    width: 50%;
+    height: 44px;
+    background-color: #FAF6F4;
+    border: 1px solid #672c2c2d;
+     font-family: 'Nunito Sans', sans-serif;
+     font-weight: 700;
+     font-size: .9rem;
+     color: #672c2c;
+     border-radius: 6px;
+     cursor: pointer;
+     transition: all 0.23s ease;
+      display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+}
+.buttonpaidjue1 svg{
+    height: 20px;
+    width: 20px;
+}
+.buttonpaidjue2:hover{
+    background-color: #00000007;
+}
+.ticket-divider {
+    position: relative;
+    height: 2px;
+    margin: 16px 0;
+}
+.ticket-divider .dashed-line {
+    margin: 0 -7px;               
+    width: calc(100% + 14px);
+}
+.ticket-divider::before,
+.ticket-divider::after {
+    content: "";
+    position: absolute;
+    top: -13px;                  
+    width: 28px;
+    height: 28px;
+    box-sizing: border-box;
+    border: 1px solid #00000018;  
+    border-radius: 50%;
+    background: #FAF6F4;          
+}
+.ticket-divider::before {
+    left: -35px;                  
+    clip-path: inset(0 0 0 50%);  
+}
+.ticket-divider::after {
+    right: -35px;
+    clip-path: inset(0 50% 0 0);
+}
+
+#payModal .bagongannmodal {
+    max-width: 480px;
+    padding: 34px 36px 30px;
+}
+
+.modalsub {
+    margin: -6px 0 4px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #00000099;
+}
+
+.paynote {
+    margin: 8px 0 0;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #7B3D3B;
+}
+
+.paynote[hidden] {
+    display: none;
+}
+
+.pesowrap {
+    position: relative;
+}
+
+.pesowrap span {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-weight: 800;
+    color: #00000099;
+    pointer-events: none;
+}
+
+.pesowrap .kahonnaann {
+    padding-left: 40px;
+}
+
+.paybtnhalf {
+    flex: 1;
+}
+
+#payPager {
+    margin: 24px 0 10px;
+}
+.tickercollected1 .paidjuesakapaid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 6px;
+    align-items: baseline;
+}
+
+.tickercollected1 .paidjuesakapaid .perajue {
+    grid-column: 1 / -1;
+}
+
+.tickercollected1 .paidjuesakapaid .duejue + .duejue::before {
+    content: "· ";
+    color: #00000075;
+}

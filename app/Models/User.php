@@ -108,6 +108,10 @@ public function wantsNotification(string $key): bool
             ->latest('id')
             ->first();
     }
+    public function isGuest(): bool
+    {
+        return ($this->attributes['is_guest'] ?? false) === true;
+    }
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

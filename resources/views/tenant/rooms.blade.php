@@ -1927,6 +1927,15 @@
             const bookCsrf = document.querySelector('meta[name="csrf-token"]').content;
             let myRoom = @json(auth()->user()->room_number);
             const hasPending = @json((bool) auth()->user()->pendingBooking());
+                        const isGuest = @json(auth()->user()->isGuest());
+            const loginUrl = @json(route('login'));
+
+            document.addEventListener('click', e => {
+                if (isGuest && e.target.closest('[data-open-admin]')) {
+                    e.stopPropagation();
+                    window.location.href = loginUrl;
+                }
+            }, true);
             let booked = false;
 
             const hasRoomModal = document.getElementById('hasRoomModal');
@@ -2010,6 +2019,7 @@
             }
 
             function openPayment() {
+                                if (isGuest) { window.location.href = loginUrl; return; }
                 if (myRoom) { showHasRoom(); return; }
                 if (hasPending) { alert('Your booking is still waiting for admin approval. You can book again after the admin decides.'); return; }
                 const bed = pickBed();
@@ -2199,6 +2209,7 @@
                 bookBtn.style.cursor = noSpace ? 'not-allowed' : '';
                 bookBtn.value = card.dataset.maintenance === '1' ? 'Under maintenance'
                     : (+card.dataset.free === 0 ? 'Fully occupied' : 'Book this room');
+                                    if (isGuest && !noSpace) bookBtn.value = 'Log in to book';
 
                 roomNo = room;
                 photos = JSON.parse(btn.dataset.photos || '[]');

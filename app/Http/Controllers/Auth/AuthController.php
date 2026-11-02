@@ -24,7 +24,7 @@ class AuthController extends Controller
 
         return view('auth.index', [
         
-            'view' => session('view', 'login'),
+           'view' => in_array(request('view'), ['login', 'signup'], true) ? request('view') : session('view', 'login'),
             'stats' => DormStats::get(),
              'featured' => DormStats::featuredRooms(), 
               'announcements' => Announcement::current()->take(2)->get(),
@@ -40,6 +40,7 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            $request->session()->forget('guest');
 
             return $this->redirectByRole(Auth::user());
         }
@@ -82,7 +83,7 @@ class AuthController extends Controller
         User::create([
             'full_name' => $data['full_name'],
             'email' => $data['email'],
-            'password' => $data['password'], // hashed by the model cast
+            'password' => $data['password'], 
             'role' => 'tenant',
         ]);
 
@@ -90,7 +91,13 @@ class AuthController extends Controller
             ->with('success', 'Account created! You can log in now.')
             ->with('view', 'login');
     }
+    public function guest(Request $request): RedirectResponse
+    {
+        $request->session()->regenerate();
+        $request->session()->put('guest', true);
 
+        return redirect()->route('tenant.home');
+    }
     public function logout(Request $request): RedirectResponse
     {
         Auth::logout();
