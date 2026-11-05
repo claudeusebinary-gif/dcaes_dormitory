@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AdminNotification;
 use App\Models\DirectMessage;
 use App\Models\Notification;
+use App\Support\AdminLog;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -73,8 +74,8 @@ class DirectChatController extends Controller
             'sender_id' => $me->id,
             'body'      => trim($data['body']),
         ]);
-
-        if ($me->isAdmin()) {
+if ($me->isAdmin()) {
+            AdminLog::record('messages', 'Sent a direct message to ' . $tenant->display_name);
             Notification::create([
                 'tenant_id' => $tenant->id,
                 'title'     => 'New message from the admin',

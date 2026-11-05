@@ -156,7 +156,15 @@
             </div>
 
             <div class="annform" id="annForm" hidden>
-               <input type="text" class="annfield" id="annTitle" placeholder="Title" maxlength="60">
+                           <input type="text" class="annfield" id="annTitle" placeholder="Title" maxlength="60">
+               <div class="ann-tpl" id="annTemplates">
+                  <button type="button" class="ann-tpl-chip" data-title="Announcement">Announcement</button>
+                  <button type="button" class="ann-tpl-chip" data-title="Water Interruption - ">Water Interruption</button>
+                  <button type="button" class="ann-tpl-chip" data-title="Power Interruption - ">Power Interruption</button>
+                  <button type="button" class="ann-tpl-chip" data-title="Rent Due Reminder">Rent Due Reminder</button>
+                  <button type="button" class="ann-tpl-chip" data-title="Curfew Reminder">Curfew Reminder</button>
+                  <button type="button" class="ann-tpl-chip" data-title="Dorm Meeting - ">Dorm Meeting</button>
+               </div>
                <select class="annfield" id="annAudience">
                   <option value="All tenants">All tenants</option>
                   <option value="Unpaid only">Unpaid only</option>
@@ -377,7 +385,15 @@
     }
 
     $('annNewBtn').addEventListener('click', function () { reset(); showForm(true); });
-    $('annCancel').addEventListener('click', function () { reset(); showForm(false); });
+       $('annCancel').addEventListener('click', function () { reset(); showForm(false); });
+
+    $('annTemplates').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-title]');
+        if (!b) return;
+        title.value = b.dataset.title;
+        title.focus();
+        title.setSelectionRange(title.value.length, title.value.length);
+    });
 
     postBtn.addEventListener('click', function () {
         var t = title.value.trim(), b = body.value.trim();

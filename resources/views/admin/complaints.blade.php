@@ -135,7 +135,7 @@
                         </div>
                     @endif
                 </div>
-                <hr class="padiretso231759274" style="margin-top:20px;">
+                <hr class="padiretso231759274" style="margin-top:10px;">
                 <div class="parightcomjueplaint">
                     <h5>Filed {{ $c['filed'] }}</h5>
                     <div class="cutoncom">

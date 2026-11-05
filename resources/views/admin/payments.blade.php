@@ -164,23 +164,29 @@
                     </div>
                 </div>
                 <div class="buttonpaidjue">
-                    <button type="button" class="buttonpaidjue1" data-record="{{ $c['id'] }}" data-approve="{{ json_encode($c['approve_ids']) }}"><svg
+                   @php $showRecord = $c['can_record'] || count($c['approve_ids']); @endphp
+@if ($showRecord)
+    <button type="button" class="buttonpaidjue1" data-record="{{ $c['id'] }}" data-approve="{{ json_encode($c['approve_ids']) }}">
+        <svg
                             xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="6" width="20" height="12" rx="2" />
                             <circle cx="12" cy="12" r="2.5" />
                             <path d="M6 9.5v.01M18 14.5v.01" />
-                        </svg>Record payment</button>
+                        </svg>Record payment
+    </button>
+@endif
+                    
                     @if ($c['status'] === 'overdue')
-                        <button type="button" class="buttonpaidjue2"
-                            data-remind="{{ route('admin.payments.remind', $c['id']) }}"><svg
+                       <button type="button" class="buttonpaidjue2 {{ $showRecord ? '' : 'full' }}"
+    data-remind="{{ route('admin.payments.remind', $c['id']) }}"><svg
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
                                 <path d="M13.7 21a2 2 0 0 1-3.4 0" />
                             </svg>Send reminder</button>
                     @else
-                        <button type="button" class="buttonpaidjue2" data-href="{{ $c['url'] }}"><svg
+                        <button type="button" class="buttonpaidjue2 {{ $showRecord ? '' : 'full' }}" data-href="{{ $c['url'] }}"><svg
                                 xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
@@ -211,7 +217,7 @@
             <label class="labelnaann" for="payTenant">Tenant / Room</label>
             <select class="kahonnaann" id="payTenant">
                 <option value="">Select a tenant</option>
-                @foreach ($cards->sortBy('name') as $c)
+             @foreach ($cards->where('can_record', true)->sortBy('name') as $c)
                     <option value="{{ $c['id'] }}" data-target="{{ $c['target'] }}" data-left="{{ $c['target_left'] }}">
                         {{ $c['name'] }} - Room {{ $c['room'] }}{{ $c['bed_no'] ? ', Bed ' . $c['bed_no'] : '' }}
                     </option>

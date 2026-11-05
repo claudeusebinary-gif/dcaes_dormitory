@@ -439,3 +439,31 @@
         grid-template-columns: 1fr;
     }
 }
+.viewdetailsbtn {
+    width: 150px;
+    height: 40px;
+    background-color: #FAF6F4;
+    color: #672c2c;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    font-size: .8rem;
+    border: 1px solid #0000000c;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.23s ease;
+}
+
+.viewdetailsbtn:hover {
+    background-color: #672c2c;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.viewapprovejue {
+    cursor: pointer;
+    transition: color .2s ease;
+}
+
+.viewapprovejue:hover {
+    color: #2D7248;
+}

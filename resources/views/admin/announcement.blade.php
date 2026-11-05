@@ -124,8 +124,20 @@
             <h2 class="pamagatnamodal" id="annFormTitle">New Announcement</h2>
 
             <label class="labelnaann" for="fAnnTitle">Title</label>
-            <input type="text" class="kahonnaann" id="fAnnTitle" maxlength="60"
+                    <input type="text" class="kahonnaann" id="fAnnTitle" maxlength="60"
                 placeholder="e.g Water Interruption - Aug 28" autocomplete="off">
+
+            <div class="ann-tpl" id="annTemplates">
+                <button type="button" class="ann-tpl-chip" data-title="Announcement" data-cat="general">Announcement</button>
+                <button type="button" class="ann-tpl-chip" data-title="Water Interruption - " data-cat="utility">Water Interruption</button>
+                <button type="button" class="ann-tpl-chip" data-title="Power Interruption - " data-cat="utility">Power Interruption</button>
+                <button type="button" class="ann-tpl-chip" data-title="Internet Maintenance - " data-cat="utility">Internet Maintenance</button>
+                <button type="button" class="ann-tpl-chip" data-title="Rent Due Reminder" data-cat="payment">Rent Due Reminder</button>
+                <button type="button" class="ann-tpl-chip" data-title="Curfew Reminder" data-cat="safety">Curfew Reminder</button>
+                <button type="button" class="ann-tpl-chip" data-title="Fire Drill - " data-cat="safety">Fire Drill</button>
+                <button type="button" class="ann-tpl-chip" data-title="Dorm Meeting - " data-cat="event">Dorm Meeting</button>
+                <button type="button" class="ann-tpl-chip" data-title="Cleaning Schedule" data-cat="general">Cleaning Schedule</button>
+            </div>
 
             <label class="labelnaann" for="fAnnMsg">Message</label>
             <textarea class="kahonnaann kahonnaannmalaki" id="fAnnMsg" maxlength="150"
@@ -415,6 +427,15 @@
             $('fAnnCats').addEventListener('click', function (e) {
                 var b = e.target.closest('[data-cat]');
                 if (b) pickCat(b.dataset.cat);
+            });
+
+                    $('annTemplates').addEventListener('click', function (e) {
+                var b = e.target.closest('[data-title]');
+                if (!b) return;
+                fTitle.value = b.dataset.title;
+                if (b.dataset.cat) pickCat(b.dataset.cat);
+                fTitle.focus();
+                fTitle.setSelectionRange(fTitle.value.length, fTitle.value.length);
             });
 
             saveBtn.addEventListener('click', function () {

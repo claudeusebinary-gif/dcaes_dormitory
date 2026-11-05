@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\CalendarEvent;
 use App\Models\Approval;
 use App\Models\Announcement;
+use App\Support\AdminLog;
 
 class TenantController extends Controller
 {
@@ -215,7 +216,7 @@ public function sendMessage(Request $request): JsonResponse
 }
       public function payments(Request $request): View
     {
-        return view('tenant.payments', ['billing' => Billing::forUser($request->user())]);
+       return view('tenant.payments', ['billing' => Billing::forUser($request->user()), 'methods' => DormStats::paymentMethods()]);
     }
 
      public function pay(Request $request): JsonResponse
@@ -225,7 +226,7 @@ public function sendMessage(Request $request): JsonResponse
             'periods.*' => ['required', 'regex:/^\d{4}-\d{2}$/'],
             'half'      => ['nullable', 'array'],
             'half.*'    => ['regex:/^\d{4}-\d{2}$/'],
-            'method'    => ['required', 'in:GCash'],
+            'method'    => ['required', 'in:' . implode(',', DormStats::enabledMethodNames())],
         ]);
 
         $user = $request->user();
@@ -408,7 +409,19 @@ public function updateNotifications(Request $request): JsonResponse
 
     return response()->json(['ok' => true, 'message' => 'Notification settings saved.']);
 }
+public function document(Request $request, string $type)
+{
+    $col = [
+        'valid_id' => 'valid_id_path',
+        'lease'    => 'lease_path',
+        'barangay' => 'barangay_clearance_path',
+    ][$type] ?? abort(404);
 
+    $path = $request->user()->{$col};
+    abort_unless($path && Storage::disk('local')->exists($path), 404);
+
+    return Storage::disk('local')->response($path);
+}
 public function updatePassword(Request $request): JsonResponse
 {
     $data = $request->validate([
@@ -432,6 +445,8 @@ public function updatePassword(Request $request): JsonResponse
         ->where('id', '!=', $request->session()->getId())
         ->delete();
 
+    if ($user->isAdmin()) AdminLog::record('security', 'Changed own password');
+
     return response()->json(['ok' => true, 'message' => 'Password updated. Other devices were logged out.']);
 }
 
@@ -443,10 +458,12 @@ public function logoutSession(Request $request, string $id): JsonResponse
 
     DB::table('sessions')->where('id', $id)->where('user_id', $request->user()->id)->delete();
 
+    if ($request->user()->isAdmin()) AdminLog::record('security', 'Logged out a device');
+
     return response()->json(['ok' => true, 'message' => 'Device logged out.']);
 }
 
-private function activeSessions(Request $request)
+public function activeSessions(Request $request)
 {
     $currentId = $request->session()->getId();
 
@@ -496,6 +513,7 @@ private function marketplacePayload(MarketplaceItem $m): array
         'title'     => $m->title,
         'price'     => $m->price,
         'desc'      => $m->description ?: 'No description.',
+        'sold'      => $m->sold_at !== null,
         'seller_id' => $s->id,
         'seller'    => $s->full_name,
         'initial'   => mb_strtoupper(mb_substr(trim($s->full_name), 0, 1)),
@@ -588,6 +606,19 @@ public function marketplaceStore(Request $request): JsonResponse
     ]);
 
     return response()->json($this->marketplacePayload($item->load('seller')));
+}
+public function marketplaceSold(Request $request, int $id): JsonResponse
+{
+    $item = MarketplaceItem::where('seller_id', $request->user()->id)->findOrFail($id);
+
+    $item->sold_at = $item->sold_at ? null : now();   // click again to undo
+    $item->save();
+
+    return response()->json([
+        'ok'      => true,
+        'sold'    => $item->sold_at !== null,
+        'message' => $item->sold_at ? 'Marked as sold.' : 'Listing is available again.',
+    ]);
 }
 public function marketplaceDestroy(Request $request, int $id): JsonResponse
 {

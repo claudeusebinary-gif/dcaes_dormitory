@@ -6,6 +6,7 @@ use App\Models\AdminNotification;
 use App\Models\Complaint;
 use App\Models\ComplaintMessage;
 use App\Models\Notification;
+use App\Support\AdminLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -127,7 +128,8 @@ class ComplaintChatController extends Controller
             'body'         => trim($data['body']),
         ]);
 
-        if ($me->isAdmin()) {
+      if ($me->isAdmin()) {
+            AdminLog::record('complaints', 'Replied to complaint #' . $c->id);
             Notification::create([
                 'tenant_id' => $c->user_id,
                 'title'     => 'Reply about your complaint',

@@ -1031,23 +1031,49 @@
 .withpababascroll::-webkit-scrollbar-button:single-button:vertical:increment {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'><path d='M1 2l3 4 3-4z' fill='%23a89898'/></svg>");
 }
-/* approvals tabs */
-.allpendingdocs1 { border-bottom: 3px solid transparent; padding: 0 14px; }
-.allpendingdocs1.is-on { border-bottom-color: #672C2C; color: #672C2C; }
 
-/* room map tiles: occupied / vacant / maintenance */
-.mmgarooms181 { border-radius: 10px; }
-.mmgarooms181.is-vacant { background-color: #fffdfb; border: 1.5px solid #e8ded4; }
-.mmgarooms181.is-vacant h1 { color: #7d6e68; }
+.allpendingdocs1 {
+    border-bottom: 3px solid transparent;
+    padding: 0 14px;
+}
+
+.allpendingdocs1.is-on {
+    border-bottom-color: #672C2C;
+    color: #672C2C;
+}
+
+.mmgarooms181 {
+    border-radius: 10px;
+}
+
+.mmgarooms181.is-vacant {
+    background-color: #fffdfb;
+    border: 1.5px solid #e8ded4;
+}
+
+.mmgarooms181.is-vacant h1 {
+    color: #7d6e68;
+}
+
 .mmgarooms181.is-maint {
     background: repeating-linear-gradient(45deg, #f1dfb9, #f1dfb9 5px, #fffdfb 5px, #fffdfb 10px);
     border: 1.5px solid #b8863b;
 }
-.mmgarooms181.is-maint h1 { color: #7a5517; }
 
-/* empty states */
-.annempty {
-    padding: 28px 12px; text-align: center; color: #0000007a;
-    font-family: 'Nunito Sans', sans-serif; font-size: .85rem; font-weight: 700;
+.mmgarooms181.is-maint h1 {
+    color: #7a5517;
 }
-.rt-view, .recenttenatnsa a { cursor: pointer; }
+
+.annempty {
+    padding: 28px 12px;
+    text-align: center;
+    color: #0000007a;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .85rem;
+    font-weight: 700;
+}
+
+.rt-view,
+.recenttenatnsa a {
+    cursor: pointer;
+}

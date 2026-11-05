@@ -41,6 +41,7 @@ Route::middleware([AuthOrGuest::class, NoStore::class])->group(function () {
     Route::middleware(EnsureTenant::class)->prefix('home')->name('tenant.')->group(function () {
         Route::get('/', [TenantController::class, 'home'])->name('home');
         Route::get('/profile', [TenantController::class, 'profile'])->name('profile');
+        Route::get('/documents/{type}', [TenantController::class, 'document'])->whereIn('type', ['valid_id', 'lease', 'barangay'])->name('documents.show');
         Route::get('/dorm', [TenantController::class, 'dorm'])->name('dorm');
         Route::get('/rooms', [TenantController::class, 'rooms'])->name('rooms');
         Route::get('/payments', [TenantController::class, 'payments'])->name('payments');
@@ -66,6 +67,7 @@ Route::middleware([AuthOrGuest::class, NoStore::class])->group(function () {
         Route::post('/complaints/chat', [ComplaintChatController::class, 'send'])->middleware('throttle:30,1')->name('complaints.chat.send');
         Route::post('/marketplace/items', [TenantController::class, 'marketplaceStore'])->middleware('throttle:10,1')->name('marketplace.store');
         Route::delete('/marketplace/items/{id}', [TenantController::class, 'marketplaceDestroy'])->whereNumber('id')->name('marketplace.destroy');
+        Route::post('/marketplace/items/{id}/sold', [TenantController::class, 'marketplaceSold'])->whereNumber('id')->name('marketplace.sold');
         Route::get('/calendar', [TenantController::class, 'calendar'])->name('calendar');
         Route::post('/calendar/events', [TenantController::class, 'calendarStore'])->middleware('throttle:10,1')->name('calendar.store');
         Route::post('/calendar/events/{id}/rsvp', [TenantController::class, 'calendarRsvp'])->whereNumber('id')->middleware('throttle:30,1')->name('calendar.rsvp');
@@ -106,6 +108,21 @@ Route::post('/complaints',  [AdminController::class, 'complaintStore'])->name('c
 Route::post('/complaints/{id}/status', [AdminController::class, 'complaintStatus'])->whereNumber('id')->name('complaints.status');
 Route::get('/approvals',    [AdminController::class, 'approvals'])->name('approvals');
 Route::get('/settings',     [AdminController::class, 'settings'])->name('settings');
+Route::put('/settings/front-desk',    [AdminController::class, 'saveFrontDesk'])->name('settings.front-desk');
+Route::put('/settings/notifications', [AdminController::class, 'saveNotifications'])->name('settings.notifications');
+Route::post('/settings/staff', [AdminController::class, 'staffStore'])->name('settings.staff.store');
+Route::put('/settings/staff/{id}', [AdminController::class, 'staffUpdate'])->whereNumber('id')->name('settings.staff.update');
+Route::delete('/settings/staff/{id}', [AdminController::class, 'staffDestroy'])->whereNumber('id')->name('settings.staff.destroy');
+Route::put('/settings/staff/{id}/owner', [AdminController::class, 'staffMakeOwner'])->whereNumber('id')->name('settings.staff.owner');
+Route::put('/settings/payment-methods', [AdminController::class, 'savePaymentMethods'])->name('settings.payment-methods');
+Route::put('/settings/room-rent', [AdminController::class, 'saveRoomRent'])->name('settings.room-rent');
+Route::put('/settings/general',  [AdminController::class, 'saveGeneral'])->name('settings.general');
+Route::post('/settings/logo',    [AdminController::class, 'uploadLogo'])->middleware('throttle:10,1')->name('settings.logo');
+Route::delete('/settings/logo',  [AdminController::class, 'removeLogo'])->name('settings.logo.remove');
+Route::put('/settings/security', [AdminController::class, 'saveSecurity'])->name('settings.security');
+Route::put('/settings/password', [TenantController::class, 'updatePassword'])->middleware('throttle:5,1')->name('settings.password');
+Route::post('/settings/sessions/others', [AdminController::class, 'logoutOtherSessions'])->name('settings.sessions.others');
+Route::delete('/settings/sessions/{id}', [TenantController::class, 'logoutSession'])->where('id', '[A-Za-z0-9]+')->name('settings.sessions.destroy');
         Route::post('/approvals/{id}/approve', [AdminController::class, 'approve'])->whereNumber('id')->name('approvals.approve');
         Route::post('/approvals/{id}/reject', [AdminController::class, 'reject'])->whereNumber('id')->name('approvals.reject');
                 Route::post('/approvals', [AdminController::class, 'approvalStore'])->name('approvals.store');

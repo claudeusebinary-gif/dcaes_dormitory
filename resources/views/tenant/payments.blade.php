@@ -179,7 +179,7 @@
                 </div>
             </div>
             <div class="tranparentboss">
-                <div class="tranparent method" data-method="GCash" role="button" tabindex="0">
+                <div class="tranparent method" data-method="GCash" @unless ($methods['gcash']) data-unavailable="true" @endunless role="button" tabindex="0">
                     <div class="invoss347">
                         <div class="invoss1347"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -197,7 +197,7 @@
                         <h1>Dafault</h1>
                     </div>
                 </div>
-                <div class="tranparent method" data-method="Debit / Credit" data-unavailable="true" role="button"
+                <div class="tranparent method" @unless ($methods['card']) data-unavailable="true" @endunless role="button"
                     tabindex="0">
                     <div class="invoss347">
                         <div class="invoss1347"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -214,7 +214,7 @@
 
                     </div>
                 </div>
-                <div class="tranparent method" data-method="Bank Transfer" data-unavailable="true" role="button"
+                <div class="tranparent method" @unless ($methods['card']) data-unavailable="true" @endunless role="button"
                     tabindex="0">
                     <div class="invoss347">
                         <div class="invoss1347"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
@@ -265,7 +265,7 @@
                 </svg>
             </div>
             <h2 id="unavailTitle">Not available yet</h2>
-          <p><span id="unavailName">This payment method</span> is not available right now. Please use GCash for now.</p>
+          <p><span id="unavailName">This payment method</span> is not available right now. Please choose another payment method.</p>
             <button type="button" class="unavail-btn" id="unavailClose">Okay</button>
         </div>
     </div>
@@ -385,7 +385,7 @@
             </div>
             <hr class="padiretso23159">
                <div class="duhakagatos">
-               <label class="duhakagatos1 method-pick selected" data-method="GCash" data-available="true">
+               <label class="duhakagatos1 method-pick selected" data-method="GCash" data-available="{{ $methods['gcash'] ? 'true' : 'false' }}">
     <div class="tempo">
         <input type="checkbox" class="radi" checked>
         <div class="modalboxesss">
@@ -401,7 +401,7 @@
     <div class="samodapid"><div class="difults"><h1>default</h1></div></div>
 </label>
 
-<label class="duhakagatos1 method-pick" data-method="Debit / Credit" data-available="false">
+<label class="duhakagatos1 method-pick" data-method="Debit / Credit" data-available="{{ $methods['card'] ? 'true' : 'false' }}">
     <div class="tempo">
         <input type="checkbox" class="radi">
         <div class="modalboxesss">
@@ -417,7 +417,7 @@
     </div>
 </label>
 
-<label class="duhakagatos1 method-pick" data-method="Bank Transfer" data-available="false">
+<label class="duhakagatos1 method-pick" data-method="Bank Transfer" data-available="{{ $methods['bank'] ? 'true' : 'false' }}">
     <div class="tempo">
         <input type="checkbox" class="radi">
         <div class="modalboxesss">
@@ -599,8 +599,8 @@ function showNA(title, msg) {
             var name = h.textContent.trim();
             box.style.cursor = 'pointer';
             box.addEventListener('click', function () {
-                if (txt(h) === 'gcash') return;
-               showNA('Not available yet', name + ' is not available right now. Please use GCash for now.');
+               if (box.dataset.unavailable !== 'true') return;
+               showNA('Not available yet', name + ' is not available right now. Please choose another payment method.');
             });
         });
 
@@ -733,6 +733,16 @@ if (addBtn) {
                 methodLabel.textContent = 'Total (Via ' + method + ')';
             });
         });
+        var firstOn = Array.prototype.filter.call(methodRows, function (r) { return r.dataset.available === 'true'; })[0];
+if (firstOn) {
+    method = firstOn.dataset.method;
+    methodRows.forEach(function (r) {
+        var on = (r === firstOn);
+        r.classList.toggle('selected', on);
+        r.querySelector('input').checked = on;
+    });
+    methodLabel.textContent = 'Total (Via ' + method + ')';
+}
         document.getElementById('unavailClose').addEventListener('click', function () {
             unavailModal.hidden = true;
         });

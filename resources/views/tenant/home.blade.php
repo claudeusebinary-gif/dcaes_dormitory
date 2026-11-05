@@ -208,6 +208,49 @@
                 our upcoming app</p>
         </div>
     </div>
+   @php
+       $frontDesk = \App\Support\DormStats::frontDesk();
+       $dowMap = ['Sunday' => 0, 'Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6];
+   @endphp
+   <div class="home-hrs-section">
+       <h1 class="ov2">Open Hours</h1>
+       <hr class="hw2">
+       <p class="home-hrs-subtitle">Visit our front desk for inquiries, payments, and room viewings.</p>
+
+       <div class="home-hrs-card">
+           <div class="home-hrs-top">
+               <div class="home-hrs-clock">
+                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                       <circle cx="12" cy="12" r="9"></circle>
+                       <path d="M12 7v5l3 2"></path>
+                   </svg>
+               </div>
+               <div>
+                   <p class="home-hrs-label">Front Desk</p>
+                   <p class="home-hrs-status" id="homeHrsStatus">Checking…</p>
+               </div>
+               <span class="home-hrs-pill" id="homeHrsPill" hidden></span>
+           </div>
+
+           <ul class="home-hrs-list">
+               @foreach ($frontDesk as $day => $h)
+                   <li class="home-hrs-row{{ $h['open'] ? '' : ' closed' }}" data-dow="{{ $dowMap[$day] }}"
+                       data-open="{{ $h['open'] ? 1 : 0 }}" data-from="{{ $h['from'] }}" data-to="{{ $h['to'] }}">
+                       <span class="home-hrs-day">{{ $day }}</span>
+                       <span class="home-hrs-time">
+                           @if ($h['open'])
+                               {{ \App\Support\DormStats::formatTime($h['from']) }} – {{ \App\Support\DormStats::formatTime($h['to']) }}
+                           @else
+                               Closed
+                           @endif
+                       </span>
+                   </li>
+               @endforeach
+           </ul>
+       </div>
+   </div>
+
    <div class="wiabut">
     <input type="button" value="Book Now" class="bababut"
         onclick="window.location.href='{{ route('tenant.rooms') }}'">
@@ -216,4 +259,44 @@
 </div>
     
  @include('partials.footer')
+
+@push('scripts')
+<script>
+(function () {
+    var rows = [].slice.call(document.querySelectorAll('.home-hrs-row'));
+    if (!rows.length) return;
+
+    var names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var now = new Date(), dow = now.getDay(), mins = now.getHours() * 60 + now.getMinutes();
+    var byDow = {};
+    rows.forEach(function (r) { byDow[r.dataset.dow] = r; });
+
+    function toMin(t) { var p = t.split(':'); return (+p[0]) * 60 + (+p[1]); }
+    function fmt(t) { var p = t.split(':'), h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + p[1] + ' ' + ap; }
+
+    var today = byDow[dow], status = '', open = false;
+    if (today) today.classList.add('today');
+
+    if (today && today.dataset.open === '1') {
+        var f = toMin(today.dataset.from), t = toMin(today.dataset.to);
+        if (mins >= f && mins < t) { open = true; status = 'Open now · closes at ' + fmt(today.dataset.to); }
+        else if (mins < f) { status = 'Opens today at ' + fmt(today.dataset.from); }
+    }
+    if (!status) {
+        for (var i = 1; i <= 7; i++) {
+            var d = (dow + i) % 7, r = byDow[d];
+            if (r && r.dataset.open === '1') {
+                status = 'Closed now · opens ' + (i === 1 ? 'tomorrow' : names[d]) + ' at ' + fmt(r.dataset.from);
+                break;
+            }
+        }
+    }
+    document.getElementById('homeHrsStatus').textContent = status || 'Currently closed';
+    var pill = document.getElementById('homeHrsPill');
+    pill.hidden = false;
+    pill.textContent = open ? 'Open now' : 'Closed';
+    pill.classList.toggle('is-open', open);
+})();
+</script>
+@endpush
 @endsection

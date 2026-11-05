@@ -40,7 +40,7 @@
                 <input type="number" id="fPrice" min="0" step="100" placeholder="e.g. 2500">
 
                 <label for="fBed">Bed type</label>
-                <select id="fBed">
+                <select id="fBed" class="laglaggayan2">
                     <option value="">Any</option>
                     @foreach ($rooms->pluck('bed_type')->unique() as $type)
                         <option value="{{ $type }}">{{ $type }}</option>
@@ -48,7 +48,7 @@
                 </select>
 
                 <label for="fFree">Free spaces</label>
-                <select id="fFree">
+                <select id="fFree" class="laglaggayan2">
                     <option value="0">Any</option>
                     <option value="1">1 or more</option>
                     <option value="2">2 or more</option>
@@ -91,14 +91,14 @@
                 $tenantCount = $inRoom->count();
                 $split = $tenantCount > 1;
                 $share = $split ? (float) $room->price_per_bed / $tenantCount : (float) $room->price_per_bed;
-               $photoList = $room->photo_paths
-    ? array_map(fn ($p) => asset($p), $room->photo_paths)
-    : [
-        asset('images/rooms/sample-room-1.svg'),
-        asset('images/rooms/sample-room-2.svg'),
-        asset('images/rooms/sample-room-3.svg'),
-        asset('images/rooms/sample-room-4.svg'),
-    ];
+                $photoList = $room->photo_paths
+                    ? array_map(fn($p) => asset($p), $room->photo_paths)
+                    : [
+                        asset('images/rooms/sample-room-1.svg'),
+                        asset('images/rooms/sample-room-2.svg'),
+                        asset('images/rooms/sample-room-3.svg'),
+                        asset('images/rooms/sample-room-4.svg'),
+                    ];
             @endphp
 
             <div class="roomstart"
@@ -171,6 +171,7 @@
                         data-price-label="{{ $split ? 'per tenant / month' : 'per bed / month' }}"
                         data-sharing="{{ $room->sharing_type }}" data-bedtype="{{ $room->bed_type }}"
                         data-total-beds="{{ $room->total_beds }}" data-photos='@json($photoList)'
+                        data-amenities='@json($room->amenities)'
                         data-availability="{{ $room->under_maintenance ? 'Under maintenance' : ($freeBeds > 0 ? $freeBeds . ' ' . \Illuminate\Support\Str::plural('space', $freeBeds) . ' open' : 'Fully occupied') }}"
                         data-availability-color="{{ $room->under_maintenance ? '#b26a00' : ($freeBeds > 0 ? '#1b7219' : '#b3261e') }}">
                 </div>
@@ -365,7 +366,7 @@
             </button>
             <h1 class="sinta21">File a Complaint<br><span>Report an issue or concerns</span></h1>
 
-            <select name="type" id="complaintType" required class="silicta">
+            <select name="type" id="complaintType" required class="laglaggayan2">
                 <option value="" disabled selected>Select complaint type</option>
                 <option value="plumbing">Plumbing</option>
                 <option value="electrical">Electrical</option>
@@ -629,7 +630,7 @@
                             </div>
                             <div class="lastfirst">
                                 <span>Sex *</span>
-                                <select name="sex" class="firtsnimesex" not-required>
+                                <select name="sex" class="laglaggayan2" not-required>
                                     <option value="">Select...</option>
                                     <option value="male">Male</option>
                                     <option value="female">Female</option>
@@ -637,7 +638,7 @@
                             </div>
                             <div class="lastfirst">
                                 <span>Civil status *</span>
-                                <select name="civil_status" class="firtsnimestatus" not-required>
+                                <select name="civil_status" class="laglaggayan2" not-required>
                                     <option value="">Select...</option>
                                     <option value="Single">Single</option>
                                     <option value="Married">Married</option>
@@ -781,7 +782,7 @@
                         <div class="kabuuan">
                             <div class="lastfirst">
                                 <span>ID type *</span>
-                                <select name="id_type" class="firtsnimesex" required>
+                                <select name="id_type" class="laglaggayan2" required>
                                     <option value="Philipine National ID">Philipine National ID</option>
                                     <option value="Drivers License">Drivers License</option>
                                 </select>
@@ -853,7 +854,7 @@
                             <div class="firstnamelast">
                                 <div class="lastfirst">
                                     <span>Expected length of stay *</span>
-                                    <select name="length_of_stay" class="firtsnimesex" required>
+                                    <select name="length_of_stay" class="laglaggayan2" required>
                                         <option value="">Select...</option>
                                         <option value="1 month">1 month</option>
                                         <option value="3 months">3 months</option>
@@ -867,8 +868,9 @@
                 </div>
                 <div class="agreekaba">
                     <input type="checkbox" name="agree" id="agree" class="radi" required>
-                    <h1>I certify that the information provided is true and correct, and I agree to the dormitory's house
-                        rules and terms of stay</h1>
+                    <h1>I certify that the information provided is true and correct, and I agree to the dormitory's
+                        <button type="button" class="tcm-link" id="openTerms">Terms &amp; Conditions</button>
+                    </h1>
                 </div>
                 <button type="submit" class="continuetopays">Continue to payment</button>
                 <div class="yours12">
@@ -1106,6 +1108,223 @@
 
         </div>
     </div>
+    <style>
+        .tcm {
+            position: fixed;
+            inset: 0;
+            z-index: 5000;
+            background: rgba(0, 0, 0, .55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .tcm.is-open {
+            display: flex;
+        }
+
+        .tcm-box {
+            background: #fff;
+            width: 640px;
+            max-width: 100%;
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            border-radius: 12px;
+            font-family: 'Nunito Sans', sans-serif;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .25);
+        }
+
+        .tcm-head {
+            padding: 22px 28px 12px;
+            border-bottom: 1px solid #0000001a;
+        }
+
+        .tcm-head h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: #672c2c;
+        }
+
+        .tcm-head p {
+            margin: 4px 0 0;
+            font-size: .8rem;
+            color: #00000088;
+        }
+
+        .tcm-body {
+            padding: 16px 28px;
+            overflow-y: auto;
+            font-size: .86rem;
+            line-height: 1.55;
+            color: #222;
+        }
+
+        .tcm-body h3 {
+            margin: 16px 0 4px;
+            font-size: .92rem;
+            color: #672c2c;
+        }
+
+        .tcm-body p,
+        .tcm-body li {
+            margin: 0 0 6px;
+        }
+
+        .tcm-body ul {
+            padding-left: 18px;
+            margin: 0;
+        }
+
+        .tcm-foot {
+            padding: 14px 28px;
+            border-top: 1px solid #0000001a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .tcm-hint {
+            font-size: .75rem;
+            color: #00000088;
+        }
+
+        .tcm-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tcm-btn {
+            height: 40px;
+            padding: 0 20px;
+            border-radius: 6px;
+            border: 1px solid #0000000c;
+            font-weight: 700;
+            font-size: .8rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .23s ease;
+        }
+
+        .tcm-btn.ghost {
+            background: #FAF6F4;
+            color: #672c2c;
+        }
+
+        .tcm-btn.ghost:hover {
+            background: #672c2c;
+            color: #fff;
+        }
+
+        .tcm-btn.ok {
+            background: #2D7248;
+            color: #fff;
+        }
+
+        .tcm-btn.ok:hover:not(:disabled) {
+            background: #245c3a;
+        }
+
+        .tcm-btn:disabled {
+            opacity: .45;
+            cursor: not-allowed;
+        }
+
+        .tcm-link {
+            display: inline;
+            color: #672c2c;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: 0;
+            padding: 0;
+            font: inherit;
+            font-weight: 800;
+        }
+    </style>
+
+    <div class="tcm" id="termsModal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="tcm-box">
+            <div class="tcm-head">
+                <h2>Terms &amp; Conditions</h2>
+                <p>Please read everything before booking a bed.</p>
+            </div>
+            <div class="tcm-body" id="termsBody">
+                <h3>1. Reservation &amp; payment</h3>
+                <ul>
+                    <li>Your bed is held after you submit the booking and is confirmed once management approves it.</li>
+                    <li>The reservation fee is non-refundable.</li>
+                    <li>Rent is paid monthly in advance on or before your due date. Late payments may be charged a fee.</li>
+                </ul>
+                <h3>2. Tenant information</h3>
+                <p>You confirm that all details and your valid ID are true and correct. False information may lead to
+                    cancellation of your booking.</p>
+                <h3>3. House rules</h3>
+                <ul>
+                    <li>Follow the quiet hours, curfew, and visitor rules posted by management.</li>
+                    <li>No smoking, illegal substances, or weapons inside the dormitory.</li>
+                    <li>Keep your bed, room, and shared areas clean and orderly.</li>
+                </ul>
+                <h3>4. Damages &amp; property</h3>
+                <p>Tenants are responsible for damage they cause to rooms, furniture, or equipment. The dormitory is not
+                    liable for lost or stolen personal belongings.</p>
+                <h3>5. Room transfers</h3>
+                <p>Transfer requests are subject to availability and management approval.</p>
+                <h3>6. Move-out</h3>
+                <ul>
+                    <li>Submit a move-out request at least 30 days before your move-out date.</li>
+                    <li>Settle all balances and return your key during clearance.</li>
+                </ul>
+                <h3>7. Termination</h3>
+                <p>Management may end a stay for repeated or serious rule violations or unpaid rent.</p>
+                <h3>8. Data privacy</h3>
+                <p>Your personal information is used only for dormitory records, billing, and safety purposes.</p>
+                <p><b>By ticking "I Agree", you confirm you have read and accepted these Terms &amp; Conditions.</b></p>
+            </div>
+            <div class="tcm-foot">
+                <span class="tcm-hint" id="termsHint"></span>
+                <div class="tcm-btns">
+                    <button type="button" class="tcm-btn ghost" data-terms-close>Close</button>
+                    <button type="button" class="tcm-btn ok" id="termsAgree" disabled>I Agree</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var modal = document.getElementById('termsModal'),
+                body = document.getElementById('termsBody'),
+                ok = document.getElementById('termsAgree'),
+                hint = document.getElementById('termsHint'),
+                box = document.querySelector('.agreekaba #agree');
+            if (!modal || !box) return;
+
+            function check() {
+                var done = body.scrollTop + body.clientHeight >= body.scrollHeight - 8;
+                ok.disabled = !done;
+                hint.textContent = done ? 'Thank you for reading.' : 'Scroll to the bottom to enable "I Agree".';
+            }
+            function open() { modal.classList.add('is-open'); modal.setAttribute('aria-hidden', 'false'); body.scrollTop = 0; check(); }
+            function close() { modal.classList.remove('is-open'); modal.setAttribute('aria-hidden', 'true'); }
+
+            body.addEventListener('scroll', check);
+            document.getElementById('openTerms').addEventListener('click', open);
+            // ticking the box opens the terms first; unticking works normally
+            box.addEventListener('click', function (e) { if (box.checked) { e.preventDefault(); open(); } });
+            ok.addEventListener('click', function () {
+                box.checked = true;
+                box.dispatchEvent(new Event('change', { bubbles: true }));
+                close();
+            });
+            modal.querySelectorAll('[data-terms-close]').forEach(function (b) { b.addEventListener('click', close); });
+            modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+        })();
+    </script>
+    {{-- ===== END TERMS POPUP ===== --}}
     <div class="unavail-modal" id="unavailModal" role="dialog" aria-modal="true" aria-hidden="true">
         <div class="unavail-box">
             <h2 class="unavail-title">Not available</h2>
@@ -1261,7 +1480,7 @@
                         aria-hidden="true">
                         <polyline points="20 6 9 17 4 12" />
                     </svg></div>
-              <h1>Booking Submitted!</h1>
+                <h1>Booking Submitted!</h1>
                 <span data-conf="headline">Room 100 is now reserved under your name. A copy of this receipt has been sent to
                     your email.</span>
                 <div class="dateofdating">
@@ -1295,7 +1514,7 @@
                         </div>
                         <div class="kakanan1">
                             <h1>Tenant name</h1>
-                        <span data-conf="tenant">{{ auth()->user()->display_name }}</span>
+                            <span data-conf="tenant">{{ auth()->user()->display_name }}</span>
                         </div>
                         <hr class="padiretso54">
                         <div class="kakanan1">
@@ -1880,7 +2099,7 @@
             const confirmModal = document.getElementById('confirmModal');
             const detailsForm = document.getElementById('detailsForm');
             let bookingData = {};
-            let selectedBed = null;   
+            let selectedBed = null;
             const deckPick = document.getElementById('deckPick');
             const bedHint = document.getElementById('bedHint');
 
@@ -1915,7 +2134,7 @@
                     : 'Bed ' + m[1] + ' (' + title + ') selected.';
             });
 
-          
+
             deckPick.addEventListener('click', e => {
                 const btn = e.target.closest('button[data-deck]');
                 if (!btn || !selectedBed) return;
@@ -1927,7 +2146,7 @@
             const bookCsrf = document.querySelector('meta[name="csrf-token"]').content;
             let myRoom = @json(auth()->user()->room_number);
             const hasPending = @json((bool) auth()->user()->pendingBooking());
-                        const isGuest = @json(auth()->user()->isGuest());
+            const isGuest = @json(auth()->user()->isGuest());
             const loginUrl = @json(route('login'));
 
             document.addEventListener('click', e => {
@@ -2019,7 +2238,7 @@
             }
 
             function openPayment() {
-                                if (isGuest) { window.location.href = loginUrl; return; }
+                if (isGuest) { window.location.href = loginUrl; return; }
                 if (myRoom) { showHasRoom(); return; }
                 if (hasPending) { alert('Your booking is still waiting for admin approval. You can book again after the admin decides.'); return; }
                 const bed = pickBed();
@@ -2145,13 +2364,13 @@
                         showHasRoom();
                         return;
                     }
-                                        if (res.status === 409 && data.code === 'pending') {
+                    if (res.status === 409 && data.code === 'pending') {
                         closePayment();
                         alert(data.message);
                         return;
                     }
                     if (res.status === 422) {
-                       const first = data.errors ? Object.values(data.errors)[0][0] : data.message;
+                        const first = data.errors ? Object.values(data.errors)[0][0] : data.message;
                         throw new Error(first || 'Please check your details and try again.');
                     }
                     if (res.status === 419) throw new Error('Your session expired. Refresh the page and try again.');
@@ -2190,6 +2409,21 @@
                 fill('bedtype', btn.dataset.bedtype);
                 fill('totalbeds', btn.dataset.totalBeds + ' Beds');
                 fill('availability', btn.dataset.availability);
+                const amBox = modal.querySelector('.amemitiesbox');
+                let am = null;
+                try { am = JSON.parse(btn.dataset.amenities || 'null'); } catch (e) { }
+                if (amBox && Array.isArray(am)) {
+                    amBox.innerHTML = '';
+                    am.forEach(n => {
+                        const d = document.createElement('div');
+                        d.className = 'boxame';
+                        d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+                        const h = document.createElement('h1');
+                        h.textContent = n;
+                        d.appendChild(h);
+                        amBox.appendChild(d);
+                    });
+                }
 
                 const av = modal.querySelector('[data-fill="availability"]');
                 if (av) av.style.color = btn.dataset.availabilityColor;
@@ -2209,7 +2443,7 @@
                 bookBtn.style.cursor = noSpace ? 'not-allowed' : '';
                 bookBtn.value = card.dataset.maintenance === '1' ? 'Under maintenance'
                     : (+card.dataset.free === 0 ? 'Fully occupied' : 'Book this room');
-                                    if (isGuest && !noSpace) bookBtn.value = 'Log in to book';
+                if (isGuest && !noSpace) bookBtn.value = 'Log in to book';
 
                 roomNo = room;
                 photos = JSON.parse(btn.dataset.photos || '[]');

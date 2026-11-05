@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@daces.test',
             'password' => 'password',
             'role' => 'admin',
+            'staff_role' => 'owner',
         ]);
 
         $tenant = User::create([

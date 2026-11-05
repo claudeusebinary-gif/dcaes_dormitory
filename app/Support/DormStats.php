@@ -4,7 +4,8 @@ namespace App\Support;
 
 use App\Models\Room;
 use App\Models\User;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DormStats
 {
@@ -44,7 +45,7 @@ public static function fees(): array
 {
     return [
         'reservation' => self::RESERVATION_FEE,
-        'security'    => self::SECURITY_FEE,
+        'security'    => self::roomSettings()['deposit'] ? self::SECURITY_FEE : 0,
         'clean'       => self::CLEAN_FEE,
     ];
 }
@@ -177,5 +178,135 @@ public static function featuredRooms(int $limit = 2): \Illuminate\Support\Collec
         ->filter(fn ($room) => $room['free'] > 0)
         ->take($limit)
         ->values();
+}
+    public const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+    public static function setting(string $key, $default = null)
+    {
+        if (! Schema::hasTable('dorm_settings')) {
+            return $default;
+        }
+        $raw = DB::table('dorm_settings')->where('key', $key)->value('value');
+        if ($raw === null) {
+            return $default;
+        }
+        $decoded = json_decode($raw, true);
+
+        return json_last_error() === JSON_ERROR_NONE ? $decoded : $default;
+    }
+
+    public static function putSetting(string $key, $value): void
+    {
+        DB::table('dorm_settings')->updateOrInsert(
+            ['key' => $key],
+            ['value' => json_encode($value), 'updated_at' => now()]
+        );
+    }
+
+    public static function frontDesk(): array
+    {
+        $saved = self::setting('front_desk_hours', []);
+        $saved = is_array($saved) ? $saved : [];
+        $out = [];
+        foreach (self::DAYS as $day) {
+            $d = $saved[$day] ?? [];
+            $out[$day] = [
+                'open' => (bool) ($d['open'] ?? true),
+                'from' => $d['from'] ?? '08:00',
+                'to'   => $d['to']   ?? '17:00',
+            ];
+        }
+
+        return $out;
+    }
+
+    public static function formatTime(string $hhmm): string
+    {
+        return \Carbon\Carbon::createFromFormat('H:i', $hhmm)->format('g:i A');
+    }
+
+    public static function notificationPrefs(): array
+    {
+        $defaults = [
+            'rent_due'           => ['email' => true,  'sms' => true,  'push' => false],
+            'overdue_notice'     => ['email' => true,  'sms' => false, 'push' => false],
+            'announcement'       => ['email' => false, 'sms' => false, 'push' => true],
+            'maintenance_status' => ['email' => true,  'sms' => false, 'push' => true],
+            'new_request'        => ['email' => true,  'sms' => false, 'push' => true],
+            'overdue_digest'     => ['email' => true,  'sms' => false, 'push' => false],
+            'new_application'    => ['email' => true,  'sms' => true,  'push' => true],
+            'weekly_summary'     => ['email' => true,  'sms' => false, 'push' => false],
+        ];
+        $saved = self::setting('admin_notifications', []);
+        foreach ($defaults as $key => $channels) {
+            foreach ($channels as $ch => $on) {
+                if (isset($saved[$key][$ch])) {
+                    $defaults[$key][$ch] = (bool) $saved[$key][$ch];
+                }
+            }
+        }
+
+        return $defaults;
+    }
+    public const PAYMENT_METHODS = ['gcash' => 'GCash', 'card' => 'Debit / Credit', 'bank' => 'Bank Transfer'];
+
+public static function paymentMethods(): array
+{
+    $saved = self::setting('payment_methods', []);
+    $saved = is_array($saved) ? $saved : [];
+    $out = [];
+    foreach (array_keys(self::PAYMENT_METHODS) as $key) {
+        $out[$key] = (bool) ($saved[$key] ?? ($key === 'gcash'));
+    }
+    return $out;
+}
+
+public static function enabledMethodNames(): array
+{
+    $names = [];
+    foreach (self::paymentMethods() as $key => $on) {
+        if ($on) $names[] = self::PAYMENT_METHODS[$key];
+    }
+    return $names;
+}
+public static function profile(): array
+{
+    $s = self::setting('dorm_profile', []);
+    $s = is_array($s) ? $s : [];
+
+    return [
+        'name'    => $s['name']    ?? "D'aces Dormitory",
+        'phone'   => $s['phone']   ?? '',
+        'address' => $s['address'] ?? 'Bulacan, Pinaod',
+        'email'   => $s['email']   ?? '',
+        'logo'    => $s['logo']    ?? null,
+    ];
+}
+
+public static function security(): array
+{
+    $s = self::setting('admin_security', []);
+    $s = is_array($s) ? $s : [];
+
+    return [
+        'idle_logout'  => (bool) ($s['idle_logout'] ?? false),
+        'idle_minutes' => (int)  ($s['idle_minutes'] ?? 30),
+    ];
+}
+public static function roomSettings(): array
+{
+    $s = self::setting('room_rent', []);
+    $s = is_array($s) ? $s : [];
+
+    return [
+        'capacity'  => (int)   ($s['capacity']  ?? self::BEDS_PER_ROOM),
+        'rate'      => (float) ($s['rate']      ?? self::PRICE_PER_BED),
+        'due_day'   => !empty($s['due_day']) ? (int) $s['due_day'] : null,
+        'grace'     => (int)   ($s['grace']     ?? 0),
+        'late_fee'  => (float) ($s['late_fee']  ?? 10),
+        'auto_full' => (bool)  ($s['auto_full'] ?? true),
+        'deposit'   => (bool)  ($s['deposit']   ?? true),
+        'amenities' => array_values($s['amenities'] ?? ['Ceiling Fan', 'Restroom', 'Terrace', 'Locker', 'Wall Fan']),
+    ];
 }
 }

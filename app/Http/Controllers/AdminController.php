@@ -10,6 +10,8 @@ use App\Models\Room;
 use App\Models\RoomRequest;
 use App\Models\User;
 use App\Support\Billing;
+use App\Support\AdminLog;
+use App\Models\AdminActivityLog;
 use App\Support\DormStats;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -45,11 +47,9 @@ class AdminController extends Controller
     {
         $tenants = fn () => User::where('role', 'tenant');
 
-        // stat boxes
         $totalTenants = $tenants()->count();
         $newThisMonth = $tenants()->where('created_at', '>=', now()->startOfMonth())->count();
 
-        // room map: maintenance > occupied > vacant
         $taken = $tenants()->whereNotNull('room_number')->pluck('room_number')->map(fn ($r) => (string) $r)->unique()->all();
         $tiles = Room::orderBy('room_number')->get()->map(fn ($r) => [
             'number' => $r->room_number,
@@ -59,18 +59,15 @@ class AdminController extends Controller
         $totalRooms = $tiles->count();
         $pct        = $totalRooms ? (int) round($occupied / $totalRooms * 100) : 0;
 
-        // payments
         $unpaid      = fn () => $tenants()->whereNotNull('room_number')->where('payment_status', '!=', 'up_to_date');
         $unpaidCount = $unpaid()->count();
                $outstanding = (float) $unpaid()->get()->sum(fn ($u) => Billing::rentFor($u));
         $overdue     = $tenants()->where('payment_status', 'overdue')->count();
 
-        // maintenance requests
         $maint      = fn () => RoomRequest::where('type', 'maintenance')->where('status', 'pending');
         $maintCount = $maint()->count();
         $maintHigh  = $maint()->where('urgency', 'high')->count();
 
-        // approvals
         $counts = $this->approvalCounts();
                $labels = ['new_tenant' => 'New tenant', 'payment' => 'Payment', 'document' => 'Document',
                    'transfer' => 'Room transfer', 'move_out' => 'Move-out', 'guest' => 'Guest'];
@@ -84,10 +81,8 @@ class AdminController extends Controller
             'href'    => $a->type === 'payment' ? route('admin.payments') : route('admin.approvals'),
         ]);
 
-        // announcements
         $announcements = Announcement::latest()->get()->map(fn ($a) => $this->annPayload($a));
 
-        // recent tenants
         $recentTenants = User::where('role', 'tenant')->whereNotNull('room_number')->latest('id')->limit(5)->get()->map(function ($u) {
             $status = 'Up to date';
             $class  = 'rt-ok';
@@ -112,7 +107,6 @@ class AdminController extends Controller
             ];
         });
 
-        // complaints
         $openComplaints = Complaint::where('status', 'pending')->count();
         $complaints = Complaint::with('user')->latest()->limit(4)->get()->map(fn ($c) => [
             'id'      => $c->id,
@@ -177,7 +171,6 @@ public function tenantShow(int $id): View
 {
     $tenant = User::where('role', 'tenant')->findOrFail($id);
 
-    /* ---- billing: the same data the tenant sees in Settings > Billing ---- */
     $bill     = Billing::forUser($tenant);
     $history  = $bill['history'] ?? [];
     $paidRows = Payment::where('user_id', $tenant->id)->get()->keyBy('period');
@@ -201,7 +194,6 @@ public function tenantShow(int $id): View
         'resolved'   => Complaint::where('user_id', $tenant->id)->whereIn('status', $closed)->whereYear('updated_at', now()->year)->count(),
     ];
 
-    /* ---- activity log: built from records that already exist ---- */
     $events = collect();
 
     $events->push(['at' => $tenant->created_at, 'type' => 'account', 'title' => 'Account created', 'detail' => '']);
@@ -277,7 +269,8 @@ public function tenantDestroy(Request $request, int $id): JsonResponse
     abort_if($tenant->id === $request->user()->id, 422, "You can't delete your own account.");
 
     $name = $tenant->display_name;
-    $tenant->delete();   // payments, complaints, messages, listings... are removed by the database cascades
+    $tenant->delete();
+    AdminLog::record('tenants', "Deleted tenant {$name}");
 
     return response()->json(['ok' => true, 'message' => $name . ' was deleted.']);
 }
@@ -338,7 +331,6 @@ private function roomExtras(): array
     ];
 }
 
-// keeps the photos the admin kept, saves the new uploads, deletes the removed files
 private function storeRoomPhotos(Request $request, array $current = []): array
 {
     $photos = array_values(array_intersect((array) $request->input('keep', []), $current));
@@ -361,7 +353,6 @@ private function storeRoomPhotos(Request $request, array $current = []): array
 
 public function roomStore(Request $request): JsonResponse
 {
-    // "Room 118" -> "118" (the tenant pages already add the word "Room")
     $request->merge(['room_number' => trim(preg_replace('/^room\s*/i', '', (string) $request->input('room_number')))]);
 
     $data = $request->validate([
@@ -387,8 +378,9 @@ public function roomStore(Request $request): JsonResponse
         'photos'            => $photos,
         'photo'             => $photos[0] ?? null,
         'amenities'         => array_values($data['amenities'] ?? []),
-        'under_maintenance' => $draft,   // a draft is kept closed for booking
+            'under_maintenance' => $draft,   // a draft is kept closed for booking
     ]);
+    AdminLog::record('rooms', ($draft ? 'Saved draft room ' : 'Published room ') . $data['room_number']);
 
     return response()->json([
         'ok'      => true,
@@ -416,7 +408,7 @@ public function roomUpdate(Request $request, int $id): JsonResponse
         'photo'         => $photos[0] ?? null,
         'amenities'     => array_values($data['amenities'] ?? []),
     ]);
-
+AdminLog::record('rooms', 'Updated room ' . $room->room_number);
     return response()->json(['ok' => true, 'message' => 'Room updated.']);
 }
 
@@ -424,7 +416,7 @@ public function roomMaintenance(int $id): JsonResponse
 {
     $room = Room::findOrFail($id);
     $room->update(['under_maintenance' => ! $room->under_maintenance]);
-
+AdminLog::record('rooms', ($room->under_maintenance ? 'Marked room ' . $room->room_number . ' as under maintenance' : 'Reopened room ' . $room->room_number . ' for booking'));
     return response()->json([
         'ok'      => true,
         'message' => $room->under_maintenance ? 'Room marked as under maintenance.' : 'Room is open for booking again.',
@@ -445,6 +437,7 @@ public function roomDestroy(int $id): JsonResponse
         }
     }
 
+   AdminLog::record('rooms', 'Deleted room ' . $room->room_number);
     $room->delete();
 
     return response()->json(['ok' => true, 'message' => 'Room deleted.']);
@@ -483,7 +476,8 @@ public function payments(): View
             'sub'         => $sub,
             'balance'     => $c['balance'],
             'due_ts'      => $due->timestamp,
-            'url'         => route('admin.tenants.show', $u->id) . '#payments',
+            'url'         => route('admin.tenants.show', ['id' => $u->id, 'from' => 'payments']) . '#payments',
+            'can_record'  => $c['can_record'],
             'target'      => $c['target_label'],
             'target_left' => $c['target_left'],
         ];
@@ -506,7 +500,6 @@ public function payments(): View
     return view('admin.payments', compact('cards', 'summary'));
 }
 
-/** Works out the tenant's current bill, how much is still owed and which month a new payment goes to. */
 private function paymentCycle(User $u): array
 {
     $rent   = Billing::rentFor($u);
@@ -517,7 +510,6 @@ private function paymentCycle(User $u): array
 
     $dueOf = fn (Carbon $month) => $month->copy()->day(min($dueDay, $month->daysInMonth));
 
-    // current bill = the latest one whose due date has passed (or the very first one)
     $first = $moveIn->copy()->startOfMonth();
     $cycle = $first->copy();
     for ($m = $first->copy(); $m->lte($today->copy()->startOfMonth()); $m->addMonthNoOverflow()) {
@@ -531,14 +523,20 @@ private function paymentCycle(User $u): array
         $status = 'partial';
     } elseif ($row) {
         $status = 'paid';
-    } else {
-        $status = match ($u->payment_status) { 'up_to_date' => 'paid', 'overdue' => 'overdue', default => 'pending' };
-    }
+   } else {
+    $isFirst = $period === $first->format('Y-m');
+    $status  = match ($u->payment_status) {
+        'overdue'    => 'overdue',
+        'up_to_date' => $isFirst
+            ? 'paid'
+            : ($dueOf($cycle)->lt($today) ? 'overdue' : 'pending'),
+        default      => 'pending',
+    };
+}
 
     $paid    = $row ? (float) $row->amount : ($status === 'paid' ? $rent : 0);
     $balance = $status === 'paid' ? 0 : max(0, $rent - ($row && $row->partial ? (float) $row->amount : 0));
 
-    // a new payment goes to the first month that is not fully paid yet
     $t = $cycle->copy();
     for ($i = 0; $i < 12; $i++) {
         $r       = $rows->get($t->format('Y-m'));
@@ -556,6 +554,7 @@ private function paymentCycle(User $u): array
         'row'           => $row,
         'paid'          => $paid,
         'balance'       => $balance,
+        'can_record'    => $status !== 'paid',
         'target_period' => $t->format('Y-m'),
         'target_label'  => $t->format('F Y'),
         'target_left'   => max(0, $rent - ($tRow && $tRow->partial ? (float) $tRow->amount : 0)),
@@ -575,6 +574,11 @@ public function paymentStore(Request $request): JsonResponse
 
     $tenant = User::where('role', 'tenant')->whereNotNull('room_number')->findOrFail($data['tenant_id']);
     $c      = $this->paymentCycle($tenant);
+    if (! $c['can_record']) {
+    throw ValidationException::withMessages([
+        'amount' => $tenant->display_name . ' is already paid for ' . Carbon::parse($c['period'] . '-01')->format('F Y') . '. Nothing to record.',
+    ]);
+}
     $amount = round((float) $data['amount'], 2);
 
     if ($amount > $c['target_left'] + 0.01) {
@@ -599,6 +603,8 @@ public function paymentStore(Request $request): JsonResponse
     if (! $row->partial && $period === $c['period']) {
         $tenant->update(['payment_status' => 'up_to_date']);
     }
+
+    AdminLog::record('payments', 'Recorded ' . Billing::money($amount) . ' payment for ' . $tenant->display_name . ' (' . $c['target_label'] . ')' . ($row->partial ? ' - partial' : ''));
 
     if ($tenant->wantsNotification('email_payment')) {
         Notification::create([
@@ -643,7 +649,7 @@ public function paymentRemind(int $id): JsonResponse
             ? "Your rent of {$owed} for {$month} is overdue (it was due {$c['due']->format('M j')}). Please settle it as soon as you can."
             : "Friendly reminder: {$owed} for {$month} is due on {$c['due']->format('M j')}.",
     ]);
-
+AdminLog::record('payments', 'Sent payment reminder to ' . $tenant->display_name);
     return response()->json(['ok' => true, 'message' => 'Reminder sent to ' . $tenant->display_name . '.']);
 }
 
@@ -712,7 +718,7 @@ public function complaintStore(Request $request): JsonResponse
         'message'     => $data['message'],
         'status'      => 'pending',
     ]);
-
+AdminLog::record('complaints', 'Filed a ' . $data['type'] . ' complaint for ' . $tenant->display_name);
     return response()->json(['ok' => true, 'message' => 'Complaint filed.']);
 }
 
@@ -727,7 +733,7 @@ public function complaintStatus(Request $request, int $id): JsonResponse
         $c->resolved_at = now();
     }
     $c->save();
-
+AdminLog::record('complaints', ($data['status'] === 'resolved' ? 'Resolved' : 'Started progress on') . ' complaint #' . $c->id . ' (' . ($c->user?->display_name ?? 'unknown tenant') . ')');
     return response()->json(['ok' => true, 'message' => $data['status'] === 'resolved' ? 'Marked as resolved.' : 'Marked as in progress.']);
 }
 
@@ -750,7 +756,19 @@ public function approvals(): View
             ->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
         $last  = count($words) > 1 ? array_pop($words) : '';
         $first = implode(' ', $words);
-        preg_match('/\d+/', $a->room_text, $m);
+              preg_match('/\d+/', $a->room_text, $m);
+
+        $rr = ($a->user_id && in_array($a->type, ['transfer', 'move_out'], true))
+            ? RoomRequest::where('user_id', $a->user_id)->where('type', $a->type)
+                ->whereBetween('created_at', [$a->created_at->copy()->subMinute(), $a->created_at->copy()->addMinute()])
+                ->first()
+            : null;
+        $reasonNames = [
+            'graduating' => 'Graduating', 'transfer' => 'Transferring to another dorm', 'moving_off' => 'Moving off',
+            'financial' => 'Financial reasons', 'family' => 'Family reasons',
+            'roommate_conflict' => 'Roommate conflict', 'noise' => 'Noise / Environment',
+            'entrance' => 'Closer to entrance', 'medical' => 'Medical / accessibility need', 'other' => 'Other',
+        ];
 
         return [
             'id'             => $a->id,
@@ -791,7 +809,14 @@ public function approvals(): View
                 'relationship' => $ec?->relationship,
                 'phone'        => $ec?->phone,
             ],
-            'idcard'         => ['type' => $a->id_type, 'number' => $a->id_number],
+                       'idcard'         => ['type' => $a->id_type, 'number' => $a->id_number],
+            'request'        => $rr ? [
+                'from'          => $rr->room_number ? 'Room ' . $rr->room_number : null,
+                'to'            => $rr->target_room ? 'Room ' . $rr->target_room . ', Bed ' . $rr->target_bed . ' (' . $rr->target_deck . ')' : null,
+                'move_out_date' => $rr->move_out_date ? Carbon::parse($rr->move_out_date)->format('F j, Y') : null,
+                'reason'        => $reasonNames[$rr->reason] ?? ucfirst(str_replace('_', ' ', (string) $rr->reason)),
+                'details'       => $rr->details,
+            ] : null,
             'movein'         => [
                 'date'   => $a->move_in_date?->format('F j, Y'),
                 'stay'   => $a->length_of_stay,
@@ -810,7 +835,6 @@ public function approvals(): View
     return view('admin.approvals', compact('cards', 'stats'));
 }
 
-/** The checklist for one request. met = proven by data (auto) OR ticked by the admin. */
 private function approvalRequirements(Approval $a): array
 {
     $u      = $a->user;
@@ -849,7 +873,6 @@ private function approvalRequirements(Approval $a): array
     ], $defs);
 }
 
-/** Same rule assignRoom() uses: room exists, not in maintenance, bed/deck not owned by someone else. */
 private function approvalBedFree(Approval $a): bool
 {
     if (! $a->room_number) {
@@ -869,7 +892,6 @@ private function approvalBedFree(Approval $a): bool
         ->contains(fn ($t) => strtolower((string) $t->bed_deck) === strtolower((string) $a->bed_deck));
 }
 
-/** "Manual record request" modal. */
 public function approvalStore(Request $request): JsonResponse
 {
     $data = $request->validate([
@@ -891,11 +913,10 @@ public function approvalStore(Request $request): JsonResponse
         'room_label'     => trim($data['room']),
         'is_manual'      => true,
     ]);
-
+AdminLog::record('approvals', 'Logged manual ' . strtolower(Approval::TYPES[$data['type']]) . ' request for ' . trim($data['name']));
     return response()->json(['ok' => true, 'message' => 'Request logged.']);
 }
 
-/** Saves one manual tick on a card's checklist. */
 public function approvalCheck(Request $request, int $id): JsonResponse
 {
     $a    = Approval::with('user')->where('status', 'pending')->findOrFail($id);
@@ -909,7 +930,7 @@ public function approvalCheck(Request $request, int $id): JsonResponse
     $checks = (array) $a->checks;
     $checks[$data['key']] = (bool) $data['value'];
     $a->update(['checks' => $checks]);
-
+AdminLog::record('approvals', ($data['value'] ? 'Checked' : 'Unchecked') . ' requirement "' . $data['key'] . '" for ' . ($a->user?->display_name ?? $a->applicant_name ?? 'a request'));
     $reqs = $this->approvalRequirements($a->fresh('user'));
 
     return response()->json([
@@ -919,16 +940,253 @@ public function approvalCheck(Request $request, int $id): JsonResponse
         'total' => count($reqs),
     ]);
 }
-public function settings(): View
+public function settings(Request $request): View
 {
-    return view('admin.settings', ['admin' => auth()->user()]);
+    return view('admin.settings', [
+        'admin'    => auth()->user(),
+        'staff'    => User::where('role', 'admin')->whereNotNull('staff_role')->orderBy('id')->get(),
+        'pm'       => DormStats::paymentMethods(),
+        'rr'       => DormStats::roomSettings(),
+        'profile'  => DormStats::profile(),
+        'sec'      => DormStats::security(),
+        'history'  => AdminActivityLog::latest()->limit(200)->get(),
+        'sessions' => app(TenantController::class)->activeSessions($request),
+    ]);
 }
 
+public function staffStore(Request $request): JsonResponse
+{
+    $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
+    $data = $request->validate([
+        'full_name'  => ['required', 'string', 'max:100'],
+        'email'      => ['required', 'email', 'max:255', Rule::unique('users', 'email')],
+        'staff_role' => ['required', Rule::in(['owner', 'front_desk', 'maintenance'])],
+        'password'   => ['required', 'string', 'min:8', 'max:100'],
+    ]);
+    User::create($data + ['role' => 'admin']);
+    AdminLog::record('staff-access', "Added staff member {$data['full_name']} ({$data['staff_role']})");
+
+    return response()->json(['ok' => true, 'message' => 'Staff member added.'], 201);
+}
+
+public function staffUpdate(Request $request, int $id): JsonResponse
+{
+    $m = User::where('role', 'admin')->whereNotNull('staff_role')->findOrFail($id);
+    if ($m->id === auth()->id()) {
+        return response()->json(['message' => "You can't edit your own account here."], 422);
+    }
+    $request->merge(['email' => strtolower(trim((string) $request->input('email')))]);
+    $data = $request->validate([
+        'full_name'  => ['required', 'string', 'max:100'],
+        'email'      => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($m->id)],
+        'staff_role' => ['required', Rule::in(['owner', 'front_desk', 'maintenance'])],
+        'password'   => ['nullable', 'string', 'min:8', 'max:100'],
+    ]);
+    if (empty($data['password'])) unset($data['password']);
+    $before = $m->only(['full_name','email','staff_role']); $pwChanged = ! empty($data['password']);
+    $m->update($data);
+    AdminLog::changed('staff-access', "Edited staff member {$m->full_name}", $before, $m->only(['full_name','email','staff_role']));
+    if ($pwChanged) AdminLog::record('staff-access', "Reset password for {$m->full_name}");
+
+    return response()->json(['ok' => true, 'message' => 'Staff member updated.']);
+}
+public function staffMakeOwner(int $id): JsonResponse
+{
+    abort_unless(auth()->user()->staff_role === 'owner', 403, 'Only an owner can do this.');
+
+    $m = User::where('role', 'admin')->whereNotNull('staff_role')->findOrFail($id);
+    if ($m->staff_role === 'owner') {
+        return response()->json(['message' => 'Already an owner.'], 422);
+    }
+    $m->update(['staff_role' => 'owner']);
+    AdminLog::record('staff-access', "Made {$m->full_name} an owner");
+
+    return response()->json(['ok' => true, 'message' => $m->full_name . ' is now an owner.']);
+}
+public function staffDestroy(int $id): JsonResponse
+{
+    abort_unless(auth()->user()->staff_role === 'owner', 403, 'Only an owner can do this.');
+    $m = User::where('role', 'admin')->whereNotNull('staff_role')->findOrFail($id);
+    if ($m->id === auth()->id()) {
+        return response()->json(['message' => "You can't remove your own account."], 422);
+        
+    }
+    AdminLog::record('staff-access', "Removed staff member {$m->full_name} ({$m->email})");
+    $m->delete();
+
+    return response()->json(['ok' => true, 'message' => 'Staff member removed.']);
+}
+
+public function savePaymentMethods(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'methods'       => ['required', 'array'],
+        'methods.gcash' => ['required', 'boolean'],
+        'methods.card'  => ['required', 'boolean'],
+        'methods.bank'  => ['required', 'boolean'],
+    ]);
+    if (! in_array(true, array_map('boolval', $data['methods']), true)) {
+        return response()->json(['errors' => ['methods' => ['Keep at least one payment method on.']]], 422);
+    }
+    $old = DormStats::paymentMethods();
+    DormStats::putSetting('payment_methods', $data['methods']);
+    AdminLog::changed('payment-methods', 'Updated payment methods', $old, array_map('boolval', $data['methods']));
+
+    return response()->json(['ok' => true]);
+}
+
+public function saveRoomRent(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'capacity'    => ['required', 'integer', 'min:1', 'max:20'],
+        'rate'        => ['required', 'numeric', 'min:0', 'max:1000000'],
+        'due_day'     => ['nullable', 'integer', 'min:1', 'max:31'],
+        'grace'       => ['required', 'integer', 'min:0', 'max:60'],
+        'late_fee'    => ['required', 'numeric', 'min:0', 'max:100000'],
+        'auto_full'   => ['required', 'boolean'],
+        'deposit'     => ['required', 'boolean'],
+        'amenities'   => ['nullable', 'array', 'max:30'],
+        'amenities.*' => ['string', 'max:40'],
+    ]);
+    $data['amenities'] = array_values(array_unique(array_filter(array_map('trim', $data['amenities'] ?? []))));
+    $old = DormStats::roomSettings();
+    DormStats::putSetting('room_rent', $data);
+    AdminLog::changed('room-rent', 'Updated room & rent settings', $old, $data);
+
+    return response()->json(['ok' => true]);
+}
+public function saveGeneral(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'name'    => ['required', 'string', 'max:100'],
+        'phone'   => ['nullable', 'string', 'max:30'],
+        'address' => ['nullable', 'string', 'max:200'],
+        'email'   => ['nullable', 'email', 'max:255'],
+    ]);
+
+    $old = DormStats::profile();
+    $new = [
+        'name'    => trim($data['name']),
+        'phone'   => trim($data['phone'] ?? ''),
+        'address' => trim($data['address'] ?? ''),
+        'email'   => trim($data['email'] ?? ''),
+        'logo'    => DormStats::profile()['logo'],
+    ];
+    DormStats::putSetting('dorm_profile', $new);
+    AdminLog::changed('general', 'Updated dormitory details', $old, $new);
+
+    return response()->json(['ok' => true]);
+}
+
+public function uploadLogo(Request $request): JsonResponse
+{
+    $request->validate(['logo' => ['required', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048']]);
+
+    $profile = DormStats::profile();
+    $file    = $request->file('logo');
+    $name    = 'logo-' . Str::random(10) . '.' . $file->extension();
+    $file->move(public_path('images/logo'), $name);
+
+    if ($profile['logo'] && str_starts_with($profile['logo'], 'images/logo/logo-')) {
+        @unlink(public_path($profile['logo']));
+    }
+
+    $profile['logo'] = 'images/logo/' . $name;
+    DormStats::putSetting('dorm_profile', $profile);
+    AdminLog::record('general', 'Uploaded a new logo');
+
+    return response()->json(['ok' => true, 'url' => asset($profile['logo'])]);
+}
+
+public function removeLogo(): JsonResponse
+{
+    $profile = DormStats::profile();
+
+    if ($profile['logo'] && str_starts_with($profile['logo'], 'images/logo/logo-')) {
+        @unlink(public_path($profile['logo']));
+    }
+
+    $profile['logo'] = null;
+    DormStats::putSetting('dorm_profile', $profile);
+    AdminLog::record('general', 'Removed the logo');
+
+    return response()->json(['ok' => true]);
+}
+
+public function saveSecurity(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'idle_logout'  => ['required', 'boolean'],
+        'idle_minutes' => ['required', 'integer', Rule::in([15, 30, 60, 120])],
+    ]);
+
+    $old = DormStats::security();
+    DormStats::putSetting('admin_security', $data);
+    AdminLog::changed('security', 'Updated security settings', $old, $data);
+
+    return response()->json(['ok' => true]);
+}
+
+public function logoutOtherSessions(Request $request): JsonResponse
+{
+    DB::table('sessions')
+        ->where('user_id', $request->user()->id)
+        ->where('id', '!=', $request->session()->getId())
+        ->delete();
+    AdminLog::record('security', 'Logged out all other devices');
+
+    return response()->json(['ok' => true, 'message' => 'All other devices were logged out.']);
+}
+public function saveFrontDesk(Request $request): JsonResponse
+{
+    $data = $request->validate([
+        'hours'        => ['required', 'array'],
+        'hours.*.open' => ['required', 'boolean'],
+        'hours.*.from' => ['required', 'date_format:H:i'],
+        'hours.*.to'   => ['required', 'date_format:H:i'],
+    ]);
+
+    $clean = [];
+    foreach (DormStats::DAYS as $day) {
+        $h = $data['hours'][$day] ?? null;
+        if (! $h) {
+            continue;
+        }
+        if ($h['open'] && $h['to'] <= $h['from']) {
+            throw ValidationException::withMessages([
+                "hours.$day.to" => "$day: closing time must be after opening time.",
+            ]);
+        }
+        $clean[$day] = ['open' => (bool) $h['open'], 'from' => $h['from'], 'to' => $h['to']];
+    }
+
+    $old = DormStats::frontDesk();
+    DormStats::putSetting('front_desk_hours', $clean);
+    AdminLog::changed('general', 'Updated front desk hours', $old, $clean);
+
+    return response()->json(['ok' => true]);
+}
+
+public function saveNotifications(Request $request): JsonResponse
+{
+    $rules = ['prefs' => ['required', 'array']];
+    foreach (array_keys(DormStats::notificationPrefs()) as $key) {
+        foreach (['email', 'sms', 'push'] as $ch) {
+            $rules["prefs.$key.$ch"] = ['required', 'boolean'];
+        }
+    }
+    $data = $request->validate($rules);
+
+    $old = DormStats::notificationPrefs();
+    DormStats::putSetting('admin_notifications', $data['prefs']);
+    AdminLog::changed('notification', 'Updated notification preferences', $old, $data['prefs']);
+
+    return response()->json(['ok' => true]);
+}
       public function approve(int $id): JsonResponse
 {
     $a = Approval::with('user')->where('status', 'pending')->findOrFail($id);
 
-    // a new-tenant application gets its room only now (manual records skip this)
     if (! $a->is_manual && $a->type === 'new_tenant' && $a->room_number) {
         $error = $this->assignRoom($a);
 
@@ -936,14 +1194,22 @@ public function settings(): View
             return response()->json(['ok' => false, 'message' => $error], 409);
         }
     }
+    if (! $a->is_manual && $a->type === 'transfer' && $a->user_id) {
+        $error = $this->applyTransfer($a);
 
-    $a->update(['status' => 'approved']);
+        if ($error) {
+            return response()->json(['ok' => false, 'message' => $error], 409);
+        }
+    }
+
+     $a->update(['status' => 'approved']);
+    AdminLog::record('approvals', 'Approved ' . str_replace('_', ' ', $a->type) . ' request from ' . ($a->user?->display_name ?? $a->applicant_name ?? 'unknown'));
+    $this->syncRoomRequest($a, 'approved');
 
     if ($a->type === 'payment' && $a->period) {
         $this->recordPayment($a);
     }
 
-    // manual records have no tenant account, so nobody to notify
     if ($a->user_id) {
         Notification::create([
             'tenant_id' => $a->user_id,
@@ -966,7 +1232,6 @@ public function settings(): View
 
     return response()->json(['ok' => true, 'message' => 'Request approved.', 'counts' => $this->approvalCounts()]);
 }
-    /** Saves a tenant's submitted payment. paid_at = now, so it shows as "just now". */
     private function recordPayment(Approval $a): void
     {
         $tenant = $a->user;
@@ -979,18 +1244,16 @@ public function settings(): View
             'amount'    => $total,
             'fee'       => round((float) ($row->exists ? $row->fee : 0) + (float) $a->fee, 2),
             'partial'   => $total + 0.01 < $rent,
-            'method'    => 'GCash',
+           'method'    => \Illuminate\Support\Str::before((string) $a->title, ' payment') ?: 'GCash',
             'reference' => 'DAC-' . str_replace('-', '', $a->period) . '-' . str_pad($tenant->id, 4, '0', STR_PAD_LEFT),
             'paid_at'   => now(),
         ])->save();
 
-        // fully paid and nothing overdue left -> tenant is up to date
         if (! $row->partial
             && collect(Billing::forUser($tenant)['invoices'])->where('status', 'overdue')->isEmpty()) {
             $tenant->update(['payment_status' => 'up_to_date']);
         }
     }
-    /** Gives the tenant the room they applied for. Returns an error message, or null when it worked. */
     private function assignRoom(Approval $a): ?string
     {
         return DB::transaction(function () use ($a) {
@@ -1021,32 +1284,82 @@ public function settings(): View
                 'payment_status' => 'up_to_date',
             ]);
 
-            // the booking pays the first month (this used to happen inside book())
-            $first = collect(Billing::forUser($user)['invoices'])
-                ->firstWhere('period', Carbon::parse($a->move_in_date)->format('Y-m'));
+           // the booking pays the move-in month
+$period = Carbon::parse($a->move_in_date)->format('Y-m');
+$first  = collect(Billing::forUser($user)['invoices'])->firstWhere('period', $period);
 
-            if ($first) {
-                Payment::firstOrCreate(
-                    ['user_id' => $user->id, 'period' => $first['period']],
-                    [
-                        'amount'    => $first['amount'],
-                        'method'    => 'Booking',
-                        'reference' => $first['ref'],
-                        'paid_at'   => now(),
-                    ]
-                );
-            }
+Payment::firstOrCreate(
+    ['user_id' => $user->id, 'period' => $period],
+    [
+        'amount'    => $first['amount'] ?? Billing::rentFor($user),
+        'method'    => 'Booking',
+        'reference' => $first['ref'] ?? 'DAC-' . str_replace('-', '', $period) . '-' . str_pad($user->id, 4, '0', STR_PAD_LEFT),
+        'paid_at'   => now(),
+    ]
+);
 
             return null;
         });
     }
+    private function requestFor(Approval $a): ?RoomRequest
+    {
+        if (! $a->user_id || ! in_array($a->type, ['transfer', 'move_out'], true)) {
+            return null;
+        }
 
+        return RoomRequest::where('user_id', $a->user_id)
+            ->where('type', $a->type)->where('status', 'pending')
+            ->latest('id')->first();
+    }
+
+    private function syncRoomRequest(Approval $a, string $status): void
+    {
+        $this->requestFor($a)?->update(['status' => $status]);
+    }
+
+    private function applyTransfer(Approval $a): ?string
+    {
+        $req = $this->requestFor($a);
+
+        if (! $req || ! $req->target_room) {
+            return 'The transfer details could not be found. Please reject this request.';
+        }
+
+        return DB::transaction(function () use ($a, $req) {
+            $room = Room::where('room_number', $req->target_room)->lockForUpdate()->first();
+
+            if (! $room || $room->under_maintenance) {
+                return 'That room is no longer available. Please reject this request.';
+            }
+
+            $taken = User::where('role', 'tenant')
+                ->where('room_number', $req->target_room)
+                ->where('bed_number', $req->target_bed)
+                ->where('id', '!=', $a->user_id)
+                ->get()
+                ->contains(fn ($t) => strtolower((string) $t->bed_deck) === strtolower((string) $req->target_deck));
+
+            if ($taken) {
+                return 'That bed already belongs to another tenant. Please reject this request.';
+            }
+
+            $a->user->update([
+                'room_number'  => $room->room_number,
+                'bed_number'   => $req->target_bed,
+                'bed_deck'     => $req->target_deck,
+                'monthly_rent' => $room->price_per_bed,
+            ]);
+
+            return null;
+        });
+    }
   public function reject(int $id): JsonResponse
 {
     $a = Approval::with('user')->where('status', 'pending')->findOrFail($id);
-    $a->update(['status' => 'rejected']);
+     $a->update(['status' => 'rejected']);
+    AdminLog::record('approvals', 'Rejected ' . str_replace('_', ' ', $a->type) . ' request from ' . ($a->user?->display_name ?? $a->applicant_name ?? 'unknown'));
+    $this->syncRoomRequest($a, 'rejected');
 
-    // Old rows (made before the room-hold change) already had the room on the tenant, so free it.
     if (! $a->is_manual && $a->user_id && $a->type === 'new_tenant' && ! $a->room_number) {
         $a->user->update([
             'room_number' => null, 'bed_number' => null, 'bed_deck' => null,
@@ -1071,7 +1384,6 @@ public function settings(): View
 
     return response()->json(['ok' => true, 'message' => 'Request rejected.', 'counts' => $this->approvalCounts()]);
 }
-    /* ---------- announcements ---------- */
 
        private function annRules(): array
     {
@@ -1100,7 +1412,6 @@ public function settings(): View
         ];
     }
 
-    /** The expiry comes in as a plain date: keep the notice up until the end of that day. */
     private function annData(array $data): array
     {
         if (array_key_exists('ends_at', $data)) {
@@ -1118,11 +1429,11 @@ public function settings(): View
 
         $a = Announcement::create($this->annData($data) + ['is_active' => true]);
 
-        $this->notifyTenants($a);
+             $this->notifyTenants($a);
+        AdminLog::record('announcements', 'Posted announcement: ' . ($a->title ?: 'Untitled'));
 
         return response()->json($this->annPayload($a));
     }
-    /** Puts a bell notification in every tenant who should get this announcement. */
     private function notifyTenants(Announcement $a): void
     {
         $unpaidOnly = ($a->audience ?: 'All tenants') === 'Unpaid only';
@@ -1140,14 +1451,19 @@ public function settings(): View
     public function announcementUpdate(Request $request, int $id): JsonResponse
     {
         $a = Announcement::findOrFail($id);
-       $a->update($this->annData($request->validate($this->annRules())));
+       $keys = ['title', 'audience', 'message', 'category', 'pinned'];
+        $old  = $a->only($keys);
+        $a->update($this->annData($request->validate($this->annRules())));
+        AdminLog::changed('announcements', 'Edited announcement: ' . ($a->title ?: 'Untitled'), $old, $a->only($keys));
 
         return response()->json($this->annPayload($a));
     }
 
     public function announcementDestroy(int $id): JsonResponse
     {
-        Announcement::findOrFail($id)->delete();
+              $a = Announcement::findOrFail($id);
+        AdminLog::record('announcements', 'Deleted announcement: ' . ($a->title ?: 'Untitled'));
+        $a->delete();
 
         return response()->json(['ok' => true]);
     }

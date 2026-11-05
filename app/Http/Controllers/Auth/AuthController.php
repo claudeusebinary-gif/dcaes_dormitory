@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Support\DormStats;
+use App\Support\AdminLog;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -41,7 +42,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             $request->session()->forget('guest');
-
+if (Auth::user()->isAdmin()) AdminLog::record('security', 'Logged in');
             return $this->redirectByRole(Auth::user());
         }
 
@@ -100,6 +101,7 @@ class AuthController extends Controller
     }
     public function logout(Request $request): RedirectResponse
     {
+        if ($request->user()?->isAdmin()) AdminLog::record('security', 'Logged out');
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -214,6 +214,7 @@
             var ME = @json($me);
             var STORE_URL = @json(route('tenant.marketplace.store'));
             var DEL_URL = @json(route('tenant.marketplace.destroy', ['id' => '__ID__']));
+            var SOLD_URL = @json(route('tenant.marketplace.sold', ['id' => '__ID__']));
             var CSRF = document.querySelector('meta[name="csrf-token"]').content;
             var colors = ['#672c2c', '#672c2cb9', '#843939', '#A87C5F', '#6E7A5D', '#8a5a44'];
             var IMG_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>';
@@ -231,7 +232,7 @@
             function filtered() {
                 var q = state.q.trim().toLowerCase();
                 var list = items.filter(function (it) {
-                    if (it.seller_id === ME.id) return false;
+                    if (it.seller_id === ME.id || it.sold) return false;
                     if (state.cat === 'Free' && Number(it.price) !== 0) return false;
                     if (state.cat !== 'All' && state.cat !== 'Free' && it.category !== state.cat) return false;
                     if (state.max !== '' && Number(it.price) > Number(state.max)) return false;
@@ -465,9 +466,11 @@
                 var thumb = (it.photos && it.photos.length)
                     ? '<div class="mine-thumb" style="background-image:url(\'' + it.photos[0] + '\')"></div>'
                     : '<div class="mine-thumb">' + IMG_SVG + '</div>';
-                return '<div class="mine-row" data-id="' + it.id + '">' + thumb
-                    + '<div class="mine-info"><b>' + esc(it.title) + '</b><span>' + esc(it.category) + ' · ' + peso(it.price) + '</span></div>'
-                    + '<button type="button" class="mine-del" data-del="' + it.id + '">Delete</button></div>';
+               return '<div class="mine-row" data-id="' + it.id + '">' + thumb
+    + '<div class="mine-info"><b>' + esc(it.title) + (it.sold ? ' <em class="mine-sold">SOLD</em>' : '') + '</b>'
+    + '<span>' + esc(it.category) + ' · ' + peso(it.price) + '</span></div>'
+    + '<button type="button" class="mine-sold-btn" data-sold="' + it.id + '">' + (it.sold ? 'Mark available' : 'Mark as sold') + '</button>'
+    + '<button type="button" class="mine-del" data-del="' + it.id + '">Delete</button></div>';
             }
 
             function renderMine() {
@@ -485,6 +488,29 @@
             });
 
             $('mineList').addEventListener('click', async function (e) {
+                var sold = e.target.closest('[data-sold]');
+if (sold) {
+    var sid = Number(sold.dataset.sold);
+    sold.disabled = true;
+    try {
+        var r = await fetch(SOLD_URL.replace('__ID__', sid), {
+            method: 'POST',
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            credentials: 'same-origin'
+        });
+        var d = await r.json().catch(function () { return {}; });
+        if (r.status === 419) throw new Error('Your session expired. Refresh the page and try again.');
+        if (!r.ok) throw new Error(d.message || 'Could not update. Please try again.');
+        items.forEach(function (x) { if (x.id === sid) x.sold = d.sold; });
+        renderMine();
+        render();
+        sayMine(d.message, true);
+    } catch (err) {
+        sold.disabled = false;
+        sayMine(err instanceof TypeError ? 'No connection. Check your internet and try again.' : err.message, false);
+    }
+    return;
+}
                 var del = e.target.closest('[data-del]');
                 var row = e.target.closest('.mine-row');
 

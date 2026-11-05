@@ -6,14 +6,15 @@
   @php $u = $profileUser ?? auth()->user(); @endphp
 @section('page_title', 'Profile')
 @section('page_subtitle', "Your info, your room, your bed, and who you're sharing it with.")
-    @isset($profileUser)
-        <a href="{{ route('admin.tenants') }}" class="backtenants">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M19 12H5M12 19l-7-7 7-7" />
-            </svg>
-            Back to tenants
-        </a>
-    @endisset
+@isset($profileUser)
+    @php $fromPayments = request('from') === 'payments'; @endphp
+    <a href="{{ $fromPayments ? route('admin.payments') : route('admin.tenants') }}" class="backtenants">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+        </svg>
+        {{ $fromPayments ? 'Back to payments' : 'Back to tenants' }}
+    </a>
+@endisset
     <div class="profilee">
         <div class="logbi">
             <span class="namesa">{{ $u->initial }}</span>
@@ -204,6 +205,38 @@
     @endfor
 </div>
         </div>
+         @unless(isset($profileUser))
+        <div class="acson">
+            <h1 class="stays">Quick Actions<br><span>Things you might need right now</span></h1>
+            <div class="fur">
+                <div class="acsun" data-contact="maintenance" role="button" tabindex="0">
+                    <h1 class="req">Request Maintenance <br><span>Report a repair or issue in your room</span></h1>
+                    <div class="maliitb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path
+                                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
+                        </svg></div>
+                </div>
+               <div class="acsun" data-contact="chooser" role="button" tabindex="0">
+                    <h1 class="req">Message Dorm Manager <br><span>Ask a question or raise a concern</span></h1>
+                    <div class="maliitb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        </svg></div>
+                </div>
+                <div class="acsun" role="button" tabindex="0">
+                    <h1 class="req">Download Lease Agreement <br><span>Access your digital lease documents</span></h1>
+                    <div class="maliitb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <path d="m7 10 5 5 5-5" />
+                            <path d="M12 15V3" />
+                        </svg></div>
+                </div>
+            </div>
+
+        </div>
+        @endunless
         <div class="sicsons">
             <h1 class="stays">Stay Details<br><span>A quick snapshot of your lease</span></h1>
           @php $u = $profileUser ?? auth()->user(); @endphp
@@ -239,38 +272,7 @@
             </div>
 
         </div>
-        @unless(isset($profileUser))
-        <div class="acson">
-            <h1 class="stays">Quick Actions<br><span>Things you might need right now</span></h1>
-            <div class="fur">
-                <div class="acsun" data-contact="maintenance" role="button" tabindex="0">
-                    <h1 class="req">Request Maintenance <br><span>Report a repair or issue in your room</span></h1>
-                    <div class="maliitb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path
-                                d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" />
-                        </svg></div>
-                </div>
-               <div class="acsun" data-contact="chooser" role="button" tabindex="0">
-                    <h1 class="req">Message Dorm Manager <br><span>Ask a question or raise a concern</span></h1>
-                    <div class="maliitb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                        </svg></div>
-                </div>
-                <div class="acsun">
-                    <h1 class="req">Download Lease Agreement <br><span>Access your digital lease documents</span></h1>
-                    <div class="maliitb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <path d="m7 10 5 5 5-5" />
-                            <path d="M12 15V3" />
-                        </svg></div>
-                </div>
-            </div>
-
-        </div>
-        @endunless
+       
     </section>
 
     <section class="panel" id="panel-details">
@@ -384,40 +386,40 @@
     <section class="panel" id="panel-documents">
         <div class="lease">
             <h1 class="stays">Documents<br><span>Your submitted requirements and paperwork</span></h1>
-            <div class="pababa">
-                <div class="tulo">
-                    <div class="lugos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <path d="M14 2v6h6" />
-    <path d="M8 13h8M8 17h8M8 9h2" />
-</svg>
+        @php
+    $docs = [
+        ['valid_id', 'Valid ID',           $u->valid_id_path,           'Verified'],
+        ['lease',    'Lease Agreement',    $u->lease_path,              'Verified'],
+        ['barangay', 'Barangay Clearance', $u->barangay_clearance_path, 'Pending Review'],
+    ];
+@endphp
+<div class="pababa">
+    @foreach ($docs as [$key, $label, $path, $okText])
+        <div class="tulo">
+            <div class="lugos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <path d="M14 2v6h6" />
+                <path d="M8 13h8M8 17h8M8 9h2" />
+            </svg></div>
+            <h1 class="stays3">{{ $label }}<br>
+                @if ($path)
+                    <span @if ($key === 'barangay') style="color:#C98A2C;" @endif>{{ $okText }}</span>
+                @else
+                    <span style="color:#9a9a9a;">Not uploaded</span>
+                @endif
+            </h1>
+            <div class="view" role="button" tabindex="0" data-doc="{{ $label }}"
+                data-url="{{ route('tenant.documents.show', $key) }}"><h2>View</h2></div>
+        </div>
+    @endforeach
 </div>
- <h1 class="stays3">Valid ID<br><span>Verified</span></h1>
- <div class="view"><h2>View</h2></div>
-                </div>
-                <div class="tulo"><div class="lugos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <path d="M14 2v6h6" />
-    <path d="M8 13h8M8 17h8M8 9h2" />
-</svg>
-</div>
- <h1 class="stays3">Lease Agreement<br><span>Verified</span></h1>
- <div class="view"><h2>View</h2></div></div>
-                <div class="tulo"><div class="lugos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <path d="M14 2v6h6" />
-    <path d="M8 13h8M8 17h8M8 9h2" />
-</svg>
-</div>
- <h1 class="stays3">Barangay Clearance<br><span style="color:#C98A2C    ;">Pending Review</span></h1>
- <div class="view"><h2>View</h2></div></div>
-            </div>
 
         </div>
         @unless(isset($profileUser))
         <div class="lease1">
 <h1 class="stays">Account Security<br><span>Change your password or manage account access.</span></h1>
-<input type="button" class="change" value="Change Password">
+<input type="button" class="change" value="Change Password"
+    onclick="window.location.href='{{ route('tenant.settings') }}#security'">
         </div>
         @endunless
     </section>
@@ -576,7 +578,15 @@
                 data-url="{{ route('tenant.requests.maintenance') }}">
             <p class="msg-status" hidden></p>
         </div>
-
+<div class="adminbox" id="ctDoc" hidden style="width:760px;">
+    <button type="button" class="admin-close" data-ct-back aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+    </button>
+    <h1 class="sinta21" id="ctDocTitle">Document<br><span>Your uploaded file</span></h1>
+    <div id="ctDocBody" style="margin-top:16px; max-height:65vh; overflow:auto; text-align:center;"></div>
+</div>
         <div class="adminbox" id="ctChooser">
             <button type="button" class="admin-close" data-ct-all aria-label="Close">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -803,6 +813,35 @@
                     document.getElementById('ctUrgency').selectedIndex = 0;
                     resetText('ctDetails');
                 });
+                            var docObj = null;
+            function openDoc(btn) {
+                var body = document.getElementById('ctDocBody');
+                fromChooser = false;
+                show('ctDoc');
+                document.getElementById('ctDocTitle').childNodes[0].nodeValue = btn.dataset.doc;
+                body.textContent = 'Loading...';
+                fetch(btn.dataset.url).then(function (r) {
+                    if (!r.ok) throw new Error('missing');
+                    return r.blob();
+                }).then(function (b) {
+                    if (docObj) URL.revokeObjectURL(docObj);
+                    docObj = URL.createObjectURL(b);
+                    var el = b.type.indexOf('image/') === 0 ? document.createElement('img') : document.createElement('iframe');
+                    if (el.tagName === 'IMG') { el.style.maxWidth = '100%'; }
+                    else { el.style.cssText = 'width:100%;height:60vh;border:0;'; }
+                    el.src = docObj;
+                    body.textContent = '';
+                    body.appendChild(el);
+                }).catch(function () {
+                    body.textContent = 'No file has been uploaded for this document yet.';
+                });
+            }
+            document.querySelectorAll('[data-doc]').forEach(function (b) {
+                b.addEventListener('click', function () { openDoc(b); });
+                b.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDoc(b); }
+                });
+            });
         })();
     </script>
 @endpush

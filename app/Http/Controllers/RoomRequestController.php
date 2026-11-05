@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Approval;
 use App\Models\Room;
 use App\Models\RoomRequest;
 use App\Models\User;
@@ -100,6 +101,14 @@ class RoomRequestController extends Controller
             'details'     => $data['details'] ?? null,
         ]);
 
+             Approval::create([
+            'user_id'    => $user->id,
+            'type'       => 'transfer',
+            'title'      => 'Transfer from Room ' . $user->room_number . ' to Room ' . $data['room'] . ', Bed ' . $bedNo . ' (' . $deck . ')',
+            'status'     => 'pending',
+            'room_label' => 'Room ' . $user->room_number . ' → Room ' . $data['room'] . ', Bed ' . $bedNo . ' (' . $deck . ')',
+        ]);
+
         AdminNotification::fromTenant($user, 'Transfer request', 'requested a transfer to Room ' . $data['room'] . '.');
 
         return response()->json(['ok' => true, 'message' => 'Transfer request sent. Management will review it.']);
@@ -136,6 +145,16 @@ class RoomRequestController extends Controller
             'reason'        => $data['reason'],
             'details'       => $data['details'] ?? null,
             'move_out_date' => $data['move_out_date'],
+        ]);
+
+              Approval::create([
+            'user_id'     => $user->id,
+            'type'        => 'move_out',
+            'title'       => 'Move-out request · Room ' . $user->room_number,
+            'status'      => 'pending',
+            'room_number' => $user->room_number,
+            'bed_number'  => $user->bed_number,
+            'bed_deck'    => $user->bed_deck,
         ]);
 
         AdminNotification::fromTenant($user, 'Move-out request', 'requested to move out on ' . $data['move_out_date'] . '.');

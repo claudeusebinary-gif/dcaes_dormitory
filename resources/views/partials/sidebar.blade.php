@@ -70,10 +70,14 @@ if ($user->isGuest()) {
 <aside class="sidebar" id="sidebar" aria-label="Sidebar">
 
     <div class="sb-brand">
-        <span class="sb-title">D'aces Dormitory</span>
-        <svg class="sb-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2.5 3 10v11h6.5v-6h5v6H21V10z" />
-        </svg>
+       <span class="sb-title">{{ $dorm['name'] }}</span>
+        @if ($dorm['logo'])
+    <img class="sb-logo" src="{{ asset($dorm['logo']) }}" alt="" style="object-fit:cover;border-radius:8px;">
+@else
+    <svg class="sb-logo" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2.5 3 10v11h6.5v-6h5v6H21V10z" />
+    </svg>
+@endif
     </div>
 
     <nav class="sb-nav">
@@ -116,22 +120,31 @@ if ($user->isGuest()) {
     <span class="sb-chevron">{!! $icon('chevron') !!}</span>
 @endunless
         </button>
-        <div class="sb-usermenu" id="sbUserMenu" {{ $userMenuOpen ? '' : 'hidden' }}>
+               <div class="sb-usermenu" id="sbUserMenu" {{ $userMenuOpen ? '' : 'hidden' }}>
             @foreach ($userMenu as $it)
                 <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}" class="sb-subitem{{ $it['key'] === $active ? ' active' : '' }}">
                     {!! $icon($it['key']) !!}
                     <span>{{ $it['label'] }}</span>
                 </a>
             @endforeach
+
+            @unless ($isAdmin)
+                @if ($user->isGuest())
+                    <a href="{{ route('login') }}" class="sb-subitem sb-subitem-logout" title="Log in">
+                        {!! $icon('logout') !!}
+                        <span>Log in</span>
+                    </a>
+                @else
+                    <a href="#" id="logoutLink" class="sb-subitem sb-subitem-logout" title="Logout">
+                        {!! $icon('logout') !!}
+                        <span>Logout</span>
+                    </a>
+                    <form id="logoutForm" action="{{ route('logout') }}" method="POST" hidden>@csrf</form>
+                @endif
+            @endunless
         </div>
 
-       
-      @if ($user->isGuest())
-            <a href="{{ route('login') }}" class="sb-link sb-logout" title="Log in">
-                {!! $icon('logout') !!}
-                <span class="sb-label">Log in</span>
-            </a>
-        @else
+        @if ($isAdmin)
             <a href="#" id="logoutLink" class="sb-link sb-logout" title="Logout">
                 {!! $icon('logout') !!}
                 <span class="sb-label">Logout</span>

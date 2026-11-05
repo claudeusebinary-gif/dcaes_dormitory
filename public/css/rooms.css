@@ -2310,24 +2310,31 @@ justify-content: flex-start;
 
 .agreekaba {
     width: 994px;
+    min-height: 50px;
+    padding: 10px 0;
     border-radius: 8px;
-    height: 50px;
     border: 1px solid #685a5a2a;
     background-color: #4b444405;
     margin-top: 20px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: start;
+    justify-content: flex-start;
     gap: 10px;
 }
 
-.agreekaba h1 {
+.agreekaba h1,
+.tuo1 .agreekaba h1 {
+    display: block;
+    flex-direction: row;
+    margin: 0;
+    padding: 0;
     font-family: 'Nunito Sans', sans-serif;
     font-size: .9rem;
     font-weight: 700;
+    line-height: 1.4;
+    text-align: left;
     color: #000000;
-    margin-top: 8px;
 }
 .agreekaba3 {
     width: 1012px;

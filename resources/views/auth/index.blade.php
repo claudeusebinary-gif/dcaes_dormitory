@@ -273,9 +273,9 @@
             <a href="#about">
                 <h3>About Us</h3>
             </a>
-            <a href="#room">
-                <h3>Room</h3>
-            </a>
+           <a href="#hours">
+    <h3>Open Hours</h3>
+</a>
             <a href="#settings">    
                 <h3>Settings</h3>
             </a>
@@ -345,22 +345,47 @@
                 class="viewa" href="#">View Rooms</button></div>
     </section>
 
-    <section id="room" class="lipat">
-        <h2>Room</h2>
-        <div class="glass">
-            <div class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <rect x="4" y="11" width="16" height="10" rx="2"></rect>
-                    <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-                </svg></div>
+@php
+    $frontDesk = \App\Support\DormStats::frontDesk();
+    $dowMap = ['Sunday' => 0, 'Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6];
+@endphp
+<section id="hours" class="lipat">
+    <h2>Open Hours</h2>
+    <p class="find">Visit our front desk for inquiries, payments, and room viewings.</p>
 
-            <h1 class="lks">Log in to use this feature</h1>
-            <h1 class="lks1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Log in to book and manage your reservations,<br> or continue
-                as a guest to view the available rooms.</h1>
-            <div class="but"><button type="button" class="but1">Log In</button> 
-                <button type="submit" form="guestForm" class="but2">Continue as Guest</button></div>
+    <div class="hrs-card">
+        <div class="hrs-top">
+            <div class="hrs-clock">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3 2"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="hrs-label">Front Desk</p>
+                <p class="hrs-status" id="hrsStatus">Checking…</p>
+            </div>
+            <span class="hrs-pill" id="hrsPill" hidden></span>
         </div>
-    </section>
+
+        <ul class="hrs-list">
+            @foreach ($frontDesk as $day => $h)
+                <li class="hrs-row{{ $h['open'] ? '' : ' closed' }}" data-dow="{{ $dowMap[$day] }}"
+                    data-open="{{ $h['open'] ? 1 : 0 }}" data-from="{{ $h['from'] }}" data-to="{{ $h['to'] }}">
+                    <span class="hrs-day">{{ $day }}</span>
+                    <span class="hrs-time">
+                        @if ($h['open'])
+                            {{ \App\Support\DormStats::formatTime($h['from']) }} – {{ \App\Support\DormStats::formatTime($h['to']) }}
+                        @else
+                            Closed
+                        @endif
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+    </div>
+</section>
 
     <section id="settings" class="lipat">
         <h2>Settings</h2>
@@ -444,6 +469,42 @@
 
     window.addEventListener('hashchange', setActiveNav);
     setActiveNav();
+
+    (function () {
+    var rows = [].slice.call(document.querySelectorAll('.hrs-row'));
+    if (!rows.length) return;
+
+    var names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var now = new Date(), dow = now.getDay(), mins = now.getHours() * 60 + now.getMinutes();
+    var byDow = {};
+    rows.forEach(function (r) { byDow[r.dataset.dow] = r; });
+
+    function toMin(t) { var p = t.split(':'); return (+p[0]) * 60 + (+p[1]); }
+    function fmt(t) { var p = t.split(':'), h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + p[1] + ' ' + ap; }
+
+    var today = byDow[dow], status = '', open = false;
+    if (today) today.classList.add('today');
+
+    if (today && today.dataset.open === '1') {
+        var f = toMin(today.dataset.from), t = toMin(today.dataset.to);
+        if (mins >= f && mins < t) { open = true; status = 'Open now · closes at ' + fmt(today.dataset.to); }
+        else if (mins < f) { status = 'Opens today at ' + fmt(today.dataset.from); }
+    }
+    if (!status) {
+        for (var i = 1; i <= 7; i++) {
+            var d = (dow + i) % 7, r = byDow[d];
+            if (r && r.dataset.open === '1') {
+                status = 'Closed now · opens ' + (i === 1 ? 'tomorrow' : names[d]) + ' at ' + fmt(r.dataset.from);
+                break;
+            }
+        }
+    }
+    document.getElementById('hrsStatus').textContent = status || 'Currently closed';
+    var pill = document.getElementById('hrsPill');
+    pill.hidden = false;
+    pill.textContent = open ? 'Open now' : 'Closed';
+    pill.classList.toggle('is-open', open);
+})();
 </script>
 
 </html>

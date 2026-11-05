@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MarketplaceItem extends Model
 {
-  protected $fillable = ['seller_id', 'category', 'title', 'price', 'description', 'photos'];
+ protected $fillable = ['seller_id', 'category', 'title', 'price', 'description', 'photos', 'sold_at'];
 
 protected function casts(): array
 {
-    return ['photos' => 'array'];
+    return ['photos' => 'array', 'sold_at' => 'datetime'];
 }
 
     public function seller(): BelongsTo

@@ -7,7 +7,7 @@
     --sb-active: rgba(255, 255, 255, 0.14);
     --sb-active-border: rgba(214, 110, 110, 0.55);
     --sb-width: 297px;
-        --page-pad: 40px;
+    --page-pad: 40px;
     --sb-width-collapsed: 76px;
 }
 
@@ -26,7 +26,7 @@
     overflow-y: auto;
     transition: width 0.25s ease, transform 0.25s ease;
     z-index: 100;
-   
+
 }
 
 .sb-icon {
@@ -302,7 +302,7 @@
 
 .main-content {
     margin-left: var(--sb-width);
-        padding: var(--page-pad);
+    padding: var(--page-pad);
     transition: margin-left 0.25s ease;
 }
 
@@ -395,14 +395,17 @@ body.sb-collapsed .sb-user {
         padding: 72px 18px 24px;
     }
 }
+
 .sb-user:disabled {
     cursor: default;
     pointer-events: none;
     opacity: 1;
 }
+
 body {
     margin: 0;
 }
+
 .topbar {
     position: sticky;
     top: 0;
@@ -421,7 +424,9 @@ body {
     box-shadow: 0 2px 10px rgba(103, 44, 44, 0.08);
 }
 
-.topbar-text { min-width: 0; }
+.topbar-text {
+    min-width: 0;
+}
 
 .topbar-title {
     margin: 0;
@@ -439,7 +444,10 @@ body {
     font-weight: 600;
     color: #33333386;
 }
-.topbar-sub:empty { display: none; }
+
+.topbar-sub:empty {
+    display: none;
+}
 
 .topbar-actions {
     display: flex;
@@ -453,10 +461,12 @@ body {
     top: auto;
     right: auto;
 }
+
 .topbar .notif-btn {
     width: 44px;
     height: 44px;
 }
+
 .topbar .roomlist-btn {
     position: static;
     top: auto;
@@ -470,9 +480,30 @@ body {
     .topbar {
         margin: -72px -18px 20px;
         min-height: 68px;
-        padding: 10px 18px 10px 72px;   
+        padding: 10px 18px 10px 72px;
     }
-    .topbar-title { font-size: 1.4rem; }
-    .topbar-sub { display: none; }
-    .topbar .roomlist-btn { height: 38px; padding: 0 14px; font-size: .8rem; }
+
+    .topbar-title {
+        font-size: 1.4rem;
+    }
+
+    .topbar-sub {
+        display: none;
+    }
+
+    .topbar .roomlist-btn {
+        height: 38px;
+        padding: 0 14px;
+        font-size: .8rem;
+    }
+}
+
+.sb-subitem-logout {
+    margin-top: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+}
+
+.sb-subitem-logout:hover {
+    background: rgba(255, 255, 255, 0.15);
 }

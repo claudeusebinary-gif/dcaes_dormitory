@@ -25,7 +25,8 @@ class Billing
 
         $today  = now()->startOfDay();
         $moveIn = Carbon::parse($user->move_in_date ?? $user->created_at)->startOfDay();
-        $dueDay = $moveIn->day;
+      $fixedDue = DormStats::roomSettings()['due_day'];
+$dueDay   = $fixedDue ?: $moveIn->day;
        $paymentRows = \App\Models\Payment::where('user_id', $user->id)->get()->keyBy('period');
 $paidPeriods = $paymentRows->reject(fn ($p) => $p->partial)->keys()->all();   
         $awaiting = \App\Models\Approval::where('user_id', $user->id)
@@ -37,7 +38,9 @@ $paidPeriods = $paymentRows->reject(fn ($p) => $p->partial)->keys()->all();
 $last = $moveIn->copy()->startOfMonth()->addMonths(2);
 $window = $today->copy()->startOfMonth()->addMonths(2);
 if ($window->gt($last)) $last = $window;     
-        for ($m = $moveIn->copy()->startOfMonth(); $m->lte($last); $m->addMonthNoOverflow()) {
+$first = $moveIn->copy()->startOfMonth();
+for ($m = $first; $m->lte($last); $m->addMonthNoOverflow()) {
+      
             $due = $m->copy()->day(min($dueDay, $m->daysInMonth));
             $period = $m->format('Y-m');
             $part   = $paymentRows->get($period);
@@ -70,14 +73,16 @@ $all[] = [
                 default      => 'pending',
             };
         }
-
+$rs      = DormStats::roomSettings();
+$grace   = $rs['grace'];
+$lateFee = $rs['late_fee'];
              foreach ($all as $i => $inv) {
             $late = ($inv['status'] !== 'paid' && $inv['due']->lt($today))
                 ? (int) $inv['due']->diffInDays($today, true)
                 : 0;
 
             $all[$i]['late_days'] = $late;
-            $all[$i]['fee']       = max(0, round($late * self::LATE_FEE_PER_DAY - $inv['fee_paid'], 2));
+           $all[$i]['fee']       = max(0, round(max(0, $late - $grace) * $lateFee - $inv['fee_paid'], 2));
             $all[$i]['half']      = round($rent / 2, 2);
             $all[$i]['can_half']  = $inv['status'] !== 'paid' && abs($inv['amount'] - $rent) < 0.01 && $rent >= 2;
         }

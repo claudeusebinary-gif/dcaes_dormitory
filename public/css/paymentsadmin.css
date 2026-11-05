@@ -17,7 +17,7 @@
     justify-content: start;
     padding:20px;
     box-sizing: border-box;
-}
+}   
 .collectedbreak{
     display: flex;
     flex-direction: row;
@@ -219,6 +219,10 @@
 }
 .buttonpaidjue2:hover{
     background-color: #00000007;
+    
+}
+.buttonpaidjue2.full{
+    width: 100%;
 }
 .ticket-divider {
     position: relative;

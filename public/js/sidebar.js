@@ -29,7 +29,14 @@
         if (localStorage.getItem('sbUserOpen') === '1') setUserMenu(true);
     } catch (e) { }
 
-    userBtn.addEventListener('click', () => {
+      userBtn.addEventListener('click', () => {
+        if (!isMobile() && body.classList.contains('sb-collapsed')) {
+            body.classList.remove('sb-collapsed');
+            try { localStorage.setItem('sbCollapsed', '0'); } catch (e) { }
+            setUserMenu(true);
+            try { localStorage.setItem('sbUserOpen', '1'); } catch (e) { }
+            return;
+        }
         const open = userBtn.getAttribute('aria-expanded') !== 'true';
         setUserMenu(open);
         try { localStorage.setItem('sbUserOpen', open ? '1' : '0'); } catch (e) { }

@@ -455,6 +455,7 @@ $fields = [
                     <span class="switch25-track" aria-hidden="true"></span>
                     <span class="sr-only25">{{ $label }}</span>
                 </label>
+               
             </div>
             <hr class="padiretso23175927" style="margin-top:15px;">
         @endforeach
@@ -1230,7 +1231,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var cancel  = document.getElementById('cancelEdit');
     if (!editBtn || !form || !fields || !save || !cancel) return;
 
-    var HAS_ERRORS = @json($errors->any());   // if the server rejected the last save, stay in edit mode
+    var HAS_ERRORS = @json($errors->any());  
     var editing = false;
     var forceDirty = false;
     var original = {};
@@ -1278,7 +1279,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     cancel.addEventListener('click', function () {
         if (cancel.disabled) return;
-        if (forceDirty) { window.location.reload(); return; }   // drop the rejected values, show saved ones
+        if (forceDirty) { window.location.reload(); return; }  
         controls().forEach(function (el, i) {
             var key = el.name || ('f' + i);
             if (key in original) el.value = original[key];

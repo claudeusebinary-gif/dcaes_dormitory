@@ -891,3 +891,27 @@ select.kahonnaann {
     margin: 0 0 0 auto;
     justify-content: flex-end;
 }
+.ann-tpl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 12px;
+}
+
+.ann-tpl-chip {
+    border: 1px solid #d5d9e0;
+    background: #f5f7fa;
+    color: #3a4252;
+    font-size: 12px;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.ann-tpl-chip:hover {
+    background: #1060BC;
+    border-color: #1060BC;
+    color: #fff;
+}

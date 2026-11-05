@@ -1,5 +1,3 @@
-{{-- SAMPLE TEXT: replace the wording with your dormitory's real policies (and have it reviewed) before relying on it.
---}}
 <style>
     .legalmodal {
         position: fixed;
@@ -222,8 +220,22 @@
         color: #672C2C;
     }
 
-    .legalbtn.ghost:hover {
+     .legalbtn.ghost:hover {
         background-color: #f0e8e3;
+    }
+
+    .legalpanel[contenteditable="true"] {
+        outline: 2px dashed #672C2C;
+        outline-offset: 8px;
+        border-radius: 4px;
+    }
+
+    .legalstatus {
+        margin-right: auto;
+        align-self: center;
+        font-size: .85rem;
+        font-weight: 700;
+        color: #16a34a;
     }
 </style>
 
@@ -249,7 +261,6 @@
 
         <div class="legalbody" id="legalBody">
 
-            {{-- ===================== TERMS OF SERVICE ===================== --}}
             <div class="legalpanel" data-panel="terms">
                 <p class="legaldate">Terms of stay &middot; Last updated November 2, 2026</p>
 
@@ -320,7 +331,6 @@
                     details in the website footer.</p>
             </div>
 
-            {{-- ===================== PRIVACY POLICY ===================== --}}
             <div class="legalpanel" data-panel="privacy" hidden>
                 <p class="legaldate">Last updated November 2, 2026</p>
 
@@ -383,7 +393,6 @@
                     <b>Message admin</b> in your account or the contact details in the footer.</p>
             </div>
 
-            {{-- ===================== FAQs ===================== --}}
             <div class="legalpanel" data-panel="faqs" hidden>
                 <p class="legaldate">Quick answers about staying at D'aces Dormitory</p>
 
@@ -477,7 +486,6 @@
                 </div>
             </div>
 
-            {{-- ===================== HOUSE RULES ===================== --}}
             <div class="legalpanel" data-panel="rules" hidden>
                 <p class="legaldate">Please read and follow these rules so everyone can live comfortably</p>
 
@@ -533,8 +541,13 @@
 
         </div>
 
-        <div class="legalfoot">
-            @if ($withAgree ?? false)
+             <div class="legalfoot">
+            @if ($adminEdit ?? false)
+                <span class="legalstatus" id="legalStatus" hidden></span>
+                <button type="button" class="legalbtn ghost" data-legal-close>Close</button>
+                <button type="button" class="legalbtn ghost" id="legalEdit">Edit</button>
+                <button type="button" class="legalbtn" id="legalSave" hidden>Save Changes</button>
+            @elseif ($withAgree ?? false)
                 <button type="button" class="legalbtn ghost" data-legal-close>Close</button>
                 <button type="button" class="legalbtn" id="legalAgree">I agree</button>
             @else
@@ -548,7 +561,7 @@
     (function () {
         var modal = document.getElementById('legalModal');
         if (!modal) return;
-        document.body.appendChild(modal);   // so no page layout can clip or cover it
+        document.body.appendChild(modal);   
 
         var titles = { terms: 'Terms of Service', privacy: 'Privacy Policy', faqs: 'FAQs', rules: 'House Rules' };
         var tabs = modal.querySelectorAll('.legaltab');
@@ -575,7 +588,6 @@
             document.body.style.overflow = '';
         }
 
-        // any link or button with data-legal="terms | privacy | faqs | rules" opens the modal
         document.addEventListener('click', function (e) {
             var link = e.target.closest('[data-legal]');
             if (link) { e.preventDefault(); openLegal(link.dataset.legal); }
@@ -590,13 +602,48 @@
             if (e.key === 'Escape' && modal.classList.contains('is-open')) closeLegal();
         });
 
-        // sign-up page only: "I agree" ticks the checkbox
         var agreeBtn = document.getElementById('legalAgree');
         if (agreeBtn) {
             agreeBtn.addEventListener('click', function () {
                 var box = document.getElementById('agree');
                 if (box) box.checked = true;
                 closeLegal();
+            });
+        }
+
+        var editBtn = document.getElementById('legalEdit');
+        var saveBtn = document.getElementById('legalSave');
+        var statusEl = document.getElementById('legalStatus');
+        if (editBtn && saveBtn) {
+            function say(text) { statusEl.textContent = text; statusEl.hidden = !text; }
+            function stopEdit() {
+                panels.forEach(function (p) { p.removeAttribute('contenteditable'); });
+                editBtn.hidden = false;
+                saveBtn.hidden = true;
+            }
+
+            editBtn.addEventListener('click', function () {
+                var p = modal.querySelector('.legalpanel:not([hidden])');
+                p.querySelectorAll('details').forEach(function (d) { d.open = true; });
+                p.setAttribute('contenteditable', 'true');
+                p.focus();
+                editBtn.hidden = true;
+                saveBtn.hidden = false;
+                say('');
+            });
+
+            saveBtn.addEventListener('click', function () {
+                stopEdit();
+                say('Saved.');
+            });
+
+            tabs.forEach(function (t) {
+                t.addEventListener('click', function () { stopEdit(); say(''); });
+            });
+
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal || e.target.closest('[data-legal-close]')) { stopEdit(); say(''); }
+                if (e.target.closest('.legalpanel[contenteditable] summary')) e.preventDefault();
             });
         }
     })();

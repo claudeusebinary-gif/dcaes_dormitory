@@ -587,12 +587,7 @@
             const icon = inner => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>';
             const BED_SVG = icon('<path d="M4 3v18"/><path d="M20 3v18"/><path d="M4 10h16"/><path d="M4 17h16"/><path d="M7 7.5h3"/><path d="M7 14.5h3"/>');
             const CUSTOM_ICON = '<circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>';
-            const PRESETS = [
-                { name: 'Shared cabinets', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/>' },
-                { name: 'Own toilet and bath', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/>' },
-                { name: 'Kitchen for all', icon: '<rect x="3" y="3" width="18" height="18" rx="2"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="13" width="4" height="4"/>' },
-                { name: 'Free electricfan', icon: CUSTOM_ICON },
-            ];
+         const PRESETS = @json(\App\Support\DormStats::roomSettings()['amenities']).map(n => ({ name: n, icon: CUSTOM_ICON }));
 
             function fillSelect(sel, list, value) {
                 const opts = list.slice();
@@ -862,7 +857,7 @@
             const arRoomNo = $('#arRoomNo'), arPrice = $('#arPrice'), arSharing = $('#arSharing'), arBedType = $('#arBedType');
             const arBeds = $('#arBeds'), arBedsNote = $('#arBedsNote');
             const arDraft = $('#arDraft'), arPublish = $('#arPublish');
-            let bedCount = 6;
+            let bedCount = {{ \App\Support\DormStats::roomSettings()['capacity'] }};
 
             const addPhotos = photoWidget(add, () => { }, addSender.say);
             const addAmen = amenityWidget(add, () => { });
@@ -897,10 +892,10 @@
 
             function openAdd() {
                 arRoomNo.value = '';
-                arPrice.value = 2000;
+                arPrice.value = {{ \App\Support\DormStats::roomSettings()['rate'] }};
                 fillSelect(arSharing, SHARING, SHARING[0]);
                 fillSelect(arBedType, BEDTYPES, BEDTYPES[0]);
-                bedCount = 6;
+                bedCount = {{ \App\Support\DormStats::roomSettings()['capacity'] }};
                 renderBeds();
                 addPhotos.set([], [], 'New room');
                 addAmen.set(null);

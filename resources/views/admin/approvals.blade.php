@@ -170,8 +170,7 @@
                             <button type="button" class="rejectapprovedapproval1" data-decide="reject">Reject</button>
                             <button type="button" class="rejectapprovedapproval2" data-decide="approve">Approve</button>
                         @else
-                            <button type="button" class="rejectapprovedapproval2" data-view
-                                style="background-color:#FAF6F4; color:#672c2c; width:150px;">View details</button>
+                                                      <button type="button" class="viewdetailsbtn" data-view>View details</button>
                         @endif
                     </div>
                 </div>
@@ -289,6 +288,26 @@
                                 <div class="av-field"><small>Expected length of stay</small><b id="avStay"></b></div>
                                 <div class="av-field"><small>Certification</small><b id="avCert"></b></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                              <div id="avRequest" hidden>
+                    <div class="av-card">
+                        <div class="av-card-head">
+                            <div class="lagayanicon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                                </svg></div>
+                            <h3>Request details<span>What the tenant asked for</span></h3>
+                        </div>
+                        <div class="av-fields">
+                            <div class="av-field"><small>Current room</small><b id="avrFrom"></b></div>
+                            <div class="av-field" id="avrToRow"><small>Requested room / bed</small><b id="avrTo"></b></div>
+                            <div class="av-field" id="avrDateRow"><small>Move-out date</small><b id="avrDate"></b></div>
+                            <div class="av-field"><small>Reason</small><b id="avrReason"></b></div>
+                            <div class="av-field"><small>Notes</small><b id="avrDetails"></b></div>
                         </div>
                     </div>
                 </div>
@@ -512,7 +531,19 @@
                 const pill = $('avPill'); pill.textContent = c.label; pill.className = 'cv-pill st-' + c.status;
 
                 $('avDetails').hidden = c.manual;
-                $('avManual').hidden = !c.manual;
+                              $('avManual').hidden = !c.manual;
+
+                // transfer / move-out: show the request details, hide the move-in card
+                const isReq = !c.manual && !!c.request;
+                $('avRequest').hidden = !isReq;
+                $('avDate').closest('.av-card').style.display = isReq ? 'none' : '';
+                if (isReq) {
+                    put('avrFrom', c.request.from); put('avrTo', c.request.to);
+                    put('avrDate', c.request.move_out_date); put('avrReason', c.request.reason);
+                    put('avrDetails', c.request.details);
+                    $('avrToRow').style.display = c.request.to ? '' : 'none';
+                    $('avrDateRow').style.display = c.request.move_out_date ? '' : 'none';
+                }
                 if (c.manual) {
                     put('avmName', c.name); put('avmType', c.type_label);
                     put('avmRoom', c.room_text); put('avmLogged', c.submitted_full);

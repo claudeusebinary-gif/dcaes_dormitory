@@ -1615,15 +1615,15 @@
 #mkSellModal .mk-red,
 #mkSellModal .mk-white {
     scrollbar-width: none;
-   
+
     -ms-overflow-style: none;
-   
+
 }
 
 #mkSellModal .mk-red::-webkit-scrollbar,
 #mkSellModal .mk-white::-webkit-scrollbar {
     display: none;
-  
+
 }
 
 
@@ -1724,6 +1724,39 @@
     cursor: default;
 }
 
+.mine-sold-btn {
+    height: 30px;
+    padding: 0 14px;
+    margin-right: 6px;
+    border: 1px solid #672c2c;
+    border-radius: 6px;
+    background: transparent;
+    color: #672c2c;
+    font: 700 .75rem 'Nunito Sans', sans-serif;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.mine-sold-btn:hover {
+    background: #672c2c;
+    color: #fff;
+}
+
+.mine-sold-btn:disabled {
+    opacity: .5;
+    cursor: default;
+}
+
+.mine-sold {
+    font-style: normal;
+    font-size: .65rem;
+    margin-left: 6px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    background: #672c2c;
+    color: #fff;
+}
+
 .topbar .mine-btn {
     background: #fff;
     color: #672C2C;
@@ -1732,6 +1765,7 @@
     gap: 8px;
     cursor: pointer;
 }
+
 .topbar .mine-btn:hover {
     background: #672C2C;
     color: #fff;
@@ -1748,6 +1782,7 @@
     font: 800 .75rem/22px 'Nunito Sans', sans-serif;
     text-align: center;
 }
+
 .topbar .mine-btn:hover .mine-count {
     background: #fff;
     color: #672C2C;

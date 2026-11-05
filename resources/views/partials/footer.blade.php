@@ -1,10 +1,16 @@
-<div class="footer">
-        <div class="lugo"> <svg viewBox="0 0 24 24">
+<div    class="footer">
+       <div class="lugo">
+    @if (!empty($dorm['logo']))
+        <img src="{{ asset($dorm['logo']) }}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
+    @else
+        <svg viewBox="0 0 24 24">
                 <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
                 <path
                     d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            </svg></div>
-        <h1 class="daces">D'aces Dormitory <br><span>Bulacan, Pinaod</span></h1>
+                  </svg>
+    @endif
+</div>
+       <h1 class="daces">{{ $dorm['name'] }} <br><span>{{ $dorm['address'] }}</span>@if ($dorm['phone'])<br><span>{{ $dorm['phone'] }}</span>@endif</h1>
         <h1 class="asafe">A safe, affordable place to stay for students and young professionals — with people who actually
             answer when you knock.</h1>
         <div class="bah">
@@ -27,7 +33,7 @@
             </div>
         </div>
         <hr class="foothr">
-        <h1 class="copy">© 2026 D'aces Dormitory. All rights reserved.</h1>
+        <h1 class="copy">© 2026 {{ $dorm['name'] }}. All rights reserved.</h1>
         <div class="tatlob">
             <a href="https://facebook.com/your-page" class="socia" target="_blank" aria-label="Facebook">
                 <svg viewBox="0 0 24 24">
@@ -35,7 +41,7 @@
                 </svg>
             </a>
 
-            <a href="mailto:youremail@gmail.com" class="socia" aria-label="Email">
+            <a href="mailto:{{ $dorm['email'] }}" class="socia" aria-label="Email">
                 <svg viewBox="0 0 24 24">
                     <rect width="20" height="16" x="2" y="4" rx="2" />
                     <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />

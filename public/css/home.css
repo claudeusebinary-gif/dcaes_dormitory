@@ -50,6 +50,158 @@
       background-color: #FAF6F4;
   }
 
+  /* ── Open Hours (home page) ────────────────────────────── */
+  .home-hrs-section {
+      margin-top: 40px;
+  }
+
+  .home-hrs-subtitle {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 15px;
+      color: #7a7a7a;
+      margin: 0 0 18px;
+  }
+
+  .home-hrs-card {
+      padding: 18px 28px 14px;
+      background: #fff;
+      border: 1px solid #e5ddd8;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(103, 44, 44, 0.06);
+  }
+
+  .home-hrs-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #e5ddd8;
+  }
+
+  .home-hrs-clock {
+      flex: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #faf0ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+  }
+
+  .home-hrs-clock svg {
+      width: 26px;
+      height: 26px;
+      color: #672C2C;
+  }
+
+  .home-hrs-label {
+      margin: 0;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #999;
+  }
+
+  .home-hrs-status {
+      margin: 2px 0 0;
+      font-family: 'Inria Serif', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: #333;
+  }
+
+  .home-hrs-pill {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #faf0ec;
+      border: 1px solid #e5ddd8;
+      color: #672C2C;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+  }
+
+  .home-hrs-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff8a8a;
+  }
+
+  .home-hrs-pill.is-open::before {
+      background: #34c76a;
+  }
+
+  .home-hrs-list {
+      list-style: none;
+      margin: 10px 0 0;
+      padding: 0;
+  }
+
+  .home-hrs-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 38px;
+      padding: 0 14px;
+      border-radius: 6px;
+      font-family: 'Inria Serif', serif;
+      font-size: 18px;
+      color: #555;
+      transition: background .2s;
+  }
+
+  .home-hrs-row + .home-hrs-row {
+      margin-top: 2px;
+  }
+
+  .home-hrs-row:hover {
+      background: #faf6f4;
+  }
+
+  .home-hrs-time {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+  }
+
+  .home-hrs-row.closed {
+      color: #bbb;
+  }
+
+  .home-hrs-row.today {
+      background: #672C2C;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 3px 8px rgba(103, 44, 44, 0.25);
+  }
+
+  .home-hrs-row.today:hover {
+      background: #672C2C;
+  }
+
+  .home-hrs-row.today .home-hrs-day::after {
+      content: "Today";
+      margin-left: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #fff;
+      color: #672C2C;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      vertical-align: middle;
+  }
+
   .wiabut {
       display: flex;
       gap: 20px;
