@@ -46,7 +46,8 @@
                                 <path d="M2 7l10 6 10-6"></path>
                             </svg>
                             <div class="inputr">
-                                <input type="text" id="email" name="email" placeholder=" " required>
+                                <input type="text" id="email" name="email" placeholder=" " value="{{ old('email') }}"
+                                    autocomplete="username" required>
                                 <label for="email">Email Address</label>
                             </div>
                         </div>
@@ -84,7 +85,7 @@
 
                     </div>
                     <div class="remember">
-                        <input type="checkbox" name="remember" id="remember" class="radi">
+                        <input type="checkbox" name="remember" id="remember" class="radi" value="1" {{ old('remember') ? 'checked' : '' }}>
                         <label for="remember">Remember me</label>
                         <label for="forgot" style="margin-left: auto;">Forgot Password?</label>
                     </div>
@@ -256,7 +257,8 @@
                         </div>
                         <div class="ags">
                             <input type="checkbox" name="agree" id="agree" class="radi" required>
-                        <label for="agree">I agree to the &nbsp; <a href="#" data-legal="terms">Term of Service</a> &nbsp;and&nbsp; <a href="#" data-legal="privacy">Privacy Policy</a>.</label>
+                            <label for="agree">I agree to the &nbsp; <a href="#" data-legal="terms">Term of Service</a>
+                                &nbsp;and&nbsp; <a href="#" data-legal="privacy">Privacy Policy</a>.</label>
                         </div>
                         <div><input type="submit" value="Sign Up" class="loginbo"></div>
                         <p class="have1">Already have an account? &nbsp;<a href="#" class="crea1" id="showLogin">Log
@@ -273,10 +275,10 @@
             <a href="#about">
                 <h3>About Us</h3>
             </a>
-           <a href="#hours">
-    <h3>Open Hours</h3>
-</a>
-            <a href="#settings">    
+            <a href="#hours">
+                <h3>Open Hours</h3>
+            </a>
+            <a href="#settings">
                 <h3>Settings</h3>
             </a>
         </nav>
@@ -288,19 +290,30 @@
         <p class="find">Find your next room, check availability, and manage your stay — <br>all in one place.</p>
         <p class="find2">Featured Rooms</p>
         <hr class="hr1">
-        @include('partials.featured-rooms', ['featured' => $featured])
+        <div class="boxes" id="featuredBoxes">
+            @forelse ($featured->take(2) as $room)
+                <div class="box{{ $loop->iteration }} fr-card">
+                    <h1 class="roomp">Room {{ $room['number'] }}</h1>&nbsp;<h1 class="roomp1">— Good For {{ $room['beds'] }}
+                    </h1>
+                    <h1 class="{{ $loop->first ? 'roomp2' : 'roomp22' }}">Double Bed For {{ $room['decks'] }}</h1>
+                    <h1 class="roomp3">₱{{ number_format($room['price']) }} / month</h1>
+                </div>
+            @empty
+                <p class="roomp2" style="margin:0 auto;">No rooms are open right now. Please check back soon.</p>
+            @endforelse
+        </div>
         <h1 class="viewsa">View More.</h1>
         <p class="find3">Announcements</p>
         <hr class="hr2">
-       @forelse ($announcements as $announcement)
-    <div class="{{ $loop->first ? 'anns' : 'anns1' }}">
-        <h1 class="{{ $loop->first ? 'wat' : 'wat1' }}">{{ $announcement->message }}</h1>
-    </div>
-@empty
-    <div class="anns">
-        <h1 class="wat">No announcements right now.</h1>
-    </div>
-@endforelse
+        @forelse ($announcements->take(2) as $announcement)
+            <div class="{{ $loop->first ? 'anns' : 'anns1' }}">
+                <h1 class="{{ $loop->first ? 'wat' : 'wat1' }}">{{ $announcement->message }}</h1>
+            </div>
+        @empty
+            <div class="anns">
+                <h1 class="wat">No announcements right now.</h1>
+            </div>
+        @endforelse
         <div class="buttonsa"><button type="button" class="book" href="#">Book Now</button> <button type="button"
                 class="viewa" href="#">View Rooms</button></div>
     </section>
@@ -314,19 +327,19 @@
         <p class="find4">Quick Overview</p>
         <hr class="hr3">
         <div class="bomx">
-    <div class="bomx1">
-        <h1 class="num">{{ $stats['available_rooms'] }}</h1>
-        <h1 class="tx">Available Rooms</h1>
-    </div>
-    <div class="bomx1">
-        <h1 class="num">{{ $stats['bed_spaces'] }}</h1>
-        <h1 class="tx">Total Bed spaces</h1>
-    </div>
-    <div class="bomx1">
-        <h1 class="num">{{ $stats['vacancies'] }}</h1>
-        <h1 class="tx">Current Vacancies</h1>
-    </div>
-</div>
+            <div class="bomx1">
+                <h1 class="num">{{ $stats['available_rooms'] }}</h1>
+                <h1 class="tx">Available Rooms</h1>
+            </div>
+            <div class="bomx1">
+                <h1 class="num">{{ $stats['bed_spaces'] }}</h1>
+                <h1 class="tx">Total Bed spaces</h1>
+            </div>
+            <div class="bomx1">
+                <h1 class="num">{{ $stats['vacancies'] }}</h1>
+                <h1 class="tx">Current Vacancies</h1>
+            </div>
+        </div>
         <h1 class="viewsa">View More.</h1>
         <p class="find5">Features</p>
         <hr class="hr4">
@@ -345,47 +358,48 @@
                 class="viewa" href="#">View Rooms</button></div>
     </section>
 
-@php
-    $frontDesk = \App\Support\DormStats::frontDesk();
-    $dowMap = ['Sunday' => 0, 'Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6];
-@endphp
-<section id="hours" class="lipat">
-    <h2>Open Hours</h2>
-    <p class="find">Visit our front desk for inquiries, payments, and room viewings.</p>
+    @php
+        $frontDesk = \App\Support\DormStats::frontDesk();
+        $dowMap = ['Sunday' => 0, 'Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6];
+    @endphp
+    <section id="hours" class="lipat">
+        <h2>Open Hours</h2>
+        <p class="find">Visit our front desk for inquiries, payments, and room viewings.</p>
 
-    <div class="hrs-card">
-        <div class="hrs-top">
-            <div class="hrs-clock">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <path d="M12 7v5l3 2"></path>
-                </svg>
+        <div class="hrs-card">
+            <div class="hrs-top">
+                <div class="hrs-clock">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                        stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 7v5l3 2"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="hrs-label">Front Desk</p>
+                    <p class="hrs-status" id="hrsStatus">Checking…</p>
+                </div>
+                <span class="hrs-pill" id="hrsPill" hidden></span>
             </div>
-            <div>
-                <p class="hrs-label">Front Desk</p>
-                <p class="hrs-status" id="hrsStatus">Checking…</p>
-            </div>
-            <span class="hrs-pill" id="hrsPill" hidden></span>
+
+            <ul class="hrs-list">
+                @foreach ($frontDesk as $day => $h)
+                    <li class="hrs-row{{ $h['open'] ? '' : ' closed' }}" data-dow="{{ $dowMap[$day] }}"
+                        data-open="{{ $h['open'] ? 1 : 0 }}" data-from="{{ $h['from'] }}" data-to="{{ $h['to'] }}">
+                        <span class="hrs-day">{{ $day }}</span>
+                        <span class="hrs-time">
+                            @if ($h['open'])
+                                {{ \App\Support\DormStats::formatTime($h['from']) }} –
+                                {{ \App\Support\DormStats::formatTime($h['to']) }}
+                            @else
+                                Closed
+                            @endif
+                        </span>
+                    </li>
+                @endforeach
+            </ul>
         </div>
-
-        <ul class="hrs-list">
-            @foreach ($frontDesk as $day => $h)
-                <li class="hrs-row{{ $h['open'] ? '' : ' closed' }}" data-dow="{{ $dowMap[$day] }}"
-                    data-open="{{ $h['open'] ? 1 : 0 }}" data-from="{{ $h['from'] }}" data-to="{{ $h['to'] }}">
-                    <span class="hrs-day">{{ $day }}</span>
-                    <span class="hrs-time">
-                        @if ($h['open'])
-                            {{ \App\Support\DormStats::formatTime($h['from']) }} – {{ \App\Support\DormStats::formatTime($h['to']) }}
-                        @else
-                            Closed
-                        @endif
-                    </span>
-                </li>
-            @endforeach
-        </ul>
-    </div>
-</section>
+    </section>
 
     <section id="settings" class="lipat">
         <h2>Settings</h2>
@@ -399,13 +413,219 @@
             <h1 class="lks">Log in to use this feature</h1>
             <h1 class="lks1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Log in to book and manage your reservations,<br> or continue
                 as a guest to view the available rooms.</h1>
-            <div class="but"><button type="button" class="but1">Log In</button> 
-                <button type="submit" form="guestForm" class="but2">Continue as Guest</button></div>
+            <div class="but"><button type="button" class="but1">Log In</button>
+                <button type="submit" form="guestForm" class="but2">Continue as Guest</button>
+            </div>
         </div>
     </section>
-        <form id="guestForm" action="{{ route('guest') }}" method="POST" hidden>@csrf</form>
-            @include('partials.legal-modal', ['withAgree' => true])
+    <form id="guestForm" action="{{ route('guest') }}" method="POST" hidden>@csrf</form>
+    @include('partials.legal-modal', ['withAgree' => true])
+    <style>
+        .viewsa {
+            cursor: pointer;
+        }
+
+        .gp-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .45);
+            padding: 20px;
+        }
+
+        .gp-overlay[hidden] {
+            display: none;
+        }
+
+        .gp-box {
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 24px 22px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+            font-family: 'Nunito Sans', sans-serif;
+            animation: gpPop .22s ease-out;
+        }
+
+        .gp-box h2 {
+            margin: 0 0 6px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .gp-box p {
+            margin: 0 0 18px;
+            font-size: .9rem;
+            font-weight: 600;
+            color: #0000009a;
+            line-height: 1.5;
+        }
+
+        .gp-box button {
+            width: 100%;
+            height: 44px;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: .95rem;
+            font-weight: 700;
+            border: 1px solid #672c2c;
+        }
+
+        .gp-box .gp-primary {
+            background: #672c2c;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .gp-box .gp-primary:hover {
+            background: transparent;
+            color: #672c2c;
+        }
+
+        .gp-box .gp-secondary {
+            background: transparent;
+            color: #672c2c;
+        }
+
+        .gp-box .gp-secondary:hover {
+            background: #672c2c14;
+        }
+
+        @keyframes gpPop {
+            from {
+                transform: scale(.94);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <div class="gp-overlay" id="guestPrompt" hidden>
+        <div class="gp-box" role="dialog" aria-modal="true" aria-labelledby="guestPromptTitle">
+            <h2 id="guestPromptTitle">Want to see more?</h2>
+            <p id="guestPromptText"></p>
+            <button type="button" class="gp-primary" id="guestPromptGo">Continue as Guest</button>
+            <button type="button" class="gp-secondary" id="guestPromptLogin">Log in</button>
+        </div>
+    </div>
+    <style>
+        .social {
+            cursor: pointer;
+        }
+
+        .soon-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, .45);
+            padding: 20px;
+        }
+
+        .soon-overlay[hidden] {
+            display: none;
+        }
+
+        .soon-box {
+            width: 100%;
+            max-width: 340px;
+            text-align: center;
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px 24px 22px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+            font-family: 'Nunito Sans', sans-serif;
+            animation: soonPop .22s ease-out;
+        }
+
+        .soon-box h2 {
+            margin: 0 0 6px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #000;
+        }
+
+        .soon-box p {
+            margin: 0 0 18px;
+            font-size: .9rem;
+            font-weight: 600;
+            color: #0000009a;
+            line-height: 1.5;
+        }
+
+        .soon-box button {
+            width: 100%;
+            height: 44px;
+            border-radius: 9999px;
+            cursor: pointer;
+            background: #672c2c;
+            border: 1px solid #672c2c;
+            color: #fff;
+            font-family: inherit;
+            font-size: .95rem;
+            font-weight: 700;
+        }
+
+        .soon-box button:hover {
+            background: transparent;
+            color: #672c2c;
+        }
+
+        @keyframes soonPop {
+            from {
+                transform: scale(.94);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <div class="soon-overlay" id="soonModal" hidden>
+        <div class="soon-box" role="dialog" aria-modal="true" aria-labelledby="soonTitle">
+            <h2 id="soonTitle">Coming soon</h2>
+            <p id="soonText">This sign-in option isn't available yet. Please log in with your email for now.</p>
+            <button type="button" id="soonClose">Okay</button>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var modal = document.getElementById('soonModal');
+            var text = document.getElementById('soonText');
+
+            document.querySelectorAll('.social').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var name = btn.querySelector('span').textContent.trim();
+                    text.textContent = 'Continue with ' + name + " isn't available yet. Please log in with your email for now.";
+                    modal.hidden = false;
+                });
+            });
+
+            function close() { modal.hidden = true; }
+            document.getElementById('soonClose').addEventListener('click', close);
+            modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+        })();
+    </script>
 </body>
+
 <script>
 
     document.querySelectorAll('.hides').forEach(btn => {
@@ -471,40 +691,177 @@
     setActiveNav();
 
     (function () {
-    var rows = [].slice.call(document.querySelectorAll('.hrs-row'));
-    if (!rows.length) return;
+        var rows = [].slice.call(document.querySelectorAll('.hrs-row'));
+        if (!rows.length) return;
 
-    var names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    var now = new Date(), dow = now.getDay(), mins = now.getHours() * 60 + now.getMinutes();
-    var byDow = {};
-    rows.forEach(function (r) { byDow[r.dataset.dow] = r; });
+        var names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        var now = new Date(), dow = now.getDay(), mins = now.getHours() * 60 + now.getMinutes();
+        var byDow = {};
+        rows.forEach(function (r) { byDow[r.dataset.dow] = r; });
 
-    function toMin(t) { var p = t.split(':'); return (+p[0]) * 60 + (+p[1]); }
-    function fmt(t) { var p = t.split(':'), h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + p[1] + ' ' + ap; }
+        function toMin(t) { var p = t.split(':'); return (+p[0]) * 60 + (+p[1]); }
+        function fmt(t) { var p = t.split(':'), h = +p[0], ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return h + ':' + p[1] + ' ' + ap; }
 
-    var today = byDow[dow], status = '', open = false;
-    if (today) today.classList.add('today');
+        var today = byDow[dow], status = '', open = false;
+        if (today) today.classList.add('today');
 
-    if (today && today.dataset.open === '1') {
-        var f = toMin(today.dataset.from), t = toMin(today.dataset.to);
-        if (mins >= f && mins < t) { open = true; status = 'Open now · closes at ' + fmt(today.dataset.to); }
-        else if (mins < f) { status = 'Opens today at ' + fmt(today.dataset.from); }
-    }
-    if (!status) {
-        for (var i = 1; i <= 7; i++) {
-            var d = (dow + i) % 7, r = byDow[d];
-            if (r && r.dataset.open === '1') {
-                status = 'Closed now · opens ' + (i === 1 ? 'tomorrow' : names[d]) + ' at ' + fmt(r.dataset.from);
-                break;
+        if (today && today.dataset.open === '1') {
+            var f = toMin(today.dataset.from), t = toMin(today.dataset.to);
+            if (mins >= f && mins < t) { open = true; status = 'Open now · closes at ' + fmt(today.dataset.to); }
+            else if (mins < f) { status = 'Opens today at ' + fmt(today.dataset.from); }
+        }
+        if (!status) {
+            for (var i = 1; i <= 7; i++) {
+                var d = (dow + i) % 7, r = byDow[d];
+                if (r && r.dataset.open === '1') {
+                    status = 'Closed now · opens ' + (i === 1 ? 'tomorrow' : names[d]) + ' at ' + fmt(r.dataset.from);
+                    break;
+                }
             }
         }
-    }
-    document.getElementById('hrsStatus').textContent = status || 'Currently closed';
-    var pill = document.getElementById('hrsPill');
-    pill.hidden = false;
-    pill.textContent = open ? 'Open now' : 'Closed';
-    pill.classList.toggle('is-open', open);
-})();
+        document.getElementById('hrsStatus').textContent = status || 'Currently closed';
+        var pill = document.getElementById('hrsPill');
+        pill.hidden = false;
+        pill.textContent = open ? 'Open now' : 'Closed';
+        pill.classList.toggle('is-open', open);
+    })();
+
+   
+    const FEATURED = {{ \Illuminate\Support\Js::from($featured->values()) }};
+    const ANNOUNCEMENTS = {{ \Illuminate\Support\Js::from($announcements->pluck('message')->values()) }};
+
+    (function () {
+        var INTERVAL = 2000;
+        var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function rotator(slots, items, fill, startDelay) {
+            if (!slots.length || items.length <= slots.length || reduce) return;
+            var page = 0, paused = false;
+            slots.forEach(function (s) {
+                s.addEventListener('mouseenter', function () { paused = true; });
+                s.addEventListener('mouseleave', function () { paused = false; });
+            });
+            function tick() {
+                if (paused || document.hidden || !slots[0].offsetParent) return;
+                page++;
+                slots.forEach(function (slot, i) {
+                    setTimeout(function () {
+                        slot.classList.add('fr-out');
+                        setTimeout(function () {
+                            fill(slot, items[(page * slots.length + i) % items.length]);
+                            slot.style.transition = 'none';
+                            slot.classList.remove('fr-out');
+                            slot.classList.add('fr-pre');
+                            void slot.offsetWidth;
+                            slot.style.transition = '';
+                            slot.classList.remove('fr-pre');
+                        }, 350);
+                    }, i * 120);
+                });
+            }
+            setTimeout(function () { setInterval(tick, INTERVAL); }, startDelay || 0);
+        }
+
+        rotator(
+            [].slice.call(document.querySelectorAll('#featuredBoxes .fr-card')),
+            FEATURED,
+            function (card, r) {
+                card.querySelector('.roomp').textContent = 'Room ' + r.number;
+                card.querySelector('.roomp1').textContent = '— Good For ' + r.beds;
+                card.querySelector('.roomp2, .roomp22').textContent = 'Double Bed For ' + r.decks;
+                card.querySelector('.roomp3').textContent =
+                    '₱' + Math.round(r.price).toLocaleString('en-US') + ' / month';
+            },
+            0
+        );
+
+        rotator(
+            [].slice.call(document.querySelectorAll('#home .anns, #home .anns1')),
+            ANNOUNCEMENTS,
+            function (slot, msg) { slot.querySelector('h1').textContent = msg; },
+            1000
+        );
+    })();
+
+    
+    (function () {
+        var KEY = 'daces_remember_email';
+        var email = document.getElementById('email');
+        var box = document.getElementById('remember');
+        if (!email || !box) return;
+
+        try {
+            var saved = localStorage.getItem(KEY);
+            if (saved && !email.value) { email.value = saved; box.checked = true; }
+        } catch (e) { }
+
+        email.closest('form').addEventListener('submit', function () {
+            try {
+                if (box.checked) localStorage.setItem(KEY, email.value.trim());
+                else localStorage.removeItem(KEY);
+            } catch (e) { }
+        });
+    })();
+   
+    (function () {
+        var email = document.getElementById('email');
+        var label = document.querySelector('label[for="email"]');
+        var wrap = email.closest('.inputs');
+        var card = document.querySelector('.Main');
+        var original = label.textContent;
+
+        function clearWarn() {
+            wrap.classList.remove('warn');
+            label.textContent = original;
+        }
+        email.addEventListener('input', clearWarn);  
+
+        function promptLogin(text) {
+            signupView.hidden = true;
+            loginView.hidden = false;
+            document.querySelectorAll('.message').forEach(function (m) { m.style.display = 'none'; });
+
+            label.textContent = text;
+            wrap.classList.remove('warn');
+            void wrap.offsetWidth;                  
+            wrap.classList.add('warn');
+
+            email.focus({ preventScroll: true });
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        var gModal = document.getElementById('guestPrompt');
+        var gText = document.getElementById('guestPromptText');
+
+        function askGuest(text) {
+            gText.textContent = text;
+            gModal.hidden = false;
+        }
+        function closeGuest() { gModal.hidden = true; }
+
+        document.getElementById('guestPromptGo').addEventListener('click', function () {
+            document.getElementById('guestForm').submit();
+        });
+        document.getElementById('guestPromptLogin').addEventListener('click', function () {
+            closeGuest();
+            promptLogin('Please log in to continue.');
+        });
+        gModal.addEventListener('click', function (e) { if (e.target === gModal) closeGuest(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeGuest(); });
+
+        document.querySelectorAll('.book').forEach(function (b) {
+            b.addEventListener('click', function () { askGuest('Log in to book a room, or continue as a guest to look around first.'); });
+        });
+        document.querySelectorAll('.viewa').forEach(function (b) {
+            b.addEventListener('click', function () { askGuest('Log in to view the rooms, or continue as a guest to browse them.'); });
+        });
+        document.querySelectorAll('.viewsa').forEach(function (b) {
+            b.addEventListener('click', function () { askGuest('Log in to see more details, or continue as a guest to look around.'); });
+        });
+        document.querySelectorAll('.but1').forEach(function (b) {
+            b.addEventListener('click', function () { promptLogin('Please log in to use this feature.'); });
+        });
+    })();
 </script>
 
 </html>

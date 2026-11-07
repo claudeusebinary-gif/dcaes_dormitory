@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use App\Models\Approval;
+use App\Models\AdminNotification;
 use App\Models\Complaint;
 use App\Models\Notification;
 use App\Models\Room;
@@ -470,8 +471,9 @@ public function payments(): View
             'status'      => $c['status'],
             'rank'        => $subs->has($u->id) ? -1 : $rank[$c['status']],
             'submitted'   => (float) (($subs->get($u->id) ?? collect())->sum(fn ($s) => (float) $s->amount + (float) $s->fee)),
+            'submitted_note' => ($subs->get($u->id) ?? collect())->map(fn ($s) => Billing::money((float) $s->amount + (float) $s->fee) . ' for ' . Carbon::parse($s->period . '-01')->format('M Y'))->implode(' + '),
             'approve_ids' => ($subs->get($u->id) ?? collect())->pluck('id')->values()->all(),
-            'label'       => match ($c['status']) { 'paid' => 'AMOUNT PAID', 'partial' => 'PAID SO FAR', default => 'AMOUNT DUE' },
+            'label'       => match ($c['status']) { 'paid' => 'RECORDED PAYMENT', 'partial' => 'PAID SO FAR', default => 'AMOUNT DUE' },
             'amount'      => Billing::money(in_array($c['status'], ['paid', 'partial']) ? $c['paid'] : $c['rent']),
             'sub'         => $sub,
             'balance'     => $c['balance'],
@@ -684,7 +686,7 @@ public function complaints(): View
             'status_url'  => route('admin.complaints.status', $c->id),
         ];
     });
-
+    $cards = $cards->sortBy(fn ($c) => ['open' => 0, 'progress' => 1, 'resolved' => 2][$c['status']] ?? 3)->values();
     $stats = [
         'open'     => $cards->where('status', 'open')->count(),
         'progress' => $cards->where('status', 'progress')->count(),
@@ -809,7 +811,7 @@ public function approvals(): View
                 'relationship' => $ec?->relationship,
                 'phone'        => $ec?->phone,
             ],
-                       'idcard'         => ['type' => $a->id_type, 'number' => $a->id_number],
+                       'idcard'         => ['type' => $a->id_type, 'number' => $a->id_number, 'photo' => $a->id_photo_path ? route('admin.approvals.id-photo', $a->id) : null],
             'request'        => $rr ? [
                 'from'          => $rr->room_number ? 'Room ' . $rr->room_number : null,
                 'to'            => $rr->target_room ? 'Room ' . $rr->target_room . ', Bed ' . $rr->target_bed . ' (' . $rr->target_deck . ')' : null,
@@ -824,7 +826,7 @@ public function approvals(): View
             ],
         ];
     });
-
+    $cards = $cards->sortBy(fn ($c) => $c['status'] === 'pending' ? 0 : 1)->values();
     $stats = [
         'pending'  => $cards->where('status', 'pending')->count(),
         'approved' => $rows->where('status', 'approved')->filter(fn ($a) => $a->updated_at->isCurrentMonth())->count(),
@@ -1016,7 +1018,16 @@ public function staffDestroy(int $id): JsonResponse
 
     return response()->json(['ok' => true, 'message' => 'Staff member removed.']);
 }
+public function clearHistory(): JsonResponse
+{
+    abort_unless(auth()->user()->staff_role === 'owner', 403, 'Only an owner can do this.');
 
+    $count = AdminActivityLog::count();
+    AdminActivityLog::query()->delete();
+    AdminLog::record('history', "Cleared all history ({$count} entries)");
+
+    return response()->json(['ok' => true, 'message' => 'History cleared.']);
+}
 public function savePaymentMethods(Request $request): JsonResponse
 {
     $data = $request->validate([
@@ -1183,6 +1194,13 @@ public function saveNotifications(Request $request): JsonResponse
 
     return response()->json(['ok' => true]);
 }
+public function approvalIdPhoto(int $id)
+{
+    $a = Approval::findOrFail($id);
+    abort_unless($a->id_photo_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($a->id_photo_path), 404);
+
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($a->id_photo_path);
+}
       public function approve(int $id): JsonResponse
 {
     $a = Approval::with('user')->where('status', 'pending')->findOrFail($id);
@@ -1207,13 +1225,16 @@ public function saveNotifications(Request $request): JsonResponse
     $this->syncRoomRequest($a, 'approved');
 
     if ($a->type === 'payment' && $a->period) {
-        $this->recordPayment($a);
+       $this->recordPayment($a);
+if ($a->user) {
+    AdminNotification::fromTenant($a->user, 'Payment confirmed', 'payment of ' . Billing::money((float) $a->amount + (float) $a->fee) . ' for ' . Carbon::parse($a->period . '-01')->format('F Y') . ' was approved.');
+}
     }
 
     if ($a->user_id) {
         Notification::create([
             'tenant_id' => $a->user_id,
-            'title'     => 'Approved',
+           'title'     => $a->type === 'payment' ? 'Payment confirmed' : 'Approved',
             'message'   => match ($a->type) {
                 'new_tenant' => $a->room_number
                     ? "Your booking was approved! Room {$a->room_number}, Bed {$a->bed_number} ({$a->bed_deck}) is now yours. Welcome to D'aces!"
@@ -1281,6 +1302,7 @@ public function saveNotifications(Request $request): JsonResponse
                 'bed_deck'       => $a->bed_deck,
                 'move_in_date'   => $a->move_in_date,
                 'monthly_rent'   => $a->monthly_rent,
+                'valid_id_path'  => $a->id_photo_path ?: $user->valid_id_path,
                 'payment_status' => 'up_to_date',
             ]);
 
@@ -1359,6 +1381,9 @@ Payment::firstOrCreate(
      $a->update(['status' => 'rejected']);
     AdminLog::record('approvals', 'Rejected ' . str_replace('_', ' ', $a->type) . ' request from ' . ($a->user?->display_name ?? $a->applicant_name ?? 'unknown'));
     $this->syncRoomRequest($a, 'rejected');
+    if ($a->type === 'payment' && $a->user) {
+    AdminNotification::fromTenant($a->user, 'Payment rejected', 'payment was rejected.');
+}
 
     if (! $a->is_manual && $a->user_id && $a->type === 'new_tenant' && ! $a->room_number) {
         $a->user->update([
@@ -1370,7 +1395,7 @@ Payment::firstOrCreate(
     if ($a->user_id) {
         Notification::create([
             'tenant_id' => $a->user_id,
-            'title'     => 'Not approved',
+            'title'     => $a->type === 'payment' ? 'Payment not verified' : 'Not approved',
             'message'   => match ($a->type) {
                 'new_tenant' => 'Your room application was declined. The bed was released, so you can book another room.',
                 'payment'    => 'We could not verify your payment. Please contact the admin.',

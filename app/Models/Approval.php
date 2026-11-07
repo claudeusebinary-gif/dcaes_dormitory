@@ -20,7 +20,7 @@ class Approval extends Model
         'room_number', 'bed_number', 'bed_deck', 'move_in_date', 'monthly_rent',
         'period', 'amount', 'fee', 'partial',
         'applicant_name', 'room_label', 'is_manual', 'checks',
-        'occupation', 'civil_status', 'school', 'id_type', 'id_number', 'length_of_stay', 'agreed',
+        'occupation', 'civil_status', 'school', 'id_type', 'id_number', 'id_photo_path', 'length_of_stay', 'agreed',
     ];
 
     protected function casts(): array

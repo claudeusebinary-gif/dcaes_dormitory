@@ -404,11 +404,11 @@ $fields = [
                 <div class="autopayline">
                     <div class="persoge25" style="margin:0;">
                         <h1>Enable auto-pay for monthly rent</h1>
-                        <span>Charges your default method 3 days before due date</span>
+                        <span>You will be reminded before your rent is due</span>
                     </div>
 
                     <label class="switch25">
-                        <input type="checkbox" id="autopaySetting" checked>
+                        <input type="checkbox" id="autopaySetting" @checked(auth()->user()->autopay)>
                         <span class="switch25-track" aria-hidden="true"></span>
                         <span class="sr-only25">Enable auto-pay for monthly rent</span>
                     </label>
@@ -881,16 +881,18 @@ $fields = [
         document.addEventListener('DOMContentLoaded', function () {
 
 
-            var toggle = document.getElementById('autopaySetting');
+                      var toggle = document.getElementById('autopaySetting');
             var saveBtn = document.getElementById('paySave');
             var cancel = document.getElementById('payCancel');
             var status = document.getElementById('payStatus');
+            
             var saved = toggle.checked;
 
             function refresh() {
                 var changed = toggle.checked !== saved;
                 saveBtn.disabled = !changed;
                 cancel.disabled = !changed;
+               
             }
             refresh();
 
@@ -901,12 +903,32 @@ $fields = [
                 refresh();
             });
 
-            saveBtn.addEventListener('click', function () {
+            saveBtn.addEventListener('click', async function () {
                 if (saveBtn.disabled) return;
-                saved = toggle.checked;
-                refresh();
-                status.textContent = 'Payment settings saved.';
-                status.className = 'req-status ok';
+                var want = toggle.checked;
+                saveBtn.disabled = true;
+                try {
+                    var res = await fetch(@json(route('tenant.settings.autopay')), {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': @json(csrf_token())
+                        },
+                        body: JSON.stringify({ autopay: want })
+                    });
+                    var data = await res.json().catch(function () { return {}; });
+                    if (!res.ok) throw new Error(data.message || ('Error ' + res.status));
+                    saved = want;
+                    refresh();
+                    status.textContent = data.message || 'Payment settings saved.';
+                    status.className = 'req-status ok';
+                } catch (e) {
+                    console.error(e);
+                    refresh();
+                    status.textContent = 'Could not save: ' + e.message;
+                    status.className = 'req-status error';
+                }
                 status.hidden = false;
             });
 

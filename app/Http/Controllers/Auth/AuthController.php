@@ -27,8 +27,8 @@ class AuthController extends Controller
         
            'view' => in_array(request('view'), ['login', 'signup'], true) ? request('view') : session('view', 'login'),
             'stats' => DormStats::get(),
-             'featured' => DormStats::featuredRooms(), 
-              'announcements' => Announcement::current()->take(2)->get(),
+                    'featured' => DormStats::featuredRooms(6),
+            'announcements' => Announcement::current()->take(6)->get(),
         ]);
     }
 
@@ -46,9 +46,10 @@ if (Auth::user()->isAdmin()) AdminLog::record('security', 'Logged in');
             return $this->redirectByRole(Auth::user());
         }
 
-        return redirect()->route('login')
+             return redirect()->route('login')
             ->with('error', 'Invalid email or password.')
-            ->with('view', 'login');
+            ->with('view', 'login')
+            ->onlyInput('email', 'remember');
     }
 
     public function signup(Request $request): RedirectResponse

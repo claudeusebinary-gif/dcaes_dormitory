@@ -251,4 +251,39 @@ document.addEventListener('DOMContentLoaded', function () {
     render();
 });
 </script>
+<script>
+(function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function countUp(node, dur) {
+        var txt = node.nodeValue;
+        var m = txt.match(/\d[\d,]*(?:\.\d+)?/);
+        if (!m) return;
+        var raw = m[0];
+        var target = parseFloat(raw.replace(/,/g, ''));
+        var dec = raw.indexOf('.') > -1 ? raw.split('.')[1].length : 0;
+        var pre = txt.slice(0, m.index), post = txt.slice(m.index + raw.length);
+
+        function fmt(v) {
+            return pre + v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + post;
+        }
+
+        node.nodeValue = fmt(0);
+        var start = null;
+        function step(ts) {
+            if (start === null) start = ts;
+            var p = Math.min((ts - start) / dur, 1);
+            node.nodeValue = fmt(target * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(step);
+            else node.nodeValue = txt;
+        }
+        requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('.fournafourbox .fourbox1four h1').forEach(function (el) {
+        var n = el.firstChild;
+        if (n && n.nodeType === 3) countUp(n, 1400);
+    });
+})();
+</script>
 @endsection

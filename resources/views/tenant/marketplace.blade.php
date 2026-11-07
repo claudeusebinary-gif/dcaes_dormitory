@@ -274,6 +274,7 @@
                 var slice = list.slice(from, from + PER_PAGE);
 
                 grid.innerHTML = slice.length ? slice.map(card).join('') : '<p class="mk-empty">No items match your search.</p>';
+                [].forEach.call(grid.children, function (c, i) { c.style.setProperty('--i', i); c.classList.add('rise'); });
                 info.textContent = list.length ? 'Showing ' + (from + 1) + '–' + (from + slice.length) + ' of ' + list.length : 'Showing 0 of 0';
 
                 nums.innerHTML = '';

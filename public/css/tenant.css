@@ -519,6 +519,39 @@
     background-color: #AB1210;
 }
 
+/* Payment status breakdown: fills from 0% to full on page open */
+.breakdown {
+    animation: breakdownFill 1.6s cubic-bezier(.22, .61, .36, 1) .2s both;
+}
+
+@keyframes breakdownFill {
+    from {
+        clip-path: inset(0 100% 0 0);
+    }
+    to {
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* Each color also grows from 0 to its own width */
+.breakdown .seg {
+    animation: segGrow 1.4s cubic-bezier(.22, .61, .36, 1) .2s both;
+}
+
+@keyframes segGrow {
+    from {
+        width: 0;
+    }
+}
+
+/* Respect users who turn animations off in their device settings */
+@media (prefers-reduced-motion: reduce) {
+    .breakdown,
+    .breakdown .seg {
+        animation: none;
+    }
+}
+
 .breakdownyow {
     cursor: pointer;
 }
@@ -790,6 +823,7 @@
     opacity: .6;
     cursor: default;
 }
+
 .tn-panel {
     margin-top: 20px;
     background: #ffffff;
@@ -843,6 +877,7 @@
 .tn-foot {
     align-items: center;
 }
+
 .admintetenant {
     height: auto;
     min-height: 180px;
@@ -889,4 +924,89 @@
 
 .breakdownpababa span {
     line-height: 1.2;
+}
+
+.tn-bulk {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 0 0 14px;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid #672c2c;
+    border-left: 6px solid #672c2c;
+    border-radius: 8px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, .06);
+    animation: tnBulkIn .25s ease;
+    margin-top: 20px;
+}
+
+.tn-bulk[hidden] {
+    display: none;
+}
+
+.tn-bulk-count {
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    color: #672c2c;
+    margin-right: auto;
+}
+
+.tn-bulk-btn {
+    height: 38px;
+    padding: 0 16px;
+    background: #672c2c;
+    border: 1px solid #672c2c;
+    border-radius: 6px;
+    color: #fff;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.tn-bulk-btn:hover {
+    background: #fff;
+    color: #672c2c;
+}
+
+.tn-bulk-danger {
+    background: #fff;
+    color: #c0392b;
+    border-color: #c0392b;
+}
+
+.tn-bulk-danger:hover {
+    background: #c0392b;
+    color: #fff;
+}
+
+.tn-bulk-link {
+    background: none;
+    border: none;
+    color: #666;
+    font-family: 'Nunito Sans', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.tn-bulk button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+@keyframes tnBulkIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

@@ -156,7 +156,7 @@
                         <h1 class="perajue">{{ $c['amount'] }}</h1>
                         <h1 class="duejue">{{ $c['sub'] }}</h1>
                                                 @if ($c['submitted'] > 0)
-                            <h1 class="duejue" style="color:#1060BC;">Sent ₱{{ number_format($c['submitted'], 2) }} · waiting for you to check</h1>
+                            <h1 class="duejue" style="color:#1060BC;">Sent ₱{{ number_format($c['submitted'], 2) }} · to check</h1>
                         @endif
                     </div>
                     <div class="paidinria" @if ($p['box']) style="{{ $p['box'] }}" @endif>
@@ -217,7 +217,7 @@
             <label class="labelnaann" for="payTenant">Tenant / Room</label>
             <select class="kahonnaann" id="payTenant">
                 <option value="">Select a tenant</option>
-             @foreach ($cards->where('can_record', true)->sortBy('name') as $c)
+            @foreach ($cards->where('can_record', true)->sortBy([['rank', 'asc'], ['name', 'asc']]) as $c)
                     <option value="{{ $c['id'] }}" data-target="{{ $c['target'] }}" data-left="{{ $c['target_left'] }}">
                         {{ $c['name'] }} - Room {{ $c['room'] }}{{ $c['bed_no'] ? ', Bed ' . $c['bed_no'] : '' }}
                     </option>

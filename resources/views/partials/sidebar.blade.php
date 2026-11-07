@@ -7,6 +7,39 @@ if ($user->isGuest()) {
     $roleLine = 'Browsing as guest';
 }
 
+       
+    $sbNew = [];
+        if ($isAdmin) {
+               $sbNew['payments']   = \App\Models\Approval::where('type', 'payment')->where('status', 'pending')->whereNotNull('period')->count();
+        $sbNew['approvals']  = \App\Models\Approval::where('status', 'pending')->whereIn('type', array_keys(\App\Models\Approval::TYPES))->count();
+        $sbNew['complaints'] = \App\Models\Complaint::where('status', 'pending')->count();
+    }
+    if (! $isAdmin && ! $user->isGuest()) {
+      
+        $annSeenKey = 'ann_seen_tab_' . $user->id;
+        $annSeen    = (int) \Illuminate\Support\Facades\Cache::get($annSeenKey, 0);
+        $annLatest  = (int) \App\Models\Announcement::current()->reorder()->max('id');
+
+        if ($active === 'announcement') {
+            if ($annLatest > $annSeen) \Illuminate\Support\Facades\Cache::forever($annSeenKey, $annLatest);
+        } else {
+            $sbNew['announcement'] = \App\Models\Announcement::current()
+                ->where('id', '>', $annSeen)
+                ->where('created_at', '>=', now()->subDays(3))
+                ->reorder()->count();
+        }
+
+       
+        $nextInv = collect(\App\Support\Billing::forUser($user)['invoices'])
+            ->where('status', '!=', 'paid')
+            ->where('awaiting', false)
+            ->first();
+        if ($nextInv) {
+            $daysLeft = (int) now()->startOfDay()->diffInDays($nextInv['due']->copy()->startOfDay(), false);
+            if ($daysLeft <= 5) $sbNew['payments'] = 1;
+        }
+    }
+
     $icons = [
         'menu' => '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
         'home' => '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
@@ -88,7 +121,10 @@ if ($user->isGuest()) {
                     <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}" class="sb-link{{ $it['key'] === $active ? ' active' : '' }}"
                         @if ($it['key'] === $active) aria-current="page" @endif title="{{ $it['label'] }}">
                         {!! $icon($it['key']) !!}
-                        <span class="sb-label">{{ $it['label'] }}</span>
+                       <span class="sb-label">{{ $it['label'] }}</span>
+                        @if (($sbNew[$it['key']] ?? 0) > 0)
+                            <span class="sb-new" aria-label="New">{{ ($it['key'] === 'payments' && ! $isAdmin) ? '!' : ($sbNew[$it['key']] > 9 ? '9+' : $sbNew[$it['key']]) }}</span>
+                        @endif
                     </a>
                 </li>
             @endforeach
@@ -102,6 +138,9 @@ if ($user->isGuest()) {
                         @if ($it['key'] === $active) aria-current="page" @endif title="{{ $it['label'] }}">
                         {!! $icon($it['key']) !!}
                         <span class="sb-label">{{ $it['label'] }}</span>
+                        @if (($sbNew[$it['key']] ?? 0) > 0)
+                            <span class="sb-new" aria-label="New">{{ ($it['key'] === 'payments' && ! $isAdmin) ? '!' : ($sbNew[$it['key']] > 9 ? '9+' : $sbNew[$it['key']]) }}</span>
+                        @endif
                     </a>
                 </li>
             @endforeach

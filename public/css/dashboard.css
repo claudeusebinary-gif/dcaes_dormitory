@@ -28,6 +28,7 @@
 
 .upataapatfourboxw1 h2 {
     font-family: 'Inria Serif', serif;
+      font-variant-numeric: tabular-nums;
     font-weight: 900;
     font-size: 2rem;
     color: #672C2C;

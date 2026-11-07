@@ -1400,3 +1400,14 @@
   .badge-payment {
       top: calc(200px + var(--banner-h, 0px));
   }
+.main-content .boxes > .fr-card {
+    transition: opacity .35s ease, transform .35s ease, translate .22s ease, box-shadow .22s ease;
+}
+.main-content .boxes > .fr-card.fr-out {
+    opacity: 0 !important;
+    transform: translateY(-16px) !important;
+}
+.main-content .boxes > .fr-card.fr-pre {
+    opacity: 0 !important;
+    transform: translateY(16px) !important;
+}

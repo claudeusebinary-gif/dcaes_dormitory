@@ -507,3 +507,36 @@ body {
 .sb-subitem-logout:hover {
     background: rgba(255, 255, 255, 0.15);
 }
+.sb-new {
+    margin-left: auto;
+    flex: 0 0 auto;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: rgb(48, 11, 10);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 20px;
+    text-align: center;
+    animation: sbNewPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes sbNewPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.55); }
+    50%      { box-shadow: 0 0 0 5px rgba(229, 57, 53, 0); }
+}
+
+body.sb-collapsed .sb-new {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    min-width: 0;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    font-size: 0;
+    line-height: 0;
+    border: 2px solid var(--sb-bg);
+}

@@ -26,13 +26,33 @@ use App\Support\AdminLog;
 
 class TenantController extends Controller
 {
-    public function home(): View
-    {
-        return view('tenant.home', [
-            'stats' => DormStats::get(),
-             'featured' => DormStats::featuredRooms(),
-        ]);
+   public function home(Request $request): View
+{
+    $reminder = null;
+    $next = collect(Billing::forUser($request->user())['invoices'])
+        ->where('status', '!=', 'paid')
+        ->where('awaiting', false)
+        ->first();
+
+    if ($next) {
+        $days = (int) now()->startOfDay()->diffInDays($next['due']->copy()->startOfDay(), false);
+        $reminder = [
+            'tone' => $days < 0 ? 'bad' : ($days <= 5 ? 'soon' : 'ok'),
+            'text' => match (true) {
+                $days < 0   => 'Rent overdue by ' . abs($days) . ' day' . (abs($days) === 1 ? '' : 's'),
+                $days === 0 => 'Rent due today',
+                $days === 1 => 'Rent due tomorrow',
+                default     => 'Rent due in ' . $days . ' days',
+            },
+        ];
     }
+
+    return view('tenant.home', [
+        'stats'    => DormStats::get(),
+       'featured' => DormStats::featuredRooms(6),
+        'reminder' => $reminder,
+    ]);
+}
 
     public function profile(): View { return view('tenant.profile'); }
 
@@ -48,14 +68,19 @@ public function rooms(): View
 {
     $tenants = User::where('role', 'tenant')->whereNotNull('room_number')->get();
 
-    // beds booked but still waiting for admin approval are shown as taken
+    
     $held = Approval::where('type', 'new_tenant')->where('status', 'pending')
         ->whereNotNull('room_number')->get()
-        ->map(fn ($a) => new User([
-            'room_number' => $a->room_number,
-            'bed_number'  => $a->bed_number,
-            'bed_deck'    => $a->bed_deck,
-        ]));
+              ->map(function ($a) {
+            $u = new User([
+                'room_number' => $a->room_number,
+                'bed_number'  => $a->bed_number,
+                'bed_deck'    => $a->bed_deck,
+            ]);
+            $u->setAttribute('pending_booking', true);
+
+            return $u;
+        });
 
     return view('tenant.rooms', [
         'summary' => DormStats::listing(),
@@ -106,11 +131,12 @@ public function book(Request $request): JsonResponse
         'school_employer'   => ['nullable', 'string', 'max:150'],
         'id_type'           => ['nullable', 'string', 'max:50'],
         'id_number'         => ['nullable', 'string', 'max:50'],
+        'id_photo'          => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
         'length_of_stay'    => ['nullable', 'string', 'max:30'],
         'agree'             => ['nullable'],
     ]);
 
-    return DB::transaction(function () use ($user, $data) {
+   return DB::transaction(function () use ($user, $data, $request) {
         $room = Room::where('room_number', $data['room'])->lockForUpdate()->first();
 
         if ($room->under_maintenance) {
@@ -170,6 +196,7 @@ public function book(Request $request): JsonResponse
             'school'         => $data['school_employer'] ?? null,
             'id_type'        => $data['id_type'] ?? null,
             'id_number'      => $data['id_number'] ?? null,
+            'id_photo_path'  => $request->file('id_photo')->store('ids', 'local'),
             'length_of_stay' => $data['length_of_stay'] ?? null,
             'agreed'         => ! empty($data['agree']),
         ]);
@@ -408,6 +435,17 @@ public function updateNotifications(Request $request): JsonResponse
     $request->user()->update(['notification_prefs' => $data]);
 
     return response()->json(['ok' => true, 'message' => 'Notification settings saved.']);
+}
+public function updateAutopay(Request $request): JsonResponse
+{
+    $data = $request->validate(['autopay' => ['required', 'boolean']]);
+    $request->user()->update(['autopay' => $data['autopay']]);
+
+    return response()->json([
+        'ok'      => true,
+        'autopay' => (bool) $data['autopay'],
+        'message' => $data['autopay'] ? 'Autopay turned on.' : 'Autopay turned off.',
+    ]);
 }
 public function document(Request $request, string $type)
 {

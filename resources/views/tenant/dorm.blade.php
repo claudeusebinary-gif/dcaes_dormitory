@@ -310,6 +310,41 @@
 @endsection
 @push('scripts')
 <script>
+(function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function countUp(node, dur) {
+        var txt = node.nodeValue;
+        var m = txt.match(/\d[\d,]*(?:\.\d+)?/);
+        if (!m) return;
+        var raw = m[0];
+        var target = parseFloat(raw.replace(/,/g, ''));
+        var dec = raw.indexOf('.') > -1 ? raw.split('.')[1].length : 0;
+        var pre = txt.slice(0, m.index), post = txt.slice(m.index + raw.length);
+
+        function fmt(v) {
+            return pre + v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + post;
+        }
+
+        node.nodeValue = fmt(0);
+        var start = null;
+        function step(ts) {
+            if (start === null) start = ts;
+            var p = Math.min((ts - start) / dur, 1);
+            node.nodeValue = fmt(target * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(step);
+            else node.nodeValue = txt;
+        }
+        requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('.up h1.t, .up .percint').forEach(function (el) {
+        var n = el.firstChild;
+        if (n && n.nodeType === 3) countUp(n, 1400);
+    });
+})();
+</script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     const rooms  = JSON.parse(document.getElementById('roomData').textContent);
     const boxes  = document.querySelectorAll('.siven, .siven4, .upatbx');
@@ -398,13 +433,35 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
 
  
+    const tip = document.createElement('div');
+    tip.className = 'map-tip';
+    tip.setAttribute('role', 'tooltip');
+    document.body.appendChild(tip);
+
+    function tipShow(box) {
+        const n = parseInt(box.querySelector('.ruums').textContent.replace(/\D/g, ''), 10);
+        const r = rooms[n];
+        if (!r) return;
+        tip.className = 'map-tip ' + r.status;
+        tip.innerHTML = '<b>Room ' + n + '</b>' +
+            '<span>' + (r.free > 0 ? r.free + (r.free === 1 ? ' bed space free' : ' bed spaces free') : 'Fully booked') + '</span>' +
+            '<small>' + r.occupied + '/' + r.capacity + ' occupied</small>';
+        const b = box.getBoundingClientRect();
+        tip.style.left = (b.left + b.width / 2) + 'px';
+        tip.style.top = b.top + 'px';
+        tip.classList.add('on');
+    }
+    function tipHide() { tip.classList.remove('on'); }
+    window.addEventListener('scroll', tipHide, { passive: true });
+
     boxes.forEach(box => {
-        box.addEventListener('mouseenter', () => show(box));
-        box.addEventListener('mouseleave', () => pinned ? show(pinned) : reset());
+        box.addEventListener('mouseenter', () => { show(box); tipShow(box); });
+        box.addEventListener('mouseleave', () => { tipHide(); pinned ? show(pinned) : reset(); });
         box.addEventListener('click', () => {
+            tipHide();
             if (pinned) pinned.classList.remove('picked');
             pinned = box;
-            box.classList.add('picked');    
+            box.classList.add('picked');
             show(box);
             openModal(box);
         });

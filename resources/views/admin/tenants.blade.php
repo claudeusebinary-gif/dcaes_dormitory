@@ -118,7 +118,12 @@
         </span>
     </button>
 </div>
-
+<div class="tn-bulk" id="tnBulk" hidden>
+    <span class="tn-bulk-count" id="tnBulkCount"></span>
+    <button type="button" class="tn-bulk-btn" id="tnBulkRemind">Send Payment Reminder</button>
+    <button type="button" class="tn-bulk-btn tn-bulk-danger" id="tnBulkDelete">Delete Selected</button>
+    <button type="button" class="tn-bulk-link" id="tnBulkClear">Clear</button>
+</div>
 <div class="tn-panel">
 
     <div class="listnaetonangbreakdown" id="tnList">
@@ -284,6 +289,7 @@
         $('tnPager').innerHTML = p;
 
         $('tnAll').checked = slice.length > 0 && slice.every(function (t) { return sel[t.id]; });
+                updateBulk();
         document.querySelectorAll('#tnLegend .breakdownyow').forEach(function (el) {
             el.classList.toggle('is-on', el.dataset.s === st.pay);
         });
@@ -418,7 +424,67 @@
             .catch(function (err) { toast(err.message, true); })
             .then(function () { btn.disabled = false; btn.textContent = 'Yes, delete'; });
     });
+    /* ===== Bulk actions for the checked tenants ===== */
+    var REMIND_URL = @json(url('/admin/payments'));
 
+    function chosen() {
+        return T.filter(function (t) { return sel[t.id]; });
+    }
+    function updateBulk() {
+        var n = chosen().length;
+        $('tnBulk').hidden = n === 0;
+        $('tnBulkCount').textContent = n + (n === 1 ? ' tenant selected' : ' tenants selected');
+    }
+    function runEach(items, fn) {          // one after another, never all at once
+        var done = [], failed = [];
+        return items.reduce(function (p, t) {
+            return p.then(function () {
+                return fn(t).then(
+                    function () { done.push(t); },
+                    function (err) { failed.push({ t: t, msg: err.message }); }
+                );
+            });
+        }, Promise.resolve()).then(function () { return { done: done, failed: failed }; });
+    }
+    function setBusy(on) {
+        ['tnBulkRemind', 'tnBulkDelete', 'tnBulkClear'].forEach(function (id) { $(id).disabled = on; });
+    }
+    function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
+
+    $('tnBulkClear').addEventListener('click', function () { sel = {}; render(); });
+
+    $('tnBulkRemind').addEventListener('click', function () {
+        var all = chosen();
+        var list = all.filter(function (t) { return t.status !== 'paid'; });
+        if (!list.length) { toast('The selected tenants are all paid. Nothing to remind.', true); return; }
+        setBusy(true);
+        runEach(list, function (t) { return api(REMIND_URL + '/' + t.id + '/remind', 'POST'); })
+            .then(function (r) {
+                var skipped = all.length - r.done.length;
+                toast('Reminder sent to ' + plural(r.done.length, 'tenant')
+                    + (skipped ? ' · ' + skipped + ' skipped (already paid or reminded today)' : '') + '.', r.done.length === 0);
+                sel = {};
+                render();
+            })
+            .then(function () { setBusy(false); });
+    });
+
+    $('tnBulkDelete').addEventListener('click', function () {
+        var list = chosen();
+        if (!list.length) return;
+        if (!confirm('Permanently delete ' + plural(list.length, 'tenant') + '? Their accounts, payments, complaints, messages and marketplace listings will be removed. This cannot be undone.')) return;
+        setBusy(true);
+        runEach(list, function (t) { return api(DEL_URL + '/' + t.id, 'DELETE'); })
+            .then(function (r) {
+                var gone = {};
+                r.done.forEach(function (t) { gone[t.id] = 1; delete sel[t.id]; });
+                T = T.filter(function (x) { return !gone[x.id]; });
+                summary();
+                render();
+                toast(plural(r.done.length, 'tenant') + ' deleted.' + (r.failed.length ? ' ' + r.failed.length + ' failed.' : ''), r.done.length === 0);
+            })
+            .then(function () { setBusy(false); });
+    });
     summary();
     render();
 })();

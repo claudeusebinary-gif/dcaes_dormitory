@@ -20,7 +20,7 @@ use App\Http\Controllers\DirectChatController;
 
 // Public: landing page with login / sign-up panels 
 Route::get('/', [AuthController::class, 'show'])->middleware(NoStore::class)->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('login.submit');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup');
 Route::post('/guest', [AuthController::class, 'guest'])->name('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -52,6 +52,7 @@ Route::middleware([AuthOrGuest::class, NoStore::class])->group(function () {
         Route::put('/settings/general', [TenantController::class, 'updateGeneral'])->name('settings.general');
         Route::put('/settings/billing-email', [TenantController::class, 'updateBillingEmail'])->name('settings.billing-email');
         Route::put('/settings/notifications', [TenantController::class, 'updateNotifications'])->name('settings.notifications');
+                Route::put('/settings/autopay', [TenantController::class, 'updateAutopay'])->middleware('throttle:20,1')->name('settings.autopay');
         Route::put('/settings/password', [TenantController::class, 'updatePassword'])->middleware('throttle:5,1')->name('settings.password');
         Route::delete('/settings/sessions/{id}', [TenantController::class, 'logoutSession'])->where('id', '[A-Za-z0-9]+')->name('settings.sessions.destroy');
         Route::post('/settings/move-out', [RoomRequestController::class, 'moveOut'])->middleware('throttle:10,1')->name('requests.move-out');
@@ -120,6 +121,7 @@ Route::put('/settings/general',  [AdminController::class, 'saveGeneral'])->name(
 Route::post('/settings/logo',    [AdminController::class, 'uploadLogo'])->middleware('throttle:10,1')->name('settings.logo');
 Route::delete('/settings/logo',  [AdminController::class, 'removeLogo'])->name('settings.logo.remove');
 Route::put('/settings/security', [AdminController::class, 'saveSecurity'])->name('settings.security');
+Route::delete('/settings/history', [AdminController::class, 'clearHistory'])->name('settings.history.clear');
 Route::put('/settings/password', [TenantController::class, 'updatePassword'])->middleware('throttle:5,1')->name('settings.password');
 Route::post('/settings/sessions/others', [AdminController::class, 'logoutOtherSessions'])->name('settings.sessions.others');
 Route::delete('/settings/sessions/{id}', [TenantController::class, 'logoutSession'])->where('id', '[A-Za-z0-9]+')->name('settings.sessions.destroy');
@@ -127,6 +129,7 @@ Route::delete('/settings/sessions/{id}', [TenantController::class, 'logoutSessio
         Route::post('/approvals/{id}/reject', [AdminController::class, 'reject'])->whereNumber('id')->name('approvals.reject');
                 Route::post('/approvals', [AdminController::class, 'approvalStore'])->name('approvals.store');
         Route::post('/approvals/{id}/check', [AdminController::class, 'approvalCheck'])->whereNumber('id')->name('approvals.check');
+                Route::get('/approvals/{id}/id-photo', [AdminController::class, 'approvalIdPhoto'])->whereNumber('id')->name('approvals.id-photo');
         Route::post('/announcements', [AdminController::class, 'announcementStore'])->name('announcements.store');
         Route::put('/announcements/{id}', [AdminController::class, 'announcementUpdate'])->whereNumber('id')->name('announcements.update');
         Route::delete('/announcements/{id}', [AdminController::class, 'announcementDestroy'])->whereNumber('id')->name('announcements.destroy');

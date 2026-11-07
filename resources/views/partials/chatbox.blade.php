@@ -276,7 +276,7 @@
     setInterval(function () {
         if (cur && !box.hidden && !box.classList.contains('is-min') && !document.hidden) loadThread(false);
     }, 4000);
-    setInterval(refreshInbox, 15000);
+       setInterval(function () { if (!document.hidden) refreshInbox(); }, 15000);
 
     window.DaceChat = { open: open, refresh: refreshInbox };
 

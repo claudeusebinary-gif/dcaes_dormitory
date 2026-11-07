@@ -105,20 +105,22 @@
                 data-search="{{ strtolower('room ' . $room->room_number . ' ' . $room->sharing_type . ' ' . $room->bed_type) }}"
                 data-tenants="{{ $inRoom->count() }}" data-free="{{ $freeBeds }}" data-price="{{ round($share) }}"
                 data-bedtype="{{ $room->bed_type }}" data-maintenance="{{ $room->under_maintenance ? 1 : 0 }}">
-                <div class="saleft">
-                    @if ($room->photo)
-                        <img src="{{ asset($room->photo) }}" alt="Room {{ $room->room_number }}" class="roomimg">
-                    @else
-                        <div class="bedicon">
-                            <svg viewBox="0 0 24 24">
-                                <path d="M3 5v14" />
-                                <circle cx="7.5" cy="10.5" r="2" />
-                                <path d="M11.5 10h7.5a2 2 0 0 1 2 2v7" />
-                                <path d="M3 16h18" />
-                            </svg>
-                        </div>
-                        <h1 class="roomputo">Room photo</h1>
-                    @endif
+                @php
+                    $bedsFull = 0;
+                    for ($bn = 1; $bn <= $room->total_beds; $bn++) {
+                        if ($inRoom->where('bed_number', $bn)->count() >= $fullAt) {
+                            $bedsFull++;
+                        }
+                    }
+                    $bedsOpen = max(0, $room->total_beds - $bedsFull);
+                    $fillPct = $room->total_beds ? round($bedsFull / $room->total_beds * 100) : 0;
+                @endphp
+                <div class="saleft rp">
+                    <span
+                        class="rp-chip">{{ $bedsOpen > 0 ? $bedsOpen . ($bedsOpen === 1 ? ' BED FREE' : ' BEDS FREE') : 'FULL' }}</span>
+                    <div class="rp-num">{{ $room->room_number }}</div>
+                    <div class="rp-occ">{{ $bedsFull }} of {{ $room->total_beds }} beds taken<i><b
+                                style="width: {{ $fillPct }}%"></b></i></div>
                 </div>
 
                 <div class="saright">
@@ -134,9 +136,13 @@
                                 $taken = $bedPeople->count();
                                 $occupied = $taken >= $fullAt;
                                 $bedTitle = \App\Support\DormStats::bedTitle($bedPeople);
+                                $pendingOnBed = $bedPeople->where('pending_booking', true)->count();
+                                $bookedOnly = $occupied && $pendingOnBed === $taken;
+                                $bedLabel = $bookedOnly ? 'Booked' : ($occupied ? 'Occupied' : 'Available');
+                                $bedNote = $pendingOnBed > 0 ? ' (' . $pendingOnBed . ' waiting for admin approval)' : '';
                             @endphp
 
-                            <div class="sixulit {{ $occupied ? 'occupied' : 'free' }}">
+                            <div class="sixulit {{ $occupied ? 'occupied' : 'free' }} {{ $bookedOnly ? 'pending' : '' }}">
                                 <div class="aycon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                         <path d="M4 3v18" />
@@ -147,8 +153,7 @@
                                         <path d="M7 14.5h3" />
                                     </svg></div>
                                 <h1 class="lowerdck">Bed {{ $b }} · {{ $bedTitle }}</h1>
-                                <span class="okyupayd"
-                                    title="{{ $taken }} of 2 decks taken">{{ $occupied ? 'Occupied' : 'Available' }}</span>
+                                <span class="okyupayd" title="{{ $taken }} of 2 decks taken{{ $bedNote }}">{{ $bedLabel }}</span>
                             </div>
                         @endfor
                     </div>
@@ -2347,14 +2352,16 @@
                 payBtnEl.textContent = 'Processing...';
 
                 try {
+                    const fd = new FormData();
+                    Object.entries(bookingData).forEach(([k, v]) => fd.append(k, v));
+
                     const res = await fetch(bookUrl, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
                             'Accept': 'application/json',
                             'X-CSRF-TOKEN': bookCsrf
                         },
-                        body: JSON.stringify(bookingData)
+                        body: fd
                     });
                     const data = await res.json().catch(() => ({}));
 

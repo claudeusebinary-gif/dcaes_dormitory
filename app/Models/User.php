@@ -19,6 +19,7 @@ class User extends Authenticatable
     'move_in_date', 'monthly_rent', 'payment_status',
        'sex', 'birthday', 'address', 'civil_status', 'occupation', 'billing_email',
 'notification_prefs',
+'autopay',
 'staff_role','valid_id_path', 'lease_path', 'barangay_clearance_path',
 ];
 
@@ -48,6 +49,7 @@ public function getAgeAttribute(): ?int
         'monthly_rent' => 'decimal:2',
         'birthday' => 'date',
         'notification_prefs' => 'array',
+        'autopay'            => 'boolean',
     ];
 }
 public function getMoveInDateLabelAttribute(): string

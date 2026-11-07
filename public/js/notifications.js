@@ -40,7 +40,7 @@
             setUnread(data.unread);
             list.innerHTML = data.items.length
                 ? data.items.map(n => `
-                    <div class="notif-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}">
+                    <div class="notif-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}" data-key="${esc(n.key || '')}">
                         <b>${esc(n.title)}</b>
                         <p>${esc(n.message)}</p>
                         <small>${ago(n.created_at)}</small>
@@ -49,11 +49,12 @@
         } catch (e) { console.error('Notifications failed', e); }
     }
 
-    function post(url) {
+    function post(url, data) {
         return fetch(url, {
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': csrf, 'Accept': 'application/json' },
-            credentials: 'same-origin'
+            credentials: 'same-origin',
+            body: data ? new URLSearchParams(data) : undefined
         });
     }
 
@@ -67,7 +68,7 @@
     list.addEventListener('click', async e => {
         const item = e.target.closest('.notif-item');
         if (!item || !item.classList.contains('unread')) return;
-        await post(READ_URL.replace('__ID__', item.dataset.id));
+        await post(READ_URL.replace('__ID__', item.dataset.id), { key: item.dataset.key });
         load();
     });
 
@@ -81,5 +82,79 @@
     });
 
     load();
-    setInterval(load, 30000);
+      setInterval(function () { if (!document.hidden) load(); }, 30000);
+})();
+/* ===== Fade-up stagger on load ===== */
+(function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var SEL = [
+        '.bxsa', '.boxes > div', '.sixbs', '.lagayan',   // tenant home
+        '.upatnaapatbox1',                               // tenant payments
+        '.fournafourbox1', '.boxnabrown1',               // announcements
+        '.roomstart',                                    // rooms list
+        '.upataapatfourboxw1',                           // admin dashboard
+        '.siven', '.siven4', '.upatbx'                   // dorm map
+    ].join(',');
+
+    function run() {
+        document.querySelectorAll(SEL).forEach(function (el, i) {
+            el.style.setProperty('--i', Math.min(i, 12));   // cap so late cards don't wait long
+            el.classList.add('rise');
+        });
+    }
+
+    var tries = 0;
+    function go() {
+        var c = document.getElementById('pageCurtain');
+        if (c && c.classList.contains('covered') && tries++ < 40) { setTimeout(go, 50); return; }
+        run();
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go);
+    else go();
+})();
+/* ===== Rotating featured rooms (every 2 seconds) ===== */
+(function () {
+    var INTERVAL = 2000; // change this to speed up or slow down (milliseconds)
+    var items = window.FEATURED_ROOMS || [];
+    var slots = [].slice.call(document.querySelectorAll('#featuredBoxes .fr-card'));
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!slots.length || items.length <= slots.length || reduce) return;
+
+    var page = 0, paused = false;
+    slots.forEach(function (s) {
+        s.addEventListener('mouseenter', function () { paused = true; });
+        s.addEventListener('mouseleave', function () { paused = false; });
+    });
+
+    function fill(card, r) {
+        card.querySelector('.roomp').textContent = 'Room ' + r.number;
+        card.querySelector('.roomp1').textContent = '— Good For ' + r.beds;
+        card.querySelector('.roomp2, .roomp22').textContent = 'Double Bed For ' + r.decks;
+        card.querySelector('.roomp3').textContent =
+            '₱' + Math.round(r.price).toLocaleString('en-US') + ' / month';
+    }
+
+    function tick() {
+        if (paused || document.hidden || !slots[0].offsetParent) return;
+        page++;
+        slots.forEach(function (slot, i) {
+            setTimeout(function () {
+                slot.classList.add('fr-out');
+                setTimeout(function () {
+                    fill(slot, items[(page * slots.length + i) % items.length]);
+                    slot.style.transition = 'none';
+                    slot.classList.remove('fr-out');
+                    slot.classList.add('fr-pre');
+                    void slot.offsetWidth;
+                    slot.style.transition = '';
+                    slot.classList.remove('fr-pre');
+                }, 350);
+            }, i * 120);
+        });
+    }
+
+    setInterval(tick, INTERVAL);
 })();

@@ -181,12 +181,20 @@ public static function featuredRooms(int $limit = 2): \Illuminate\Support\Collec
 }
     public const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+    private static ?array $settingsCache = null;
+
     public static function setting(string $key, $default = null)
     {
-        if (! Schema::hasTable('dorm_settings')) {
-            return $default;
+        if (self::$settingsCache === null) {
+            try {
+                // one query for ALL settings, once per request
+                self::$settingsCache = DB::table('dorm_settings')->pluck('value', 'key')->all();
+            } catch (\Throwable $e) {
+                self::$settingsCache = [];   // table doesn't exist yet
+            }
         }
-        $raw = DB::table('dorm_settings')->where('key', $key)->value('value');
+
+        $raw = self::$settingsCache[$key] ?? null;
         if ($raw === null) {
             return $default;
         }
@@ -199,8 +207,9 @@ public static function featuredRooms(int $limit = 2): \Illuminate\Support\Collec
     {
         DB::table('dorm_settings')->updateOrInsert(
             ['key' => $key],
-            ['value' => json_encode($value), 'updated_at' => now()]
+                     ['value' => json_encode($value), 'updated_at' => now()]
         );
+        self::$settingsCache = null;   // reload after a save
     }
 
     public static function frontDesk(): array

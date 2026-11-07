@@ -270,6 +270,10 @@
                             <div class="av-fields one">
                                 <div class="av-field"><small>ID type</small><b id="avIdType"></b></div>
                                 <div class="av-field"><small>ID number</small><b id="avIdNo"></b></div>
+                                <div class="av-field" id="avIdPhotoRow" style="display:none;">
+    <small>ID photo</small>
+    <a id="avIdPhotoLink" href="#" target="_blank"><img id="avIdPhoto" alt="Valid ID" style="max-width:100%; border-radius:8px; border:1px solid #0002; margin-top:6px;"></a>
+</div>
                             </div>
                         </div>
                         <div class="av-card">
@@ -555,6 +559,9 @@
                     put('avPhone', c.contact.phone); put('avEmail', c.contact.email); put('avAddress', c.contact.address);
                     put('avEcName', c.emergency.name); put('avEcRel', c.emergency.relationship); put('avEcPhone', c.emergency.phone);
                     put('avIdType', c.idcard.type); put('avIdNo', c.idcard.number);
+                    const ph = c.idcard.photo;
+$('avIdPhotoRow').style.display = ph ? '' : 'none';
+if (ph) { $('avIdPhoto').src = ph; $('avIdPhotoLink').href = ph; }
                     put('avDate', c.movein.date); put('avStay', c.movein.stay);
                     const cert = $('avCert');
                     cert.textContent = c.movein.agreed ? '✓ Agreed to house rules & terms of stay' : 'Not confirmed';

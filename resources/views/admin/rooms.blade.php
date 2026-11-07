@@ -144,20 +144,22 @@
                     data-tenants="{{ $inRoom->count() }}" data-free="{{ $freeBeds }}"
                     data-price="{{ round($room->price_per_bed) }}" data-bedtype="{{ $room->bed_type }}"
                     data-maintenance="{{ $room->under_maintenance ? 1 : 0 }}">
-                    <div class="saleft">
-                        @if ($paths)
-                            <img src="{{ $urls[0] }}" alt="Room {{ $room->room_number }}" class="roomimg">
-                        @else
-                            <div class="bedicon">
-                                <svg viewBox="0 0 24 24">
-                                    <path d="M3 5v14" />
-                                    <circle cx="7.5" cy="10.5" r="2" />
-                                    <path d="M11.5 10h7.5a2 2 0 0 1 2 2v7" />
-                                    <path d="M3 16h18" />
-                                </svg>
-                            </div>
-                            <h1 class="roomputo">Room photo</h1>
-                        @endif
+                    @php
+                        $bedsFull = 0;
+                        for ($bn = 1; $bn <= $room->total_beds; $bn++) {
+                            if ($inRoom->where('bed_number', $bn)->count() >= $fullAt) {
+                                $bedsFull++;
+                            }
+                        }
+                        $bedsOpen = max(0, $room->total_beds - $bedsFull);
+                        $fillPct = $room->total_beds ? round($bedsFull / $room->total_beds * 100) : 0;
+                    @endphp
+                    <div class="saleft rp">
+                        <span
+                            class="rp-chip">{{ $bedsOpen > 0 ? $bedsOpen . ($bedsOpen === 1 ? ' BED FREE' : ' BEDS FREE') : 'FULL' }}</span>
+                        <div class="rp-num">{{ $room->room_number }}</div>
+                        <div class="rp-occ">{{ $bedsFull }} of {{ $room->total_beds }} beds taken<i><b
+                                    style="width: {{ $fillPct }}%"></b></i></div>
                     </div>
 
                     <div class="saright">
@@ -222,7 +224,7 @@
             @endforelse
         </div>
         <p class="no-rooms" id="noRooms" hidden>No rooms match your search.</p>
-                <div class="ann-pager" id="roomPager"></div>
+        <div class="ann-pager" id="roomPager"></div>
         <div class="roommodals" id="roomModal" role="dialog" aria-modal="true" aria-hidden="true">
             <div class="wala">
                 <button type="button" class="goback" data-close-modal>
@@ -587,7 +589,7 @@
             const icon = inner => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>';
             const BED_SVG = icon('<path d="M4 3v18"/><path d="M20 3v18"/><path d="M4 10h16"/><path d="M4 17h16"/><path d="M7 7.5h3"/><path d="M7 14.5h3"/>');
             const CUSTOM_ICON = '<circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>';
-         const PRESETS = @json(\App\Support\DormStats::roomSettings()['amenities']).map(n => ({ name: n, icon: CUSTOM_ICON }));
+            const PRESETS = @json(\App\Support\DormStats::roomSettings()['amenities']).map(n => ({ name: n, icon: CUSTOM_ICON }));
 
             function fillSelect(sel, list, value) {
                 const opts = list.slice();

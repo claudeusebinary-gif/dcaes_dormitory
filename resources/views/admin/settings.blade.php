@@ -508,6 +508,13 @@
     <div class="st-panel" data-panel="history">
         <h2 class="st-title">History</h2>
         <h1 class="yoursas">Everything admins did across the dormitory system.</h1>
+                @if (auth()->user()->staff_role === 'owner')
+            <div style="margin-top:14px; display:flex; align-items:center; gap:12px;">
+                <button type="button" class="buttonparasave2" id="histClear"
+                    style="width:auto; padding:0 18px;" {{ $history->isEmpty() ? 'disabled' : '' }}>Delete All History</button>
+                <p class="req-status" id="histStatus" hidden></p>
+            </div>
+        @endif
 
         <div style="margin-top:20px; overflow-x:auto;">
            <table class="hist-table">
@@ -949,6 +956,20 @@ $('secSave').addEventListener('click', function () {
     }).catch(function () { say($('secStatus'), 'Network error. Please try again.', 'error'); secRefresh(); });
 });
 secRefresh();
+var histBtn = $('histClear');
+if (histBtn) {
+    histBtn.addEventListener('click', function () {
+        if (!confirm('Delete ALL history? This cannot be undone.')) return;
+        histBtn.disabled = true;
+        api('{{ route('admin.settings.history.clear') }}', 'DELETE').then(function (res) {
+            if (!res.ok) { say($('histStatus'), firstError(res.d), 'error'); histBtn.disabled = false; return; }
+            location.reload();   // stays on the History tab and shows the fresh list
+        }).catch(function () {
+            say($('histStatus'), 'Network error. Please try again.', 'error');
+            histBtn.disabled = false;
+        });
+    });
+}
     var staffUrl = '{{ route('admin.settings.staff.store') }}';
     var modal = $('staffModal'), editId = null;
 

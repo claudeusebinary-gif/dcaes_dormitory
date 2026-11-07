@@ -319,3 +319,9 @@
     content: "· ";
     color: #00000075;
 }
+.tickercollected1 .paidjuesakapaid .duejue {
+    white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

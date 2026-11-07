@@ -67,8 +67,8 @@
                         <path d="M21 13v2a4 4 0 0 1-4 4H3" />
                     </svg></div>
             </div>
-            <h1 class="perapera">On</h1>
-            <div class="duevoice"><span id="autopayMethod">Charges GCash on due date</span></div>
+            <h1 class="perapera" id="autopayState">{{ auth()->user()->autopay ? 'On' : 'Off' }}</h1>
+            <div class="duevoice duevoice-fit"><span id="autopayMethod">{{ auth()->user()->autopay ? 'You will be reminded before the due date' : 'Autopay is turned off' }}</span></div>
         </div>
     </div>
     <div class="invoice">
@@ -247,7 +247,7 @@
                 </div>
 
                 <label class="toggle39">
-                    <input type="checkbox" id="autopayToggle" checked>
+                    <input type="checkbox" id="autopayToggle" @checked(auth()->user()->autopay)>
                     <span class="toggle39-track" aria-hidden="true"></span>
                     <span class="sr-only39">Autopay</span>
                 </label>
@@ -463,14 +463,49 @@
     <circle cx="12" cy="12" r="10" />
     <path d="m9 12 2 2 4-4" />
 </svg></div>
-<h2 class="paymentsuc">Payment Successful</h2>
-<h1 class="paymentsuc1" id="successText">₱0.00 paid via GCash</h1>
-<span class="paymentsuc2">A receipt has been sent to your account</span>
+<h2 class="paymentsuc">Payment Sent</h2>
+<h1 class="paymentsuc1" id="successText">₱0.00 sent via GCash</h1>
+<span class="paymentsuc2">Please wait for the admin to confirm your payment. Your invoice will show as paid once it's approved.</span>
         <button type="button" id="doneBtn" class="contopay1">Done</button>
     </div>
 </div>
 @endsection
 @push('scripts')
+<script>
+(function () {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    function countUp(node, dur) {
+        var txt = node.nodeValue;
+        var m = txt.match(/\d[\d,]*(?:\.\d+)?/);
+        if (!m) return;
+        var raw = m[0];
+        var target = parseFloat(raw.replace(/,/g, ''));
+        var dec = raw.indexOf('.') > -1 ? raw.split('.')[1].length : 0;
+        var pre = txt.slice(0, m.index), post = txt.slice(m.index + raw.length);
+
+        function fmt(v) {
+            return pre + v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) + post;
+        }
+
+        node.nodeValue = fmt(0);
+        var start = null;
+        function step(ts) {
+            if (start === null) start = ts;
+            var p = Math.min((ts - start) / dur, 1);
+            node.nodeValue = fmt(target * (1 - Math.pow(1 - p, 3)));
+            if (p < 1) requestAnimationFrame(step);
+            else node.nodeValue = txt;
+        }
+        requestAnimationFrame(step);
+    }
+
+    document.querySelectorAll('.upatnaapatbox1 .perapera').forEach(function (el) {
+        var n = el.firstChild;
+        if (n && n.nodeType === 3) countUp(n, 1400);
+    });
+})();
+</script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -792,5 +827,42 @@ if (firstOn) {
             else if (!payModal2.hidden) closePay2(false);
         });
     });
+</script>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var toggle = document.getElementById('autopayToggle');
+    var state  = document.getElementById('autopayState');
+    var method = document.getElementById('autopayMethod');
+    var box    = state ? state.closest('.upatnaapatbox1') : null;
+    var url    = @json(route('tenant.settings.autopay'));
+    var busy   = false;
+
+    function paint(on) {
+        if (toggle) toggle.checked = on;
+        if (state)  state.textContent = on ? 'On' : 'Off';
+        if (method) method.textContent = on ? 'You will be reminded before the due date' : 'Autopay is turned off';
+    }
+
+    function save(on) {
+        if (busy) return;
+        busy = true;
+        paint(on);
+        fetch(url, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': @json(csrf_token()) },
+            body: JSON.stringify({ autopay: on })
+        }).then(function (r) { if (!r.ok) throw new Error(); })
+          .catch(function () { paint(!on); alert('Could not save Autopay. Please try again.'); })
+          .finally(function () { busy = false; });
+    }
+
+    if (toggle) toggle.addEventListener('change', function () { save(toggle.checked); });
+    if (box) {
+        box.style.cursor = 'pointer';
+        box.addEventListener('click', function () { save(state.textContent.trim() !== 'On'); });
+    }
+});
 </script>
 @endpush
