@@ -1225,7 +1225,7 @@
      display: flex;
      align-items: center;
      justify-content: space-between;
-         flex: 1;
+     flex: 1;
      min-height: 0;
      padding: 0 14px;
      border-radius: 6px;
@@ -1277,36 +1277,590 @@
      text-transform: uppercase;
      vertical-align: middle;
  }
-.fr-card {
-    transition: opacity .35s ease, transform .35s ease, box-shadow .3s ease;
-}
-.fr-out {
-    opacity: 0 !important;
-    transform: translateY(-16px) !important;
-}
-.fr-pre {
-    opacity: 0 !important;
-    transform: translateY(16px) !important;
-}
-@keyframes nudge {
-    0%   { box-shadow: 0 0 0 0 rgba(103, 44, 44, .45); }
-    100% { box-shadow: 0 0 0 16px rgba(103, 44, 44, 0); }
-}
-.Main.nudge {
-    animation: nudge .9s ease;
-}
-.inputs.warn {
-    border-color: #672C2C;
-    animation: warnShake .45s ease, nudge .9s ease;
-}
-.inputs.warn .inputr label {
-    color: #672C2C;
-    font-weight: 700;
-    white-space: nowrap;
-}
-@keyframes warnShake {
-    0%, 100% { transform: translateX(0); }
-    25%      { transform: translateX(-6px); }
-    50%      { transform: translateX(6px); }
-    75%      { transform: translateX(-3px); }
-}
+
+ .fr-card {
+     transition: opacity .35s ease, transform .35s ease, box-shadow .3s ease;
+ }
+
+ .fr-out {
+     opacity: 0 !important;
+     transform: translateY(-16px) !important;
+ }
+
+ .fr-pre {
+     opacity: 0 !important;
+     transform: translateY(16px) !important;
+ }
+
+ @keyframes nudge {
+     0% {
+         box-shadow: 0 0 0 0 rgba(103, 44, 44, .45);
+     }
+
+     100% {
+         box-shadow: 0 0 0 16px rgba(103, 44, 44, 0);
+     }
+ }
+
+ .Main.nudge {
+     animation: nudge .9s ease;
+ }
+
+ .inputs.warn {
+     border-color: #672C2C;
+     animation: warnShake .45s ease, nudge .9s ease;
+ }
+
+ .inputs.warn .inputr label {
+     color: #672C2C;
+     font-weight: 700;
+     white-space: nowrap;
+ }
+
+ @keyframes warnShake {
+
+     0%,
+     100% {
+         transform: translateX(0);
+     }
+
+     25% {
+         transform: translateX(-6px);
+     }
+
+     50% {
+         transform: translateX(6px);
+     }
+
+     75% {
+         transform: translateX(-3px);
+     }
+ }
+
+ /* =====================================================================
+   RESPONSIVE OVERRIDES  (keep this block at the very BOTTOM of login.css)
+   ===================================================================== */
+
+ /* ---------- 1. Fluid layout (all screen sizes) ---------- */
+ html {
+     -webkit-text-size-adjust: 100%;
+ }
+
+ body {
+     display: grid;
+     grid-template-columns: 43.3% minmax(0, 1fr);
+     grid-template-rows: auto 1fr;
+     justify-content: stretch;
+     align-items: stretch;
+     min-height: 100vh;
+     min-height: 100dvh;
+     overflow-x: hidden;
+     overflow-y: auto;
+ }
+
+ .all {
+     display: contents;
+ }
+
+ /* left side: login / sign up card */
+ .Main {
+     grid-column: 1;
+     grid-row: 1 / span 2;
+     align-self: center;
+     justify-self: center;
+     position: relative;
+     left: auto;
+     top: -40px;
+     width: calc(100% - 2 * min(56px, 4vw));
+     max-width: 625px;
+     margin: 40px 0;
+ }
+
+ .kaliwa {
+     width: 100%;
+     height: auto;
+ }
+
+ .top {
+     gap: min(70px, 3.65vw);
+ }
+
+ .top>div:first-child {
+     flex: 1 1 0;
+     min-width: 0;
+ }
+
+ .top>div:last-child {
+     flex: 0 0 auto;
+ }
+
+ .logo {
+     left: -11.5%;
+     width: 100%;
+     max-width: 390px;
+ }
+
+ .lg {
+     font-size: clamp(34px, 3.125vw, 60px);
+     white-space: nowrap;
+ }
+
+ .lg1 {
+     font-size: clamp(32px, 2.86vw, 55px);
+     width: auto;
+     margin-left: 0;
+     white-space: nowrap;
+ }
+
+ .h3,
+ .h31 {
+     font-size: clamp(16px, 1.15vw, 22px);
+ }
+
+ .message {
+     height: auto;
+     min-height: 40px;
+     padding: 10px 16px;
+     text-indent: 0;
+ }
+
+ /* right side: menu + pages */
+ .right {
+     position: static;
+     grid-column: 2;
+     grid-row: 1;
+     align-self: start;
+     flex-wrap: wrap;
+     gap: 12px 30px;
+     margin: 0;
+     padding: 80px 20px 0 clamp(20px, 2.3vw, 44px);
+ }
+
+ .lipat {
+     grid-column: 2;
+     grid-row: 2;
+     align-self: start;
+     width: auto;
+     max-width: 850px;
+     height: auto;
+     margin: clamp(20px, 5vh, 100px) clamp(24px, 5.4vw, 104px) 0 clamp(24px, 6.7vw, 129px);
+ }
+
+ .lipat h2 {
+     font-size: clamp(34px, 2.6vw, 50px);
+ }
+
+ .abt {
+     box-sizing: border-box;
+     height: auto;
+     min-height: 100px;
+     line-height: 1.3;
+     padding: 12px 20px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+ }
+
+ .wel {
+     margin: 0;
+     font-size: clamp(18px, 1.35vw, 26px);
+ }
+
+ .boxes {
+     display: grid;
+     grid-template-columns: repeat(2, minmax(0, 1fr));
+     gap: clamp(14px, 2.1vw, 40px);
+ }
+
+ .box1,
+ .box2 {
+     width: auto;
+     height: auto;
+     min-height: 240px;
+     flex-wrap: wrap;
+     align-content: flex-end;
+     padding: 0 40px 24px;
+ }
+
+ .roomp,
+ .roomp1,
+ .roomp2,
+ .roomp22,
+ .roomp3 {
+     margin: 0;
+ }
+
+ .roomp2,
+ .roomp22,
+ .roomp3 {
+     flex: 0 0 100%;
+ }
+
+ .roomp3 {
+     margin-top: 2px;
+ }
+
+ .anns,
+ .anns1 {
+     box-sizing: border-box;
+ }
+
+ .viewsa {
+     margin-left: 0;
+     padding-right: 6px;
+     text-align: right;
+ }
+
+ .buttonsa {
+     width: 100%;
+     height: auto;
+     margin-left: 0;
+     justify-content: flex-end;
+     flex-wrap: wrap;
+ }
+
+ .bomx {
+     display: grid;
+     grid-template-columns: repeat(3, minmax(0, 1fr));
+     gap: clamp(10px, 3vw, 80px);
+ }
+
+ .bomx1 {
+     width: auto;
+     height: auto;
+     min-height: 180px;
+ }
+
+ .amenities {
+     flex-wrap: wrap;
+     gap: 14px 70px;
+     margin-left: 0;
+     padding: 20px 5px;
+     font-size: clamp(17px, 1.15vw, 22px);
+ }
+
+ .glass {
+     min-height: 500px;
+ }
+
+ @media (max-width: 1100px) {
+     body {
+         --pad: clamp(20px, 6vw, 48px);
+         background: #672C2C;
+         grid-template-columns: minmax(0, 1fr);
+         grid-template-rows: auto auto 1fr;
+     }
+
+     body::before {
+         display: none;
+     }
+
+     .Main {
+         grid-column: 1;
+         grid-row: 1;
+         justify-self: stretch;
+         box-sizing: border-box;
+         width: 100%;
+         max-width: none;
+         margin: 0;
+         padding: 40px var(--pad) 48px;
+         background: #fff;
+     }
+
+     .view {
+         max-width: 560px;
+         margin: 0 auto;
+     }
+
+     .h3 br,
+     .h31 br,
+     .lipat .find br,
+     .lks1 br {
+         display: none;
+     }
+
+     .right {
+         grid-column: 1;
+         grid-row: 2;
+         width: calc(100% - 2 * var(--pad));
+         max-width: 850px;
+         margin: 0 auto;
+         padding: 28px 0 0;
+     }
+
+     .lipat {
+         grid-column: 1;
+         grid-row: 3;
+         width: calc(100% - 2 * var(--pad));
+         max-width: 850px;
+         margin: 28px auto 48px;
+     }
+
+     .hrs-card {
+         height: auto;
+     }
+
+     .hrs-row {
+         flex: none;
+         padding: 12px 14px;
+     }
+
+     .glass {
+         min-height: 380px;
+         padding: 36px 20px;
+         box-sizing: border-box;
+     }
+
+     .lks,
+     .lks1 {
+         text-align: center;
+     }
+ }
+
+ @media (max-width: 600px) {
+     .Main {
+         padding: 28px var(--pad) 36px;
+     }
+
+     .top {
+         gap: 12px;
+     }
+
+     .lg {
+         font-size: 34px;
+         right: 0;
+     }
+
+     .lg1 {
+         font-size: 32px;
+     }
+
+     .h3,
+     .h31 {
+         font-size: 16px;
+     }
+
+     .inputs,
+     .inputs1 {
+         padding: 12px;
+         gap: 10px;
+     }
+
+     .iconsa {
+         width: 22px;
+         height: 22px;
+     }
+
+     .inputr input,
+     .inputr label,
+     .inputr1 input,
+     .inputr1 label {
+         font-size: 16px;
+     }
+
+     .inputr input:focus+label,
+     .inputr input:not(:placeholder-shown)+label,
+     .inputr1 input:focus+label,
+     .inputr1 input:not(:placeholder-shown)+label {
+         font-size: 13px;
+     }
+
+     .remember,
+     .ags {
+         font-size: 14px;
+     }
+
+     .ags {
+         align-items: flex-start;
+     }
+
+     .ags .radi {
+         margin-top: 2px;
+     }
+
+     .ags label {
+         display: block;
+         line-height: 1.5;
+     }
+
+     .loginbo,
+     .loginbo2 {
+         padding: 14px;
+     }
+
+     .below {
+         gap: 8px;
+     }
+
+     .social {
+         padding: 10px 6px;
+         gap: 6px;
+         font-size: 12px;
+         border-radius: 10px;
+     }
+
+     .lipat h2 {
+         font-size: 34px;
+     }
+
+     .lipat .find {
+         font-size: 16px;
+     }
+
+     .lipat .find2,
+     .lipat .find3 {
+         font-size: 22px;
+     }
+
+     .lipat .find4,
+     .lipat .find5 {
+         font-size: 21px;
+     }
+
+     .boxes {
+         grid-template-columns: minmax(0, 1fr);
+     }
+
+     .box1,
+     .box2 {
+         min-height: 200px;
+         padding: 0 24px 20px;
+     }
+
+     .roomp,
+     .roomp1 {
+         font-size: 17px;
+     }
+
+     .anns,
+     .anns1 {
+         height: auto;
+         min-height: 60px;
+         line-height: 1.4;
+         text-indent: 0;
+         padding: 14px 16px;
+     }
+
+     .anns .wat,
+     .anns1 .wat1 {
+         margin: 0;
+         font-size: 15px;
+     }
+
+     .abt {
+         min-height: 80px;
+         padding: 12px 16px;
+     }
+
+     .wel {
+         font-size: 18px;
+     }
+
+     .bomx {
+         gap: 10px;
+     }
+
+     .bomx1 {
+         min-height: 120px;
+     }
+
+     .num {
+         font-size: 28px;
+         margin-top: 30px;
+     }
+
+     .tx {
+         font-size: 13px;
+     }
+
+     .amenities {
+         gap: 10px 36px;
+         font-size: 17px;
+     }
+
+     .book,
+     .viewa {
+         flex: 1;
+         width: auto;
+         min-width: 0;
+         height: 50px;
+     }
+
+     .hrs-card {
+         padding: 16px;
+     }
+
+     .hrs-top {
+         flex-wrap: wrap;
+         gap: 12px;
+     }
+
+     .hrs-status {
+         font-size: 18px;
+     }
+
+     .hrs-row {
+         font-size: 16px;
+         padding: 10px 12px;
+     }
+
+     .hrs-time {
+         font-size: 14px;
+     }
+
+     .circle {
+         width: 76px;
+         height: 76px;
+     }
+
+     .lks {
+         font-size: 21px;
+     }
+
+     .lks1 {
+         font-size: 16px;
+     }
+
+     .but {
+         flex-direction: column;
+         align-items: center;
+         width: 100%;
+     }
+
+     .but1,
+     .but2 {
+         width: 100%;
+         max-width: 280px;
+     }
+ }
+
+ @media (max-width: 360px) {
+     .lg {
+         font-size: 28px;
+     }
+
+     .lg1 {
+         font-size: 26px;
+     }
+
+     .social span {
+         display: none;
+     }
+
+     .social {
+         padding: 12px 6px;
+     }
+ }
+
+ html,
+ body {
+     scrollbar-width: none;
+     /* Firefox */
+     -ms-overflow-style: none;
+     /* old Edge / IE */
+ }
+
+ html::-webkit-scrollbar,
+ body::-webkit-scrollbar {
+     display: none;
+ }
