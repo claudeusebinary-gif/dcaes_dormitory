@@ -363,6 +363,16 @@
                             <span class="namesa" style="color: #672C2C;">{{ $p->initial }}</span>
                         </div>
                         <h1 class="stays">{{ $p->display_name }}<br><span>Bed {{ $bed }} · {{ $deck }} Deck</span></h1>
+                        @unless (isset($profileUser))
+                            <button type="button" class="mensahe" data-id="{{ $p->id }}"
+                                data-name="{{ $p->display_name }}" data-room="Room {{ $p->room_number }}"
+                                aria-label="Message {{ $p->display_name }}" title="Message {{ $p->display_name }}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
+                            </button>
+                        @endunless
                     </div>
 
                 @else
@@ -843,5 +853,22 @@
                 });
             });
         })();
+    </script>
+    <script>
+        document.querySelectorAll('.mensahe').forEach(function (b) {
+            b.addEventListener('click', function () {
+                if (!window.DaceChat) return;
+                window.DaceChat.open({
+                    kind: 'roommate',
+                    item_id: b.dataset.id,
+                    with_id: b.dataset.id,
+                    with_name: b.dataset.name,
+                    with_room: b.dataset.room,
+                    item_title: 'Roommate',
+                    item_price: b.dataset.room,
+                    photo: ''
+                });
+            });
+        });
     </script>
 @endpush

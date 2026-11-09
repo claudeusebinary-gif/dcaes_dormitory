@@ -300,3 +300,12 @@ body.sb-collapsed .page-curtain {
 body:has(.page-curtain.covered) .rise {
     animation-play-state: paused;
 }
+
+body.sb-no-anim .sidebar .sb-indicator {
+    transition: transform .4s cubic-bezier(.65, 0, .25, 1),
+        height .4s cubic-bezier(.65, 0, .25, 1) !important;
+}
+
+html body .sidebar span.sb-indicator.snapping {
+    transition: none !important;
+}

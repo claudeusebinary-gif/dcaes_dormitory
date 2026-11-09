@@ -1070,3 +1070,27 @@
         outline: 2px solid #672C2C;
         outline-offset: 2px;
     }
+        .mensahe {
+        margin-left: auto;
+        width: 42px;
+        height: 42px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        border: 1px solid #672c2c33;
+        background-color: #ffffff;
+        color: #672C2C;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .mensahe:hover {
+        background-color: #672C2C;
+        color: #ffffff;
+    }
+
+    .mensahe svg {
+        width: 20px;
+        height: 20px;
+    }

@@ -51,7 +51,10 @@
         dmInbox:      @json(route('tenant.dm.inbox')),
         dmAdminInbox: @json(route('admin.dm.inbox')),
         dmThread:     @json(route($admin ? 'admin.dm.chat' : 'tenant.dm.chat')),
-        dmSend:       @json(route($admin ? 'admin.dm.chat.send' : 'tenant.dm.chat.send'))
+        dmSend:       @json(route($admin ? 'admin.dm.chat.send' : 'tenant.dm.chat.send')),
+        rmInbox:      @json(route('tenant.rm.inbox')),
+        rmThread:     @json(route('tenant.rm.chat')),
+        rmSend:       @json(route('tenant.rm.chat.send'))
     };
     var CSRF = document.querySelector('meta[name="csrf-token"]').content;
     var $ = function (id) { return document.getElementById(id); };
@@ -133,7 +136,9 @@
         var mine = cur;
         var peek = box.classList.contains('is-min') ? '&peek=1' : '';
         try {
-            var url = mine.kind === 'complaint'
+            var url = mine.kind === 'roommate'
+                ? URLS.rmThread + '?with=' + mine.with_id + peek
+                : mine.kind === 'complaint'
                 ? URLS.ctThread + '?complaint_id=' + mine.item_id + peek
                 : mine.kind === 'direct'
                     ? URLS.dmThread + '?tenant_id=' + mine.item_id + peek
@@ -186,12 +191,12 @@
         if (!text || !cur || sending) return;
         sending = true; sendBtn.disabled = true; say('');
         try {
-            var isC = cur.kind === 'complaint', isD = cur.kind === 'direct';
-            var res = await fetch(isC ? URLS.ctSend : isD ? URLS.dmSend : URLS.send, {
+            var isC = cur.kind === 'complaint', isD = cur.kind === 'direct', isR = cur.kind === 'roommate';
+            var res = await fetch(isC ? URLS.ctSend : isD ? URLS.dmSend : isR ? URLS.rmSend : URLS.send, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
                 credentials: 'same-origin',
-                body: JSON.stringify(isC ? { complaint_id: cur.item_id, body: text } : isD ? { tenant_id: cur.item_id, body: text } : { item_id: cur.item_id, recipient_id: cur.with_id, body: text })
+                body: JSON.stringify(isC ? { complaint_id: cur.item_id, body: text } : isD ? { tenant_id: cur.item_id, body: text } : isR ? { recipient_id: cur.with_id, body: text } : { item_id: cur.item_id, recipient_id: cur.with_id, body: text })
             });
             var data = await res.json().catch(function () { return {}; });
             if (res.status === 419) throw new Error('Session expired. Refresh the page.');
@@ -244,7 +249,7 @@
         try {
             var o = { headers: { 'Accept': 'application/json' }, credentials: 'same-origin', cache: 'no-store' };
             var none = { unread: 0, threads: [] };
-            var urls = IS_ADMIN ? [URLS.adminInbox, URLS.dmAdminInbox] : [URLS.inbox, URLS.ctInbox, URLS.dmInbox];
+            var urls = IS_ADMIN ? [URLS.adminInbox, URLS.dmAdminInbox] : [URLS.inbox, URLS.ctInbox, URLS.dmInbox, URLS.rmInbox];
             var rs = await Promise.all(urls.map(function (u) { return fetch(u, o); }));
             var parts = await Promise.all(rs.map(function (r) { return r.ok ? r.json() : none; }));
 

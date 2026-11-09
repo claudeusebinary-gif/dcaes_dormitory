@@ -184,7 +184,7 @@
     @unless (auth()->user()->isGuest())
         @include('partials.chatbox')
     @endunless
-    <script src="{{ asset('js/sidebar.js') }}"></script>
+<script src="{{ asset('js/sidebar.js') }}?v={{ filemtime(public_path('js/sidebar.js')) }}"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
     <script src="{{ asset('js/logout-modal.js') }}"></script>
     @stack('scripts')

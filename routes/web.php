@@ -16,6 +16,8 @@ use App\Http\Controllers\MarketplaceChatController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\ComplaintChatController;
 use App\Http\Controllers\DirectChatController;
+use App\Http\Controllers\RoommateChatController;
+
 
 
 // Public: landing page with login / sign-up panels 
@@ -60,7 +62,10 @@ Route::middleware([AuthOrGuest::class, NoStore::class])->group(function () {
         Route::get('/marketplace/inbox', [MarketplaceChatController::class, 'inbox'])->name('marketplace.inbox');
         Route::get('/marketplace/chat', [MarketplaceChatController::class, 'thread'])->name('marketplace.chat');
         Route::post('/marketplace/chat', [MarketplaceChatController::class, 'send'])->middleware('throttle:30,1')->name('marketplace.chat.send');
-                Route::get('/dm/inbox', [DirectChatController::class, 'inbox'])->name('dm.inbox');
+               Route::get('/dm/inbox', [DirectChatController::class, 'inbox'])->name('dm.inbox');
+        Route::get('/roommates/inbox', [RoommateChatController::class, 'inbox'])->name('rm.inbox');
+        Route::get('/roommates/chat', [RoommateChatController::class, 'thread'])->name('rm.chat');
+        Route::post('/roommates/chat', [RoommateChatController::class, 'send'])->middleware('throttle:30,1')->name('rm.chat.send');
         Route::get('/dm/chat', [DirectChatController::class, 'thread'])->name('dm.chat');
         Route::post('/dm/chat', [DirectChatController::class, 'send'])->middleware('throttle:30,1')->name('dm.chat.send');
         Route::get('/complaints/inbox', [ComplaintChatController::class, 'inbox'])->name('complaints.inbox');

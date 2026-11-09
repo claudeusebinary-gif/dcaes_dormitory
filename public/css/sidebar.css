@@ -80,6 +80,7 @@
 .sb-nav {
     flex: 1;
     padding: 0;
+    position: relative;
 }
 
 .sb-nav ul {
@@ -539,4 +540,36 @@ body.sb-collapsed .sb-new {
     font-size: 0;
     line-height: 0;
     border: 2px solid var(--sb-bg);
+}
+.sb-indicator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: var(--sb-active);
+    pointer-events: none;
+    will-change: transform;
+    transition: transform .4s cubic-bezier(.65, 0, .25, 1),
+                height .4s cubic-bezier(.65, 0, .25, 1);
+}
+
+.sb-indicator::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px;
+    background: #fff;
+}
+
+body.sb-has-ind .sb-link.active {
+    background: transparent;
+    border-left-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sb-indicator {
+        transition: none;
+    }
 }
