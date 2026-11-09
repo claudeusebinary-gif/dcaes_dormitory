@@ -2124,3 +2124,175 @@ input:focus {
     line-clamp: unset;
     overflow: visible;
 }
+/* ===== Settings: responsive ===== */
+
+/* Billing history table: stop it overflowing on laptops / tablets / phones */
+@media (max-width: 1500px) {
+    .periodbalancestatus {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+        justify-content: stretch;
+    }
+
+    .periodbalancestatus1,
+    .periodbalancestatus12 {
+        width: auto;
+        min-width: 0;
+    }
+
+    .periodbalancestatus > .receiptcell {
+        margin-left: 0;
+    }
+}
+
+/* Tablet / small laptop: menu on top, content below */
+@media (max-width: 1200px) {
+    .st-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+
+    .st-side {
+        flex: none;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .st-nav {
+        flex-direction: row;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .st-nav .st-item {
+        flex: none;
+        width: auto;
+        white-space: nowrap;
+    }
+
+    .st-main {
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+    }
+}
+
+/* Forms: one field per row */
+@media (max-width: 960px) {
+    .pirsname29 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .pirsname,
+    .pirsname3,
+    .pirsname4,
+    .pirsname24,
+    .pirsname324,
+    .pirsname244,
+    .pirsname2442,
+    .pirsname2443 {
+        width: 100%;
+    }
+
+    .roombedmove {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .roombedmove1 {
+        height: auto;
+        min-height: 100px;
+        padding: 16px 0;
+        box-sizing: border-box;
+    }
+}
+
+/* Phone */
+@media (max-width: 640px) {
+    .st-main {
+        padding: 20px 16px;
+    }
+
+    .st-title {
+        font-size: 1.4rem;
+    }
+
+    .general {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .buttonparasave5,
+    .buttonparasave {
+        flex-wrap: wrap;
+    }
+
+    .submitmain,
+    .submitmoveoutreq,
+    .submitmoveoutreq2 {
+        width: 100%;
+    }
+
+    .submitrqmove {
+        align-items: stretch;
+    }
+
+    .linkto1 {
+        height: auto;
+        min-height: 65px;
+        padding: 8px 0;
+        gap: 8px;
+    }
+
+    .manageee {
+        margin-right: 14px;
+        white-space: nowrap;
+    }
+
+    .ibosses96 {
+        min-width: 0;
+    }
+
+    .autopayline > .persoge25 {
+        min-width: 0;
+    }
+
+    .pantayinnnn {
+        gap: 12px;
+    }
+
+    .bemail {
+        flex-wrap: wrap;
+        padding: 8px 14px;
+    }
+
+    .bemail-text {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .periodbalancestatus {
+        gap: 4px;
+    }
+
+    .periodbalancestatus1,
+    .periodbalancestatus12 {
+        font-size: .72rem;
+    }
+
+    .periodbalancestatus > .receiptcell {
+        white-space: normal;
+    }
+
+    .anostatbayad {
+        width: 56px;
+    }
+}

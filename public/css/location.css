@@ -228,3 +228,76 @@
     font-weight: 700;
     color: #00000086;
 }
+
+@media (max-width: 1200px) {
+    .locatesa {
+        flex-direction: column;
+    }
+
+    .locatesa1 {
+        width: 100%;
+        height: 520px;
+    }
+
+    .locatesa2 {
+        width: 100%;
+        height: auto;
+    }
+
+    .invoss19 {
+        flex: none;
+    }
+
+    .ibosses9 {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .locatesa1 {
+        height: 400px;
+    }
+
+    .locatesa-foot {
+        height: auto;
+        min-height: 52px;
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+    }
+
+    .locatesa-coords {
+        flex-wrap: wrap;
+        gap: 4px 14px;
+    }
+
+    .locatesa2 {
+        padding: 16px;
+    }
+
+    .contactandner {
+        font-size: 1.15rem;
+    }
+
+    .tatlonalink1 {
+        height: auto;
+        min-height: 56px;
+        padding: 10px 16px;
+    }
+
+    .tatlonalink1 .locatediv h1,
+    .tatlonalink1 .locatediv a {
+        line-height: 1.3;
+        overflow-wrap: anywhere;
+    }
+}
+
+@media (max-width: 480px) {
+    .locatesa1 {
+        height: 320px;
+    }
+
+    .locatesa-name {
+        font-size: .9rem;
+    }
+}

@@ -1337,11 +1337,7 @@
      }
  }
 
- /* =====================================================================
-   RESPONSIVE OVERRIDES  (keep this block at the very BOTTOM of login.css)
-   ===================================================================== */
 
- /* ---------- 1. Fluid layout (all screen sizes) ---------- */
  html {
      -webkit-text-size-adjust: 100%;
  }
@@ -1362,7 +1358,6 @@
      display: contents;
  }
 
- /* left side: login / sign up card */
  .Main {
      grid-column: 1;
      grid-row: 1 / span 2;
@@ -1424,7 +1419,7 @@
      text-indent: 0;
  }
 
- /* right side: menu + pages */
+
  .right {
      position: static;
      grid-column: 2;
@@ -1855,9 +1850,7 @@
  html,
  body {
      scrollbar-width: none;
-     /* Firefox */
      -ms-overflow-style: none;
-     /* old Edge / IE */
  }
 
  html::-webkit-scrollbar,

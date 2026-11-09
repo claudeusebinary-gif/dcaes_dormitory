@@ -259,20 +259,22 @@
     margin: 0;
 }
 
-.lubidog  a{
+.lubidog a {
     font-family: 'Nunito Sans', sans-serif;
     font-size: .8rem;
     font-weight: 800;
     color: #00000086;
-   
+
 }
-.lubidog  h1{
+
+.lubidog h1 {
     font-family: 'Nunito Sans', sans-serif;
     font-size: .8rem;
     font-weight: 800;
     color: #000000c9;
-   
+
 }
+
 .lubidog1 {
     width: 35px;
     height: 35px;
@@ -868,7 +870,7 @@
 }
 
 .invoice1 .ann-pager {
-    margin: auto 0 10px;      
+    margin: auto 0 10px;
 }
 
 .invoice1 .rightarrow {
@@ -876,6 +878,7 @@
     padding-top: 10px;
     border-top: 1px solid #00000013;
 }
+
 .ibosses34791 h1 {
     font-family: 'Nunito Sans', sans-serif;
     font-size: 1rem;
@@ -1239,15 +1242,15 @@
 }
 
 #payModal .duhakagatos {
-    flex: 1;                        
-    justify-content: flex-start;     
-    padding-bottom: 24px;           
+    flex: 1;
+    justify-content: flex-start;
+    padding-bottom: 24px;
 }
 
 #payModal .padiretso231591 {
-    margin-top: auto;               
+    margin-top: auto;
 }
-/* ===== late fee + half payment ===== */
+
 .payfeenote {
     margin: -6px 0 8px 16px;
     font-family: 'Nunito Sans', sans-serif;
@@ -1268,12 +1271,12 @@
     cursor: pointer;
 }
 
-.payhalf input:disabled + * ,
+.payhalf input:disabled+*,
 .payhalf:has(input:disabled) {
     opacity: .5;
     cursor: default;
 }
-/* ===== payment modal: invoice row layout fix ===== */
+
 #payModal .invoice-pick {
     width: 90%;
     display: flex;
@@ -1317,6 +1320,7 @@
 #payModal .invoice-pick .payhalf {
     margin: 0 0 0 4px;
 }
+
 #payModal3 .pay-box {
     padding: 40px 0 28px;
 }
@@ -1325,6 +1329,7 @@
     margin-top: 0;
     margin-bottom: 6px;
 }
+
 .duevoice.duevoice-fit {
     box-sizing: border-box;
     width: fit-content;
@@ -1339,7 +1344,235 @@
     text-align: center;
     line-height: 1.3;
 }
+
 .upatnaapatbox1 {
     height: auto;
     min-height: 80px;
+}
+
+
+@media (max-width: 1100px) {
+    body .invoice {
+        flex-direction: column;
+    }
+
+    body .invoice1,
+    body .invoice2 {
+        width: 100%;
+        height: auto;
+        box-sizing: border-box;
+        padding: 24px;
+    }
+}
+
+@media (max-width: 900px) {
+
+
+    body .upatnaapatbox {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+
+    body .upatnaapatbox1 {
+        height: auto;
+        padding: 16px;
+        box-sizing: border-box;
+    }
+
+    body .duevoice,
+    body .duevoice.duevoice-fit {
+        width: 100%;
+        height: auto;
+        min-height: 32px;
+    }
+
+    body .invoiceboss {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    body .fourinvoice {
+        width: 100%;
+    }
+
+    body .fourinvoice1 {
+        flex: 1;
+        width: auto;
+    }
+
+    body .ibossboss {
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: 0;
+        gap: 10px;
+    }
+
+    body .invoss3 {
+        margin-top: 20px;
+    }
+
+    body .ibosses3 {
+        min-width: 0;
+    }
+
+    body .ungprice {
+        margin-bottom: 0;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 10px 14px;
+        padding-left: 55px;
+    }
+
+    body .ungprice h1 {
+        margin: 0;
+    }
+
+    body .padiretso231 {
+        margin-top: 14px;
+    }
+}
+
+@media (max-width: 700px) {
+
+    body .pay-overlay {
+        padding: 10px;
+    }
+
+    body .pay-box {
+        max-width: 100%;
+        min-height: 0;
+        max-height: calc(100vh - 20px);
+        overflow-y: auto;
+    }
+
+    body #payModal2 .pay-box {
+        min-width: 0 !important;
+        min-height: 0 !important;
+    }
+
+    body .pay-close {
+        top: 12px;
+        right: 12px;
+    }
+
+    body .pay-back {
+        top: 14px;
+        left: 14px;
+    }
+
+    body .invoss3479 {
+        margin: 20px 52px 0 20px;
+    }
+
+    body .invoss34791 {
+        margin: 20px 52px 0 62px;
+    }
+
+    body .duhakagatos {
+        gap: 12px;
+    }
+
+    body .duhakagatos1 {
+        width: calc(100% - 32px);
+        padding: 0 12px;
+        box-sizing: border-box;
+    }
+
+    body .difults {
+        width: 64px;
+    }
+
+    body #payModal .invoice-pick {
+        width: calc(100% - 32px);
+    }
+
+    body #payModal .invoice-pick .duhakagatos1 {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    body #payModal .invoice-pick .tempo {
+        flex: 1 1 100%;
+    }
+
+    body #payModal .invoice-pick .ibosses34791 h1 {
+        white-space: normal;
+    }
+
+    body #payModal .invoice-pick .samodapid {
+        flex: 1 1 100%;
+        justify-content: space-between;
+        margin-left: 0;
+    }
+
+    body .encri1 {
+        margin: 0 auto;
+        padding: 0 16px;
+        text-align: center;
+    }
+
+    body .encri1 h1 {
+        font-size: .75rem;
+    }
+
+    body .padiretso2315912 {
+        margin-top: 0;
+    }
+
+    body .totalinvoice12 {
+        gap: 12px !important;
+        width: calc(100% - 32px);
+        margin: 0 auto;
+        align-self: center;
+        box-sizing: border-box;
+    }
+
+    body .contopay {
+        width: calc(100% - 32px);
+        margin: 8px auto 20px;
+        align-self: center;
+    }
+
+    body .paymentsuc2 {
+        padding: 0 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body .perapera {
+        font-size: 1.05rem;
+    }
+
+    body .currentbal h1 {
+        font-size: .85rem;
+    }
+
+    body .duevoice span {
+        font-size: .75rem;
+    }
+
+    body .invoice1,
+    body .invoice2 {
+        padding: 18px;
+    }
+
+    body .fourinvoice1 h1 {
+        font-size: .75rem;
+    }
+
+    body .tranparent {
+        height: auto;
+        min-height: 85px;
+    }
+
+    body .invoss347 {
+        margin-left: 14px;
+        gap: 14px;
+    }
+
+    body .lubidog43 {
+        margin-right: 14px;
+    }
 }

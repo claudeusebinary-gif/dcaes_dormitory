@@ -1787,3 +1787,142 @@
     background: #fff;
     color: #672C2C;
 }
+
+@media (max-width: 1100px) {
+    body:has(#mkGrid) {
+        height: auto;
+        overflow: visible;
+    }
+
+    .main-content:has(#mkGrid) {
+        height: auto;
+        display: block;
+        overflow: visible;
+        padding-bottom: 24px;
+    }
+
+    .main-content:has(#mkGrid) .pangsell {
+        flex: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: none;
+        grid-auto-rows: auto;
+    }
+
+    .main-content:has(#mkGrid) .pangsell1 {
+        height: auto;
+    }
+
+    .main-content:has(#mkGrid) .taasmuna {
+        height: 150px;
+    }
+
+    .main-content:has(#mkGrid) .babamuna {
+        height: auto;
+        overflow: visible;
+        padding: 12px 15px 14px;
+    }
+
+    .main-content:has(#mkGrid) .mk-pager {
+        margin: 16px 0 24px;
+    }
+
+    .namesakaroom {
+        min-width: 0;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 860px) {
+    .main-content:has(#mkGrid) .pangsell {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1000px) {
+    .topbar:has(.mine-btn) {
+        flex-wrap: wrap;
+        align-content: flex-start;
+        row-gap: 8px;
+        padding-top: 14px;
+        padding-bottom: 12px;
+    }
+
+    .topbar:has(.mine-btn) .topbar-text {
+        flex: 1 1 100%;
+    }
+
+    .topbar:has(.mine-btn) .topbar-actions {
+        flex: 1 1 100%;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .main-content:has(#mkGrid) .pangsell {
+        grid-template-columns: 1fr;
+    }
+
+    .search {
+        gap: 10px;
+    }
+
+    .filter {
+        width: 110px;
+    }
+
+    .bagongpangpile {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .bagongpangpile1 {
+        flex: none;
+    }
+
+    .mk-info-text {
+        flex-basis: 100%;
+        margin: 0;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar:has(.mine-btn) .topbar-actions {
+        gap: 4px;
+    }
+
+    .topbar:has(.mine-btn) .topbar-actions .roomlist-btn {
+        font-size: .68rem;
+    }
+
+    .topbar .topbar-actions .mine-btn {
+        padding: 0 8px;
+        gap: 6px;
+    }
+
+    .mine-count {
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        font-size: .68rem;
+        line-height: 18px;
+    }
+
+    .mk-white {
+        padding: 24px 18px;
+    }
+
+    .pirsname295 {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 0;
+    }
+
+    .laglaggayanfd {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

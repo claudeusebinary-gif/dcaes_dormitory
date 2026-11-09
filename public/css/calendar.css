@@ -708,3 +708,96 @@
 .ev-toast.is-bad {
     background: #b3261e;
 }
+
+@media (max-width: 1200px) {
+    .kabuuannanglahtlaat {
+        flex-direction: column;
+    }
+
+    .calendar {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .calgrid {
+        flex: none;
+        grid-template-rows: repeat(6, 76px);
+    }
+
+    .searchboxlaglagayan {
+        width: 100%;
+        height: auto;
+    }
+
+    .mgaeventslahat {
+        flex: none;
+        max-height: 560px;
+    }
+
+    .invoss96j,
+    .ibosses96j {
+        min-width: 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .calendar {
+        padding: 14px 10px;
+    }
+
+    .calgrid {
+        grid-template-rows: repeat(6, 54px);
+    }
+
+    .calday {
+        padding: 4px;
+        justify-content: center;
+    }
+
+    .calday span {
+        width: 26px;
+        height: 26px;
+        font-size: .75rem;
+    }
+
+    .caldots {
+        bottom: 5px;
+    }
+
+    .caldots b {
+        width: 5px;
+        height: 5px;
+    }
+
+    .mgadatengayon {
+        font-size: .65rem;
+    }
+
+    .fileters {
+        overflow-x: auto;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .fileters1 {
+        flex: none;
+        width: auto;
+        padding: 0 14px;
+        white-space: nowrap;
+    }
+
+    .evt-foot {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .mgaeventslahat {
+        max-height: none;
+        padding: 8px 0 14px;
+    }
+
+    .evm-body {
+        padding: 32px 18px 22px;
+    }
+}

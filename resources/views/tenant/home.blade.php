@@ -5,7 +5,9 @@
 @section('content')
 @section('page_title', 'Home')
 @section('page_subtitle', "Here's what's happening with your dormitory account.")
-    <div class="pangbaabbaaba">
+   <div class="pangbaabbaaba">
+<div class="hero">
+<div class="hero-text">
         <div class="now">
             <h1 class="tul">•</h1>
             <h1 class="nows">NOW ACCEPTING MOVE-INS FOR THIS TERM</h1>
@@ -32,10 +34,13 @@
             <a href="{{ route('tenant.rooms') }}" class="bosk1">Browse Available Rooms</a>
             <a href="{{ route('tenant.profile') }}" class="bosk12">View Profile</a>
         </div>
-        <div class="im"><img src="{{ asset('images/house.svg') }}" alt="" class="house">
-            <img src="{{ asset('images/house.svg') }}" alt="" class="house1">
-            <img src="{{ asset('images/house.svg') }}" alt="" class="house2">
-            <img src="{{ asset('images/house.svg') }}" alt="" class="house3">
+      </div> 
+
+<div class="hero-art im">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house1">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house2">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house3">
             <div class="badge-secure">
                 <div class="badge-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#672C2C" stroke-width="2.5"
@@ -67,14 +72,19 @@
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
                     </svg>
-                </div>
+                </div><div class="hero-art im">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house1">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house2">
+    <img src="{{ asset('images/house.svg') }}" alt="" class="house3">s
                 <div class="badge-text">
                     <strong>Fast payment</strong>
                     <span>Pay in seconds</span>
                 </div>
             </div>
         </div>
-        <h1 class="ov">Overview</h1>
+       </div> 
+<h1 class="ov">Overview</h1>
         <hr class="hw">
         <div class="threw">
             <div class="bxsa">

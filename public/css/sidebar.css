@@ -508,6 +508,7 @@ body {
 .sb-subitem-logout:hover {
     background: rgba(255, 255, 255, 0.15);
 }
+
 .sb-new {
     margin-left: auto;
     flex: 0 0 auto;
@@ -525,8 +526,15 @@ body {
 }
 
 @keyframes sbNewPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.55); }
-    50%      { box-shadow: 0 0 0 5px rgba(229, 57, 53, 0); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.55);
+    }
+
+    50% {
+        box-shadow: 0 0 0 5px rgba(229, 57, 53, 0);
+    }
 }
 
 body.sb-collapsed .sb-new {
@@ -541,6 +549,7 @@ body.sb-collapsed .sb-new {
     line-height: 0;
     border: 2px solid var(--sb-bg);
 }
+
 .sb-indicator {
     position: absolute;
     top: 0;
@@ -550,7 +559,7 @@ body.sb-collapsed .sb-new {
     pointer-events: none;
     will-change: transform;
     transition: transform .4s cubic-bezier(.65, 0, .25, 1),
-                height .4s cubic-bezier(.65, 0, .25, 1);
+        height .4s cubic-bezier(.65, 0, .25, 1);
 }
 
 .sb-indicator::before {
@@ -571,5 +580,46 @@ body.sb-has-ind .sb-link.active {
 @media (prefers-reduced-motion: reduce) {
     .sb-indicator {
         transition: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .topbar {
+        gap: 8px;
+    }
+
+    .topbar-text {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .topbar-title {
+        font-size: clamp(1rem, 4.4vw, 1.3rem);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-bottom: 2px;
+    }
+
+    .topbar .topbar-actions {
+        gap: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .topbar {
+        padding: 10px 12px 10px 66px;
+    }
+
+    .topbar .topbar-actions .roomlist-btn {
+        height: 34px;
+        padding: 0 9px;
+        font-size: .7rem;
+    }
+
+    .topbar .topbar-actions .notif .notif-btn {
+        height: 34px;
+        min-width: 34px;
+        padding: 0 8px;
     }
 }

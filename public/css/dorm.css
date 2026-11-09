@@ -1008,3 +1008,307 @@ body.sb-collapsed .dot {
     flex-direction: column;
     gap: 0px;
 }
+
+/* =====================================================
+   TENANT DORM: RESPONSIVE (keep at the bottom)
+   ===================================================== */
+
+/* ---------- Tablet and below ---------- */
+@media (max-width: 1100px) {
+
+    /* overview bar */
+    body .up {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px 16px;
+        height: auto;
+        padding: 16px 20px;
+    }
+
+    body .over {
+        grid-column: 1 / -1;
+        padding-right: 0;
+    }
+
+    body .percint {
+        grid-column: 1 / -1;
+        margin: 0;
+    }
+
+    body .ver {
+        display: none;
+    }
+
+    body .t {
+        font-size: 1.5rem;
+    }
+
+    /* map on top, info cards below */
+    body .mains {
+        flex-direction: column;
+        height: auto;
+        gap: 18px;
+    }
+
+    body .rightcol {
+        flex: none;
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+
+    body .rightcol .tulooo {
+        flex: none;
+    }
+
+    body .tap {
+        margin-top: 16px;
+        line-height: 1.4;
+    }
+
+    body .tap3 {
+        line-height: 1.4;
+    }
+
+    body .toobt {
+        gap: 8px;
+    }
+
+    body .askk,
+    body .call {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+        height: 36px;
+    }
+
+    /* map: rooms flow into a grid */
+    body .leftsidebox {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 10px;
+        align-content: start;
+        align-items: stretch;
+        padding: 16px;
+    }
+
+    body .ruw {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        width: auto;
+        height: auto;
+        margin: 0;
+    }
+
+    body .mainhouse,
+    body .mainhouse2 {
+        width: auto;
+        height: 90px;
+    }
+
+    body .huse {
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    body .huse span {
+        font-size: .75rem;
+    }
+
+    /* hide the decorative pieces that only work at desktop size */
+    body .hati,
+    body .hatee,
+    body.sb-collapsed .hatee,
+    body .hatee2,
+    body.sb-collapsed .hatee2,
+    body .sidehate {
+        display: none;
+    }
+
+    /* let every room tile join one grid */
+    body .dalawas,
+    body .group1,
+    body .group2,
+    body .roms7,
+    body .inthemiddle,
+    body.sb-collapsed .inthemiddle,
+    body .upatss {
+        display: contents;
+    }
+
+    /* room tiles */
+    body .siven,
+    body .siven4,
+    body .upatbx {
+        position: relative;
+        width: auto;
+        height: 76px;
+        margin: 0;
+        justify-content: center;
+    }
+
+    body .leftsidebox .dot,
+    body.sb-collapsed .leftsidebox .dot {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        margin: 0;
+    }
+
+    body .ruums {
+        margin: 0 0 6px;
+    }
+
+    body .leet {
+        margin: 0;
+        width: 60%;
+        min-width: 52px;
+    }
+
+    /* put rooms 111-116 in numeric order, entrance tile last */
+    body .group2 .roms7 > :nth-child(7) { order: 1; }
+    body .group2 .roms7 > :nth-child(6) { order: 2; }
+    body .group2 .roms7 > :nth-child(5) { order: 3; }
+    body .group2 .roms7 > :nth-child(4) { order: 4; }
+    body .group2 .roms7 > :nth-child(3) { order: 5; }
+    body .group2 .roms7 > :nth-child(2) { order: 6; }
+
+    body .siven2 {
+        order: 7;
+        grid-column: 1 / -1;
+        height: 48px;
+        margin: 0;
+    }
+}
+
+/* ---------- Small tablet ---------- */
+@media (max-width: 900px) {
+    body .rightcol {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    body .rightcol .tulooo:nth-child(3) {
+        grid-column: 1 / -1;
+    }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 700px) {
+
+    /* overview bar: 2 x 2 */
+    body .up {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 16px;
+    }
+
+    body .t {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    body .t span {
+        margin-left: 0;
+        font-size: .85rem;
+    }
+
+    /* info cards stack */
+    body .rightcol {
+        grid-template-columns: 1fr;
+    }
+
+    body .rightcol .tulooo:nth-child(3) {
+        grid-column: auto;
+    }
+
+    /* map */
+    body .leftsidebox {
+        padding: 12px;
+        gap: 8px;
+    }
+
+    body .ruw {
+        gap: 8px;
+    }
+
+    body .mainhouse,
+    body .mainhouse2 {
+        height: 80px;
+    }
+
+    body .huse {
+        font-size: .85rem;
+    }
+
+    body .huse span {
+        font-size: .65rem;
+    }
+
+    /* room details popup */
+    body .rmd {
+        padding: 12px;
+    }
+
+    body .boxas {
+        padding: 30px 18px 22px;
+    }
+
+    body .mainnntitle {
+        font-size: 1.35rem;
+        padding-right: 34px;
+    }
+
+    body .infos {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    body .btnbaba {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        order: 99;
+    }
+
+    body .rmd-note {
+        text-align: left;
+    }
+
+    body .mainnn-beds {
+        gap: 10px;
+    }
+
+    body .mainnn-bed {
+        height: auto;
+        min-height: 90px;
+        padding: 10px 6px;
+    }
+}
+
+
+@media (max-width: 480px) {
+    body .mainnn-beds {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (hover: none) {
+    .map-tip {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1100px) {
+    body .mainhouse2,
+    body .siven2 {
+        display: none;
+    }
+
+   
+    body .ruw {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

@@ -159,7 +159,7 @@
       transition: background .2s;
   }
 
-  .home-hrs-row + .home-hrs-row {
+  .home-hrs-row+.home-hrs-row {
       margin-top: 2px;
   }
 
@@ -1400,14 +1400,557 @@
   .badge-payment {
       top: calc(200px + var(--banner-h, 0px));
   }
-.main-content .boxes > .fr-card {
-    transition: opacity .35s ease, transform .35s ease, translate .22s ease, box-shadow .22s ease;
-}
-.main-content .boxes > .fr-card.fr-out {
-    opacity: 0 !important;
-    transform: translateY(-16px) !important;
-}
-.main-content .boxes > .fr-card.fr-pre {
-    opacity: 0 !important;
-    transform: translateY(16px) !important;
-}
+
+  .main-content .boxes>.fr-card {
+      transition: opacity .35s ease, transform .35s ease, translate .22s ease, box-shadow .22s ease;
+  }
+
+  .main-content .boxes>.fr-card.fr-out {
+      opacity: 0 !important;
+      transform: translateY(-16px) !important;
+  }
+
+  .main-content .boxes>.fr-card.fr-pre {
+      opacity: 0 !important;
+      transform: translateY(16px) !important;
+  }
+
+  @media (max-width: 1799px) {
+
+      .main-content {
+          min-width: 0;
+      }
+
+      .main-content img {
+          max-width: 100%;
+      }
+
+
+      .pangbaabbaaba {
+          margin-top: 10px;
+      }
+
+      .hero {
+          display: grid;
+          grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+          align-items: center;
+          gap: 32px;
+          margin-bottom: 32px;
+      }
+
+      .hero-text {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          min-width: 0;
+      }
+
+      .main-content .hero .now {
+          width: auto;
+          max-width: 100%;
+      }
+
+      .hero .tul,
+      .hero .nows {
+          margin-top: 0;
+          margin-bottom: 0;
+      }
+
+      .main-content .hero .tul {
+          text-indent: 0;
+          margin-left: 20px;
+      }
+
+      .hero .nows {
+          margin-right: 22px;
+          font-size: clamp(.7rem, 2.9vw, .9rem);
+      }
+
+      .main-content .hero .nows {
+          font-size: clamp(.7rem, 2.9vw, .9rem);
+          margin-left: 10px;
+      }
+
+      .hero .nowsr {
+          position: static;
+          order: -1;
+          margin: 0 0 14px;
+          font-size: clamp(1.5rem, 3vw, 2rem);
+          line-height: 1.2;
+      }
+
+      .hero .texss {
+          margin: 18px 0 0;
+      }
+
+      .hero .ts {
+          margin: 0;
+          font-size: clamp(2.1rem, 4.2vw, 3rem);
+          line-height: 1.12;
+      }
+
+      .hero .tsa {
+          margin-top: 14px;
+      }
+
+      .hero .tsaa br {
+          display: none;
+      }
+
+      .hero .tsaa {
+          margin: 0;
+          font-size: clamp(1rem, 1.6vw, 1.2rem);
+          line-height: 1.6;
+      }
+
+      .hero .bosk {
+          margin-top: 24px;
+          flex-wrap: wrap;
+      }
+
+      .main-content .hero .bosk .bosk1,
+      .main-content .hero .bosk .bosk12 {
+          width: auto;
+          min-width: 200px;
+          padding: 0 26px;
+      }
+
+      .hero-art {
+          position: relative;
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0 4%;
+          align-items: end;
+          justify-items: center;
+          padding: 30px 0 10px;
+          margin-top: 0;
+      }
+
+      .main-content .hero-art .house,
+      .main-content .hero-art .house1,
+      .main-content .hero-art .house2 {
+          display: block;
+          height: auto;
+          max-width: 100%;
+          margin: 0;
+      }
+
+      .main-content .hero-art .house3 {
+          display: none;
+      }
+
+      .main-content .hero-art .house {
+          grid-column: 1 / -1;
+          width: 62%;
+      }
+
+      .main-content .hero-art .house1,
+      .main-content .hero-art .house2 {
+          width: 62%;
+      }
+
+      .main-content .hero-art .badge-secure {
+          top: 4%;
+          left: auto;
+          right: 0;
+          padding: 10px 16px 10px 11px;
+          gap: 10px;
+          background: rgba(250, 246, 244, .88);
+          -webkit-backdrop-filter: blur(6px);
+          backdrop-filter: blur(6px);
+      }
+
+      .main-content .hero-art .badge-booked {
+          top: 26%;
+          left: 0;
+          right: auto;
+      }
+
+      .main-content .hero-art .badge-payment {
+          display: none;
+          top: 56%;
+          bottom: auto;
+          left: auto;
+          right: 0;
+      }
+
+      .hero-art .badge-icon {
+          width: 36px;
+          height: 36px;
+      }
+
+
+      .threw {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 20px;
+      }
+
+      .bxsa {
+          height: auto;
+          padding: 40px 12px 36px;
+          box-sizing: border-box;
+      }
+
+      .numberf {
+          margin: 0;
+      }
+
+      .bs {
+          margin: 10px 0 0;
+      }
+
+
+      .main-content .boxes {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: clamp(14px, 2.1vw, 40px);
+      }
+
+      .main-content .boxes>p {
+          grid-column: 1 / -1;
+      }
+
+      .main-content .box1,
+      .main-content .box2 {
+          width: auto;
+          height: auto;
+          min-height: 240px;
+          flex-wrap: wrap;
+          align-content: flex-end;
+          padding: 0 clamp(18px, 3vw, 40px) 24px;
+          box-sizing: border-box;
+      }
+
+      .main-content .roomp,
+      .main-content .roomp1,
+      .main-content .roomp2,
+      .main-content .roomp22,
+      .main-content .roomp3 {
+          margin: 0;
+      }
+
+      .main-content .roomp2,
+      .main-content .roomp22,
+      .main-content .roomp3 {
+          flex: 0 0 100%;
+      }
+
+      .main-content .roomp3 {
+          margin-top: 2px;
+      }
+
+
+      .bgg {
+          height: auto;
+      }
+
+      .fil {
+          margin-top: 8px;
+      }
+
+
+      .sixbs {
+          height: auto;
+          padding-bottom: 28px;
+          box-sizing: border-box;
+      }
+
+      .meas {
+          margin-right: 24px;
+          max-width: none;
+      }
+
+
+      .home-hrs-card {
+          padding: 18px clamp(14px, 3vw, 28px) 14px;
+      }
+
+
+      @media (max-width: 1365px) {
+          .lagayan {
+              width: auto;
+              height: auto;
+              flex: 1 1 0;
+              min-width: 0;
+              padding: 0 6px;
+          }
+
+          .bilug::after {
+              display: none;
+          }
+      }
+
+
+      @media (min-width: 1280px) {
+          .main-content .hero-art .badge-payment {
+              display: flex;
+          }
+      }
+
+      @media (max-width: 1279px) {
+          .sixb {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+      }
+
+
+      @media (max-width: 1100px) {
+          .hero {
+              grid-template-columns: 1fr;
+              gap: 8px;
+          }
+
+          .hero-art {
+              max-width: 520px;
+              width: 100%;
+              margin: 24px auto 0;
+              padding-top: 76px;
+          }
+
+          .main-content .hero-art .badge-secure {
+              top: 0;
+          }
+
+          .main-content .hero-art .badge-booked {
+              top: 0;
+              left: 0;
+          }
+
+          .footer {
+              height: auto;
+              padding-bottom: 28px;
+          }
+
+          .asafe {
+              flex: 1 1 100%;
+              margin: 18px 0 0;
+              max-width: none;
+          }
+
+          body.sb-collapsed .asafe {
+              max-width: none;
+          }
+
+          .bah,
+          body.sb-collapsed .bah {
+              flex: 1 1 100%;
+              margin: 26px 0 0;
+              gap: 20px 16px;
+              flex-wrap: wrap;
+              justify-content: space-between;
+          }
+
+          .fota {
+              width: auto;
+              flex: 1 1 120px;
+              min-width: 120px;
+              margin-top: 0;
+          }
+
+          .foothr {
+              margin-top: 26px;
+          }
+
+          .copy {
+              margin: 18px 0 0;
+              flex: 1 1 auto;
+          }
+
+          .tatlob {
+              margin: 14px 0 0 auto;
+          }
+      }
+
+
+      @media (max-width: 1000px) {
+          .main-content .boxes {
+              grid-template-columns: 1fr;
+          }
+
+          .haba {
+              flex-direction: column;
+              gap: 30px;
+              margin-top: 28px;
+          }
+
+          .lagayan {
+              width: 100%;
+              max-width: 360px;
+              flex: none;
+              padding: 0;
+          }
+
+          .brow {
+              font-size: 1.35rem;
+              margin: 14px 0 0;
+          }
+
+          .fil br {
+              display: none;
+          }
+      }
+
+      @media (max-width: 900px) {
+          .sixb {
+              grid-template-columns: 1fr;
+              gap: 16px;
+          }
+      }
+
+
+      @media (max-width: 768px) {
+          .pangbaabbaaba {
+              margin-top: 0;
+          }
+
+          .bgg {
+              margin-left: -18px;
+              margin-right: -18px;
+              padding: 44px 18px;
+          }
+
+          .prom,
+          .prom1 {
+              display: inline;
+              margin: 0;
+              font-size: clamp(1.6rem, 6.4vw, 2.2rem);
+          }
+
+          .da {
+              margin-top: 0;
+          }
+
+          .footer {
+              margin-left: -18px;
+              margin-right: -18px;
+              margin-bottom: -24px;
+              padding-left: 18px;
+              padding-right: 18px;
+          }
+
+          .foothr {
+              flex: 0 0 calc(100% + 36px);
+              width: calc(100% + 36px);
+              margin-left: -18px;
+              margin-right: -18px;
+          }
+
+          .ov,
+          .ov2 {
+              font-size: 1.5rem;
+          }
+
+          .osass {
+              font-size: 1.35rem;
+          }
+
+          .osasss {
+              font-size: .92rem;
+              margin-top: -8px;
+          }
+
+          .main-content .hero-art .house {
+              width: 56%;
+          }
+
+          .main-content .hero-art .house1,
+          .main-content .hero-art .house2 {
+              width: 52%;
+          }
+
+          .hero-art {
+              max-width: 440px;
+          }
+
+          .main-content .hero-art .badge-secure {
+              transform-origin: top right;
+              scale: .85;
+          }
+
+          .main-content .hero-art .badge-booked {
+              transform-origin: top left;
+          }
+      }
+
+
+      @media (max-width: 640px) {
+
+          .main-content .box1,
+          .main-content .box2 {
+              min-height: 210px;
+          }
+      }
+
+
+      @media (max-width: 560px) {
+          .threw {
+              gap: 10px;
+          }
+
+          .bxsa {
+              padding: 24px 6px 20px;
+          }
+
+          .numberf {
+              font-size: 2rem;
+          }
+
+          .bs {
+              font-size: .95rem;
+              margin-top: 6px;
+          }
+      }
+  }
+
+  @media (max-width: 480px) {
+      .hero .bosk {
+          flex-direction: column;
+          width: 100%;
+      }
+
+      .main-content .hero .bosk .bosk1,
+      .main-content .hero .bosk .bosk12 {
+          width: 100%;
+      }
+
+      .home-hrs-top {
+          flex-wrap: wrap;
+          gap: 12px;
+      }
+
+      .home-hrs-status {
+          font-size: 18px;
+      }
+
+      .home-hrs-row {
+          font-size: 16px;
+          padding: 0 8px;
+      }
+
+      .home-hrs-time {
+          font-size: 14px;
+      }
+
+      .wiabut {
+          flex-direction: column;
+          gap: 12px;
+      }
+
+      .fota {
+          flex: 1 1 90px;
+          min-width: 90px;
+      }
+
+      .fota a {
+          font-size: .92rem;
+      }
+
+      .fotatitle {
+          font-size: 1rem;
+      }
+
+      .copy {
+          font-size: .8rem;
+      }
+  }

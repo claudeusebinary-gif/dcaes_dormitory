@@ -1248,6 +1248,468 @@
             font: inherit;
             font-weight: 800;
         }
+
+        @media (max-width: 900px) {
+
+
+            .four {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .four4 {
+                height: auto;
+                min-height: 96px;
+                text-indent: 0;
+                padding: 14px 18px;
+                box-sizing: border-box;
+            }
+
+            .namber9 {
+                margin: 0 0 4px;
+                font-size: 1.6rem;
+            }
+
+            .four4 span {
+                font-size: .85rem;
+            }
+
+            .search {
+                gap: 10px;
+            }
+
+            .filter {
+                width: auto;
+                flex: none;
+                padding: 0 22px;
+            }
+
+            .filter-pop {
+                width: min(280px, calc(100vw - 36px));
+            }
+
+            .filtering {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .fiveb {
+                width: auto;
+                flex: 1 1 auto;
+                padding: 0 16px;
+            }
+
+            .notes:not(.notes--modal) {
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 6px 18px;
+                margin: 0;
+            }
+
+            .allrooms {
+                gap: 20px;
+            }
+
+            .roommodals {
+                flex-direction: column;
+                overflow-x: hidden;
+            }
+
+            .wala,
+            .wala1 {
+                width: 100%;
+                flex: none;
+            }
+
+            .tuo,
+            .tuo1 {
+                width: 100%;
+                flex: none;
+                padding: 26px 20px 36px;
+                box-sizing: border-box;
+            }
+
+            .tuo1 h1 {
+                margin-top: 0;
+            }
+
+            .goback {
+                top: 16px;
+                left: 16px;
+                width: auto;
+                height: 42px;
+                padding: 0 18px 0 14px;
+            }
+
+            /* room details popup */
+            .wala {
+                height: auto;
+                padding: 76px 0 24px;
+            }
+
+            .tuowala {
+                width: 100%;
+                gap: 8px;
+                padding: 0 10px;
+                box-sizing: border-box;
+                align-items: center;
+            }
+
+            .tuowala .chevron {
+                flex: none;
+            }
+
+            .bilog999 {
+                flex: 1 1 0;
+                min-width: 0;
+                width: auto;
+                height: 52vw;
+                max-height: 380px;
+            }
+
+            .namber999 {
+                position: static;
+                flex-direction: column;
+                gap: 12px;
+                margin-top: 14px;
+                padding: 0 16px;
+            }
+
+            .pagsamasama {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .roomtitleee {
+                font-size: 2.4rem;
+                margin-top: 0;
+            }
+
+            .roomtitleee2 {
+                font-size: 1.8rem;
+                margin-top: 0;
+            }
+
+            .tulo999 {
+                width: 100%;
+                margin-top: 0;
+                flex-wrap: wrap;
+                gap: 4px 18px;
+            }
+
+            .tulo999 .butanganan22 {
+                flex: 1 1 110px;
+                width: auto;
+            }
+
+            .tuo .sixulit {
+                height: auto;
+                min-height: 120px;
+            }
+
+            .tuo .lowerdck {
+                font-size: .85rem;
+            }
+
+            .tuo .okyupayd {
+                font-size: .8rem;
+            }
+
+            .notes--modal {
+                flex-wrap: wrap;
+                gap: 8px 18px;
+            }
+
+            .deckpick {
+                margin-left: 0;
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .amemitiesbox {
+                flex-wrap: wrap;
+            }
+
+            .boxame {
+                width: auto;
+                flex: 1 1 calc(50% - 10px);
+                height: auto;
+                min-height: 50px;
+            }
+
+            .adminme {
+                flex-direction: column;
+                margin-top: 30px;
+            }
+
+            .messageadmin,
+            .bookthis {
+                width: 100%;
+            }
+
+            #paymentModal,
+            #paymentStepModal {
+                overflow-x: hidden;
+                overflow-y: auto;
+            }
+
+            #paymentModal .wala1,
+            #paymentStepModal .wala1 {
+                height: auto;
+            }
+
+            #paymentModal form {
+                flex: none;
+                width: 100%;
+                height: auto;
+                overflow: visible;
+            }
+
+            #paymentStepModal .tuo1 {
+                height: auto;
+                overflow: visible;
+            }
+
+            .wala1 {
+                height: auto;
+                padding: 80px 20px 26px;
+                justify-content: flex-start;
+                align-items: stretch;
+            }
+
+            .progress,
+            .wala1 .progress,
+            #paymentStepModal .progress {
+                position: static !important;
+                margin: 0 0 18px !important;
+                transform: none !important;
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px 14px;
+                width: 100%;
+            }
+
+            .padiretso {
+                display: none;
+            }
+
+            .liftfat {
+                margin-top: 0;
+            }
+
+            .tellme,
+            .tellme23 {
+                font-size: 1.8rem;
+            }
+
+            .roomnabox,
+            .roomnabox2 {
+                width: 100%;
+                height: auto;
+                box-sizing: border-box;
+                flex-wrap: wrap;
+                padding: 18px;
+                gap: 14px;
+            }
+
+            .higaan {
+                width: 64px;
+                height: 64px;
+                flex: none;
+            }
+
+            .presyo {
+                margin: 0;
+                width: 100%;
+            }
+
+            .presyo span {
+                margin-left: 8px;
+            }
+
+            .medyohaba {
+                width: auto;
+                max-width: 100%;
+                padding: 0 12px;
+            }
+
+            .padiretso42,
+            .linyavable {
+                width: 100%;
+            }
+
+            .sababasawala {
+                position: static;
+                margin-top: 20px;
+            }
+
+            .mgainfos,
+            .mgainfos2 {
+                margin-top: 20px;
+            }
+
+            .personalkoto,
+            .personalkoto64,
+            .personalkoto2,
+            .laglagyan,
+            .agreekaba,
+            .agreekaba3,
+            .continuetopays,
+            .lahatbayad,
+            .hatiinnatinmain,
+            .akingbutton,
+            .bayarinmo {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            .personalkoto,
+            .personalkoto64 {
+                padding: 18px;
+            }
+
+            .agreekaba3 {
+                height: auto;
+                min-height: 50px;
+            }
+
+            .laglagyan {
+                flex-direction: column;
+            }
+
+            .firstnamelast {
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .hatiinnatinmain,
+            .akingbutton {
+                flex-direction: column;
+            }
+
+            .hatiinnatin,
+            .hatiinnatin2,
+            .akingbutton1,
+            .akingbutton2 {
+                width: 100%;
+            }
+
+            .padiretso123,
+            .padiretso1236,
+            .padiretso545 {
+                margin-left: 0;
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .kakanan1 h1,
+            .kakanan12 h1 {
+                width: 120px;
+                flex: none;
+            }
+
+            .stepby span {
+                width: auto;
+                flex: 1;
+            }
+
+            .lagaw {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .roomstart {
+                flex-direction: column;
+            }
+
+            .saleft {
+                width: 100%;
+                height: 200px;
+                border-radius: 10px 10px 0 0;
+            }
+
+            .saright {
+                width: 100%;
+                height: auto;
+                border-radius: 0 0 10px 10px;
+                padding: 16px 16px 18px;
+            }
+
+            .tulo99 {
+                flex-wrap: wrap;
+                gap: 0 15px;
+            }
+
+            .tulo99 .butanganan2 {
+                flex: 1 1 90px;
+                width: auto;
+            }
+
+            .lowerdck {
+                font-size: .65rem;
+            }
+
+            .roomtitleee {
+                font-size: 2rem;
+            }
+
+            .roomtitleee2 {
+                font-size: 1.6rem;
+            }
+
+            .adminmodal {
+                padding: 12px;
+                box-sizing: border-box;
+            }
+
+            .adminmodal .adminbox {
+                width: 100%;
+                max-width: 100%;
+                max-height: 90vh;
+                overflow-y: auto;
+                overflow-x: hidden;
+                padding: 24px 18px 20px;
+            }
+
+            .adminmodal .sending {
+                display: block;
+                width: 100%;
+                margin-left: 0;
+                box-sizing: border-box;
+            }
+
+            .adminmodal .msgfield,
+            .adminmodal .missagekayadmin,
+            .adminmodal .silicta {
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+
+            .adminmodal .sinta21 {
+                margin-left: 6px;
+                padding-right: 36px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tuo .sixboxesulit {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .tellme,
+            .tellme23 {
+                font-size: 1.5rem;
+            }
+
+            .tcm-foot {
+                flex-wrap: wrap;
+            }
+        }
     </style>
 
     <div class="tcm" id="termsModal" role="dialog" aria-modal="true" aria-hidden="true">
