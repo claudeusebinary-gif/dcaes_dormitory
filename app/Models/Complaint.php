@@ -24,7 +24,7 @@ class Complaint extends Model
         'other'              => 'Others',
     ];
 
-   protected $fillable = ['user_id', 'room_number', 'type', 'message', 'status', 'in_progress_at', 'resolved_at'];
+   protected $fillable = ['user_id', 'room_number', 'type', 'message', 'status', 'in_progress_at', 'resolved_at', 'photo_path'];
 
 protected $casts = ['in_progress_at' => 'datetime', 'resolved_at' => 'datetime'];
 

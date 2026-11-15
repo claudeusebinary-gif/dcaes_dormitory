@@ -156,3 +156,65 @@
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
     else run();
 })();
+/* ===== Step curtain for modals (room booking steps) ===== */
+(function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var SLIDE = 500, MIN_SHOW = 350;
+    var el, label, shownAt = 0, state = 'idle', coverTimer = null;
+
+    function build() {
+        if (el) return;
+        el = document.createElement('div');
+        el.className = 'step-curtain';
+        el.setAttribute('aria-hidden', 'true');
+        el.innerHTML = '<div class="sc-label"></div><div class="sc-bar"><i></i></div>';
+        label = el.firstChild;
+        document.body.appendChild(el);
+    }
+
+    function show(text) {
+        if (reduce) return Promise.resolve();
+        build();
+        return new Promise(function (resolve) {
+            label.textContent = text || 'Loading';
+            if (state === 'covered') { resolve(); return; }
+            clearTimeout(coverTimer);
+            el.classList.remove('out', 'covered');
+            void el.offsetWidth;
+            el.classList.add('in');
+            state = 'in';
+            coverTimer = setTimeout(function () {
+                el.classList.remove('in');
+                el.classList.add('covered');
+                state = 'covered';
+                shownAt = Date.now();
+                resolve();
+            }, SLIDE);
+        });
+    }
+
+    function hide() {
+        if (!el || state === 'idle') return Promise.resolve();
+        return new Promise(function (resolve) {
+            var wait = state === 'in' ? SLIDE + MIN_SHOW : Math.max(0, MIN_SHOW - (Date.now() - shownAt));
+            setTimeout(function () {
+                el.classList.remove('in', 'covered');
+                el.classList.add('out');
+                state = 'idle';
+                setTimeout(function () { el.classList.remove('out'); resolve(); }, SLIDE);
+            }, wait);
+        });
+    }
+
+    function run(text, fn) {
+        if (reduce) return Promise.resolve(fn());
+        return show(text)
+            .then(function () { return fn(); })
+            .then(
+                function (r) { return hide().then(function () { return r; }); },
+                function (e) { return hide().then(function () { throw e; }); }
+            );
+    }
+
+    window.StepCurtain = { show: show, hide: hide, run: run };
+})();

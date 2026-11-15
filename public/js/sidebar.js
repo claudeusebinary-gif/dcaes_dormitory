@@ -21,7 +21,7 @@
     const userMenu = document.getElementById('sbUserMenu');
     function setUserMenu(open) {
         userBtn.setAttribute('aria-expanded', String(open));
-        userMenu.hidden = !open;
+       userMenu.classList.toggle('open', open);
         userBtn.classList.toggle('open', open);
     }
 

@@ -159,7 +159,7 @@ if ($user->isGuest()) {
     <span class="sb-chevron">{!! $icon('chevron') !!}</span>
 @endunless
         </button>
-               <div class="sb-usermenu" id="sbUserMenu" {{ $userMenuOpen ? '' : 'hidden' }}>
+              <div class="sb-usermenu{{ $userMenuOpen ? ' open' : '' }}" id="sbUserMenu">
             @foreach ($userMenu as $it)
                 <a href="{{ Route::has($it['route']) ? route($it['route']) : '#' }}" class="sb-subitem{{ $it['key'] === $active ? ' active' : '' }}">
                     {!! $icon($it['key']) !!}

@@ -2603,6 +2603,7 @@
     justify-content: center;
     margin-top: 40px;
     flex-direction: column;
+    flex-shrink: 0;
 }
 
 .yours12 h1 {
@@ -2707,8 +2708,16 @@
 }
 
 .lahatbayad {
-    width: 1015px;
+    width: 1012px;
+    min-height: 50px;
     height: 50px;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    line-height: 1.2;
     background-color: #672c2c;
     border-radius: 8px;
     color: #fff;
@@ -2721,19 +2730,14 @@
     cursor: pointer;
 }
 
-.lahatbayad:hover {
-    background-color: transparent;
-    border: 1px solid #672c2c;
-    color: #672C2C;
+.lahatbayad:disabled {
+    opacity: .6;
+    cursor: not-allowed;
 }
 
-.linyavable {
-    height: 1px;
-    width: 995px;
-    background-color: #0000007a;
-    margin-top: 30px;
-    position: absolute;
-
+.lahatbayad:disabled:hover {
+    background-color: #672c2c;
+    color: #fff;
 }
 
 .liftfat {
@@ -3838,7 +3842,7 @@
     justify-content: space-between;
     padding: 18px;
     color: #fff;
-     box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 
@@ -3862,7 +3866,7 @@
     top: 50%;
     transform: translateY(-54%);
     text-align: center;
-       font: 700 clamp(2.4rem, 4.5vw, 4rem)/1 'Inria Serif', serif;
+    font: 700 clamp(2.4rem, 4.5vw, 4rem)/1 'Inria Serif', serif;
     color: transparent;
     -webkit-text-stroke: 2px rgba(255, 255, 255, .55);
     pointer-events: none;
@@ -3889,4 +3893,227 @@
     height: 100%;
     border-radius: 9999px;
     background: #fff;
+}
+
+.proofbooking {
+    width: 1012px;
+    height: auto;
+    margin-top: 20px;
+    padding: 14px 0 16px;
+    border: 1px solid #685a5a2a;
+    border-radius: 8px;
+    background-color: #4b444405;
+}
+
+.proofbooking h1 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #000000;
+    margin: 0 20px 10px;
+}
+
+.proofbooking .upload {
+    width: calc(100% - 40px);
+    min-height: 110px;
+    margin: 0 20px;
+}
+
+.proofbooking .upload-error {
+    margin: 6px 20px 0;
+}
+
+.flatpickr-calendar {
+    font-family: 'Nunito Sans', sans-serif;
+    border-radius: 12px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, .18);
+    border: 1px solid #685a5a2a;
+    z-index: 9999 !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange {
+    background: #672c2c;
+    border-color: #672c2c;
+    color: #fff;
+}
+
+.flatpickr-day.today {
+    border-color: #672c2c;
+}
+
+.flatpickr-day.today:hover {
+    background: #672c2c;
+    color: #fff;
+}
+
+.flatpickr-day:hover {
+    background: #f1e4e4;
+    border-color: #f1e4e4;
+}
+
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: #00000033;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #672c2c;
+}
+
+.flatpickr-current-month,
+.flatpickr-current-month .flatpickr-monthDropdown-months,
+.flatpickr-current-month input.cur-year {
+    font-weight: 700;
+    color: #000;
+}
+
+span.flatpickr-weekday {
+    color: #672c2c;
+    font-weight: 700;
+}
+
+input.firtsnimedate[readonly] {
+    cursor: pointer;
+}
+
+.photo-drop {
+    position: relative;
+    margin-top: 16px;
+}
+
+.photo-drop-label {
+    display: block;
+    margin-bottom: 6px;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #00000099;
+}
+
+.photo-drop-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.photo-drop-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 64px;
+    padding: 12px 16px;
+    border: 1px dashed #672C2C;
+    border-radius: 8px;
+    background: #672C2C0d;
+    cursor: pointer;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+.photo-drop-area:hover,
+.photo-drop-area.is-drag {
+    background: #672C2C1a;
+    border-style: solid;
+}
+
+.photo-drop-icon {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: #672C2C;
+    color: #fff;
+}
+
+.photo-drop-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+.photo-drop-text {
+    font-family: 'Nunito Sans', sans-serif;
+    min-width: 0;
+}
+
+.photo-drop-text strong {
+    display: block;
+    font-size: .9rem;
+    color: #672C2C;
+}
+
+.photo-drop-text span {
+    font-size: .75rem;
+    font-weight: 600;
+    color: #00000080;
+}
+
+.photo-preview {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 12px 8px 8px;
+    border: 1px solid #00000026;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.photo-drop.has-file .photo-drop-area {
+    display: none;
+}
+
+.photo-drop.has-file .photo-preview {
+    display: flex;
+}
+
+.photo-preview img {
+    flex: none;
+    width: 56px;
+    height: 56px;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.photo-preview-info {
+    flex: 1;
+    min-width: 0;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.photo-preview-name {
+    display: block;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.photo-preview-size {
+    display: block;
+    font-size: .72rem;
+    font-weight: 600;
+    color: #00000080;
+}
+
+.photo-remove {
+    flex: none;
+    border: 0;
+    background: none;
+    padding: 4px 8px;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #b3261e;
+    cursor: pointer;
 }

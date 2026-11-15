@@ -9,7 +9,9 @@ use Illuminate\Support\Carbon;
 
 class Billing
 {
-        public const LATE_FEE_PER_DAY = 10;
+       public const LATE_FEE_PER_DAY = 10;
+    public const RENT  = 1000;
+    public const WATER = 100;
     public static function money(float $amount): string
     {
         return '₱' . number_format($amount, fmod($amount, 1) == 0 ? 0 : 2);
@@ -45,12 +47,17 @@ for ($m = $first; $m->lte($last); $m->addMonthNoOverflow()) {
             $period = $m->format('Y-m');
             $part   = $paymentRows->get($period);
 $isPart = $part && $part->partial;
+$total  = self::dueFor($user, $period);
+$elec   = self::electricShare($user, $period);
 $all[] = [
     'label'    => $m->format('F Y'),
     'period'   => $period,
     'due'      => $due,
-    'rent'     => $rent,
-    'amount'   => $isPart ? max(0, $rent - (float) $part->amount) : $rent,
+    'rent'      => $total,
+    'base_rent' => $rent,
+    'water'     => self::WATER,
+    'electric'  => $elec,
+    'amount'   => $isPart ? max(0, $total - (float) $part->amount) : $total,
     'fee_paid' => $part ? (float) $part->fee : 0,
     'awaiting' => in_array($period, $awaiting, true),
     'status'   => in_array($period, $paidPeriods, true)
@@ -66,12 +73,16 @@ $all[] = [
                 $latestPast = $i;
             }
         }
-      if ($latestPast !== null && ! in_array($all[$latestPast]['period'], $paidPeriods, true)) {
-            $all[$latestPast]['status'] = match ($user->payment_status) {
-                'overdue'    => 'overdue',
-                'up_to_date' => 'paid',
-                default      => 'pending',
-            };
+         if ($latestPast !== null && ! in_array($all[$latestPast]['period'], $paidPeriods, true)) {
+            $latestRow = $paymentRows->get($all[$latestPast]['period']);
+
+            $all[$latestPast]['status'] = ($latestRow && $latestRow->partial)
+                ? 'overdue'   // advance-paid month still has an unpaid balance (e.g. electricity) and the due date has passed
+                : match ($user->payment_status) {
+                    'overdue'    => 'overdue',
+                    'up_to_date' => 'paid',
+                    default      => 'pending',
+                };
         }
 $rs      = DormStats::roomSettings();
 $grace   = $rs['grace'];
@@ -83,8 +94,8 @@ $lateFee = $rs['late_fee'];
 
             $all[$i]['late_days'] = $late;
            $all[$i]['fee']       = max(0, round(max(0, $late - $grace) * $lateFee - $inv['fee_paid'], 2));
-            $all[$i]['half']      = round($rent / 2, 2);
-            $all[$i]['can_half']  = $inv['status'] !== 'paid' && abs($inv['amount'] - $rent) < 0.01 && $rent >= 2;
+            $all[$i]['half']      = round($inv['rent'] / 2, 2);
+            $all[$i]['can_half']  = $inv['status'] !== 'paid' && abs($inv['amount'] - $inv['rent']) < 0.01 && $inv['rent'] >= 2;
         }
         $overdue = array_filter($all, fn ($i) => $i['status'] === 'overdue');
         $paid    = array_filter($all, fn ($i) => $i['status'] === 'paid' && $i['due']->year === $today->year);
@@ -148,21 +159,45 @@ return [
             'paid_count'    => count($paid),
         ];
     }
-  public static function rentFor(User $user): float
+public static function rentFor(User $user): float
     {
-        if (! $user->room_number) {
-            return 0;
-        }
+        return $user->room_number ? (float) self::RENT : 0;
+    }
 
-        $price   = (float) Room::where('room_number', $user->room_number)->value('price_per_bed');
-        $custom  = $user->monthly_rent !== null ? (float) $user->monthly_rent : null;
-        $sharers = max(1, User::where('role', 'tenant')->where('room_number', $user->room_number)->count());
+       /** First month a tenant is charged electricity = the month AFTER their move-in month. */
+    public static function electricStart(User $user): Carbon
+    {
+        return Carbon::parse($user->move_in_date ?? $user->created_at)->startOfMonth()->addMonth();
+    }
 
-        if ($custom !== null && abs($custom - $price) > 0.01) {
-            return $custom;
-        }
+    /** Tenants in a room who actually share that month's electricity bill (new tenants are skipped in their first month). */
+    public static function electricSharers(string $room, string $period)
+    {
+        return User::where('role', 'tenant')->where('room_number', $room)->get()
+            ->filter(fn ($t) => $period >= self::electricStart($t)->format('Y-m'));
+    }
 
-        return round($price / $sharers, 2);
+    /** Tenant's share of the room's electricity bill for a month (0 in move-in month, or if admin hasn't posted it yet). */
+    public static function electricShare(User $user, string $period): float
+    {
+        if (! $user->room_number) return 0;
+        if ($period < self::electricStart($user)->format('Y-m')) return 0;
+
+        $bill = \App\Models\ElectricityBill::where('room_number', $user->room_number)
+            ->where('period', $period)->first();
+        if (! $bill) return 0;
+
+        $sharers = max(1, self::electricSharers($user->room_number, $period)->count());
+
+        return round((float) $bill->amount / $sharers, 2);
+    }
+
+    /** Full monthly bill = rent + water + electricity share. */
+    public static function dueFor(User $user, string $period): float
+    {
+        if (! $user->room_number) return 0;
+
+        return round(self::rentFor($user) + self::WATER + self::electricShare($user, $period), 2);
     }
     private static function blank(?string $room): array
     {

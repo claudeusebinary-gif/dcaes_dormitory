@@ -38,8 +38,6 @@ class DatabaseSeeder extends Seeder
         ]);
          Notification::create([
             'tenant_id' => $tenant->id,
-            'title' => 'Puso reminder',
-            'message' => 'August rent is due on the 53rd. Message admin if you need an extension.',
         ]);
     }
 }

@@ -5,6 +5,7 @@
 @section('page_subtitle', 'Every tenants dues at a glance — track collections, chase overdue rent, and log payments in a couple of clicks.')
 
 @section('page_action')
+    <a href="{{ route('admin.electricity') }}" class="addroombtn" style="text-decoration:none;margin-right:8px;">Electricity bills</a>
     <button type="button" class="addroombtn" id="manualBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
             stroke-linejoin="round" aria-hidden="true">
@@ -151,18 +152,25 @@
                     <hr class="dashed-line">
                 </div>
                 <h1 class="amountoaudjue">{{ $c['label'] }}</h1>
-                <div class="paidinriajuepaid">
-                    <div class="paidjuesakapaid">
-                        <h1 class="perajue">{{ $c['amount'] }}</h1>
-                        <h1 class="duejue">{{ $c['sub'] }}</h1>
-                                                @if ($c['submitted'] > 0)
-                            <h1 class="duejue" style="color:#1060BC;">Sent ₱{{ number_format($c['submitted'], 2) }} · to check</h1>
-                        @endif
-                    </div>
-                    <div class="paidinria" @if ($p['box']) style="{{ $p['box'] }}" @endif>
-                        <h1 class="inriapaidna" @if ($p['color']) style="color:{{ $p['color'] }};" @endif>{{ $p['label'] }}</h1>
-                    </div>
-                </div>
+             <div class="paidinriajuepaid">
+    <div class="paidjuesakapaid">
+        <h1 class="perajue">{{ $c['amount'] }}</h1>
+        <h1 class="duejue">{{ $c['sub'] }}</h1>
+        @if ($c['submitted'] > 0)
+            <h1 class="duejue" style="color:#1060BC;">Sent ₱{{ number_format($c['submitted'], 2) }} · to check</h1>
+        @endif
+    </div>
+    <div class="paidrightcol">
+        <div class="paidinria" @if ($p['box']) style="{{ $p['box'] }}" @endif>
+            <h1 class="inriapaidna" @if ($p['color']) style="color:{{ $p['color'] }};" @endif>{{ $p['label'] }}</h1>
+        </div>
+        @if ($c['submitted'] > 0)
+            @foreach ($c['proofs'] as $i => $url)
+                <a href="{{ $url }}" target="_blank" class="proof-link">{{ count($c['proofs']) > 1 ? 'Screenshot ' . ($i + 1) : 'View screenshot' }}</a>
+            @endforeach
+        @endif
+    </div>
+</div>
                 <div class="buttonpaidjue">
                    @php $showRecord = $c['can_record'] || count($c['approve_ids']); @endphp
 @if ($showRecord)

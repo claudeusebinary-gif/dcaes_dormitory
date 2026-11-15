@@ -23,8 +23,8 @@ use App\Http\Controllers\RoommateChatController;
 // Public: landing page with login / sign-up panels 
 Route::get('/', [AuthController::class, 'show'])->middleware(NoStore::class)->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:6,1')->name('login.submit');
-Route::post('/signup', [AuthController::class, 'signup'])->name('signup');
-Route::post('/guest', [AuthController::class, 'guest'])->name('guest');
+Route::post('/signup', [AuthController::class, 'signup'])->middleware('throttle:5,1')->name('signup');
+Route::post('/guest', [AuthController::class, 'guest'])->middleware('throttle:20,1')->name('guest');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Legal pages (public)
 Route::view('/terms',       'legal', ['page' => 'terms'])->name('legal.terms');
@@ -107,11 +107,15 @@ Route::put('/rooms/{id}',      [AdminController::class, 'roomUpdate'])->whereNum
 Route::post('/rooms/{id}/maintenance', [AdminController::class, 'roomMaintenance'])->whereNumber('id')->name('rooms.maintenance');
 Route::delete('/rooms/{id}',   [AdminController::class, 'roomDestroy'])->whereNumber('id')->name('rooms.destroy');
 Route::get('/payments',     [AdminController::class, 'payments'])->name('payments');
+Route::get('/electricity',  [AdminController::class, 'electricity'])->name('electricity');
+Route::post('/electricity', [AdminController::class, 'electricityStore'])->name('electricity.store');
+Route::get('/electricity/{id}/photo', [AdminController::class, 'electricityPhoto'])->whereNumber('id')->name('electricity.photo');
 Route::post('/payments',    [AdminController::class, 'paymentStore'])->name('payments.store');
 Route::post('/payments/{id}/remind', [AdminController::class, 'paymentRemind'])->whereNumber('id')->middleware('throttle:30,1')->name('payments.remind');
 Route::get('/complaints',   [AdminController::class, 'complaints'])->name('complaints');
 Route::post('/complaints',  [AdminController::class, 'complaintStore'])->name('complaints.store');
 Route::post('/complaints/{id}/status', [AdminController::class, 'complaintStatus'])->whereNumber('id')->name('complaints.status');
+Route::get('/complaints/{id}/photo', [AdminController::class, 'complaintPhoto'])->whereNumber('id')->name('complaints.photo');
 Route::get('/approvals',    [AdminController::class, 'approvals'])->name('approvals');
 Route::get('/settings',     [AdminController::class, 'settings'])->name('settings');
 Route::put('/settings/front-desk',    [AdminController::class, 'saveFrontDesk'])->name('settings.front-desk');
@@ -135,6 +139,7 @@ Route::delete('/settings/sessions/{id}', [TenantController::class, 'logoutSessio
                 Route::post('/approvals', [AdminController::class, 'approvalStore'])->name('approvals.store');
         Route::post('/approvals/{id}/check', [AdminController::class, 'approvalCheck'])->whereNumber('id')->name('approvals.check');
                 Route::get('/approvals/{id}/id-photo', [AdminController::class, 'approvalIdPhoto'])->whereNumber('id')->name('approvals.id-photo');
+                Route::get('/approvals/{id}/proof', [AdminController::class, 'approvalProof'])->whereNumber('id')->name('approvals.proof');
         Route::post('/announcements', [AdminController::class, 'announcementStore'])->name('announcements.store');
         Route::put('/announcements/{id}', [AdminController::class, 'announcementUpdate'])->whereNumber('id')->name('announcements.update');
         Route::delete('/announcements/{id}', [AdminController::class, 'announcementDestroy'])->whereNumber('id')->name('announcements.destroy');

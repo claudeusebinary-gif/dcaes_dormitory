@@ -50,7 +50,7 @@
                     b.classList.add('sb-collapsed');
                 }
             } catch (e) { }
-            // no sidebar/content transitions while the page is first loading
+            
             b.classList.add('sb-no-anim');
             window.addEventListener('load', function () {
                 requestAnimationFrame(function () {
@@ -102,11 +102,12 @@
                 if (reduce || busy || e.defaultPrevented) return;
                 if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
 
-                var a = e.target.closest('.sb-link, .sb-subitem');
+              var a = e.target.closest('a[href]');
                 if (!a || a.id === 'logoutLink') return;
 
                 var href = a.getAttribute('href');
-                if (!href || href.charAt(0) === '#' || a.target === '_blank') return;
+               if (!href || href.charAt(0) === '#' || a.target === '_blank') return;
+if (a.hasAttribute('download') || a.hasAttribute('data-no-curtain') || /^(mailto:|tel:|javascript:)/i.test(href)) return;
 
                 var url = new URL(a.href, location.href);
                 if (url.origin !== location.origin) return;
@@ -115,8 +116,9 @@
                 e.preventDefault();
                 busy = true;
 
-                var span = a.querySelector('.sb-label, span');
-                var name = (span ? span.textContent : a.textContent).trim();
+              var inSidebar = a.matches('.sb-link, .sb-subitem');
+var span = a.querySelector('.sb-label, span');
+var name = (a.dataset.curtain || (inSidebar ? (span ? span.textContent : a.textContent) : 'Loading')).trim();
                 label.textContent = name;
                 try { sessionStorage.setItem(KEY, Date.now() + '|' + name); } catch (err) { }
 
@@ -124,7 +126,16 @@
                 curtain.classList.add('in');
             setTimeout(function () { window.location.href = a.href; }, 160);
             }, true);
-
+window.curtainGo = function (url, name) {
+    name = name || 'Loading';
+    if (reduce || busy) { window.location.href = url; return; }
+    busy = true;
+    label.textContent = name;
+    try { sessionStorage.setItem(KEY, Date.now() + '|' + name); } catch (err) { }
+    curtain.classList.remove('out', 'covered');
+    curtain.classList.add('in');
+    setTimeout(function () { window.location.href = url; }, 160);
+};
             window.addEventListener('pageshow', function (e) {
                 if (e.persisted) {
                     busy = false;
@@ -188,6 +199,46 @@
 <script src="{{ asset('js/sidebar.js') }}?v={{ filemtime(public_path('js/sidebar.js')) }}"></script>
     <script src="{{ asset('js/notifications.js') }}"></script>
     <script src="{{ asset('js/logout-modal.js') }}"></script>
+    <script>
+(function () {
+    document.querySelectorAll('.photo-drop').forEach(function (box) {
+        var input  = box.querySelector('.photo-drop-input');
+        var area   = box.querySelector('.photo-drop-area');
+        var img    = box.querySelector('.photo-preview img');
+        var nameEl = box.querySelector('.photo-preview-name');
+        var sizeEl = box.querySelector('.photo-preview-size');
+        var url = null;
+
+        function refresh() {
+            if (url) { URL.revokeObjectURL(url); url = null; }
+            var f = input.files && input.files[0];
+            box.classList.toggle('has-file', !!f);
+            if (!f) { img.removeAttribute('src'); return; }
+            url = URL.createObjectURL(f);
+            img.src = url;
+            nameEl.textContent = f.name;
+            sizeEl.textContent = (f.size / 1048576).toFixed(2) + ' MB';
+        }
+
+        input.addEventListener('change', refresh);
+        box.querySelector('.photo-remove').addEventListener('click', function () {
+            input.value = '';
+            refresh();
+        });
+
+        ['dragenter', 'dragover'].forEach(function (ev) {
+            area.addEventListener(ev, function (e) { e.preventDefault(); area.classList.add('is-drag'); });
+        });
+        ['dragleave', 'drop'].forEach(function (ev) {
+            area.addEventListener(ev, function () { area.classList.remove('is-drag'); });
+        });
+        area.addEventListener('drop', function (e) {
+            e.preventDefault();
+            if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; refresh(); }
+        });
+    });
+})();
+</script>
     @stack('scripts')
 </body>
 

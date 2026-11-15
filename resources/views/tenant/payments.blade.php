@@ -194,7 +194,7 @@
 
                     </div>
                     <div class="lubidog43">
-                        <h1>Dafault</h1>
+                        <h1>Default</h1>
                     </div>
                 </div>
                 <div class="tranparent method" @unless ($methods['card']) data-unavailable="true" @endunless role="button"
@@ -290,7 +290,7 @@
                     </svg></div>
                 <div class="ibosses3479">
                     <h1>Select invoices</h1>
-                    <span>Room 100 · Montly rent</span>
+                    <span>Room {{ $billing['room'] }} · Monthly rent</span>
                 </div>
 
             </div>
@@ -333,6 +333,8 @@
             <p class="payfeenote">+ ₱{{ number_format($inv['fee'], 2) }} late fee (₱10 for every day late)</p>
         @endif
 
+       <p class="payfeenote">Rent ₱{{ number_format($inv['base_rent'], 0) }} + Water ₱{{ number_format($inv['water'], 0) }} + Electricity ₱{{ number_format($inv['electric'], 2) }}</p>
+
         @if ($inv['can_half'])
             <label class="payhalf">
                 <input type="checkbox" class="half-check" value="{{ $inv['period'] }}" disabled>
@@ -355,7 +357,7 @@
 
     </div>
     <div class="pay-overlay" id="payModal2" hidden>
-    <div class="pay-box" role="dialog" aria-modal="true" style="min-width: 720px; min-height: 555px;">
+   <div class="pay-box" role="dialog" aria-modal="true">
         <span class="pay-corner" aria-hidden="true"></span>
 
         <button type="button" class="pay-back" data-pay2-close aria-label="Go back">
@@ -379,7 +381,7 @@
                     </svg></div>
                 <div class="ibosses3479">
                     <h1>Choose payment method</h1>
-                    <span>Room 100 · Montly rent</span>
+                    <span>Room {{ $billing['room'] }} · Monthly rent</span>
                 </div>
 
             </div>
@@ -434,22 +436,92 @@
     </div>
 </label>
 
-<div class="encri1">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z" />
-        <rect x="9" y="11" width="6" height="5" rx="1" />
-        <path d="M10.5 11V9.5a1.5 1.5 0 0 1 3 0V11" />
-    </svg>
-    <h1 class="encri">Payments are encrypted and processed securely.</h1>
+<div class="pay2-foot">
+
+    <div class="pay2-secure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z" />
+            <rect x="9" y="11" width="6" height="5" rx="1" />
+            <path d="M10.5 11V9.5a1.5 1.5 0 0 1 3 0V11" />
+        </svg>
+        <span>Payments are encrypted and processed securely.</span>
+    </div>
+
+    <div class="proofbox">
+        <div class="proofhead">
+            <h3>Proof of payment</h3>
+            <em>Required</em>
+        </div>
+        <p class="proofhint">Upload a screenshot of your GCash, card or bank receipt so the admin can verify it.</p>
+
+        <label class="proofdrop" for="proofInput" id="proofDrop">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <b>Click to upload screenshot</b>
+            <small>PNG or JPG · up to 5 MB</small>
+        </label>
+
+        <div class="proofpreview" id="proofPreview" hidden>
+            <img id="proofImg" alt="Payment screenshot preview">
+            <div class="proofinfo">
+                <strong id="proofName"></strong>
+                <small id="proofSize"></small>
+            </div>
+            <button type="button" id="proofRemove">Remove</button>
+        </div>
+
+        <input type="file" id="proofInput" accept="image/png,image/jpeg" hidden>
+        <p class="prooferr" id="proofErr" hidden></p>
+    </div>
+
+    <div class="pay2-total">
+        <h1 id="methodLabel">Total (Via GCash)</h1>
+        <span id="methodTotal">₱0.00</span>
+    </div>
+    <button id="payNowBtn" class="contopay">Pay ₱0.00 Now</button>
 </div>
 
-<hr class="padiretso2315912">
+<script>
+(function () {
+    var input = document.getElementById('proofInput');
+    var drop = document.getElementById('proofDrop');
+    var prev = document.getElementById('proofPreview');
+    var img = document.getElementById('proofImg');
+    var err = document.getElementById('proofErr');
 
-<div class="totalinvoice12" style="gap:490px;">
-    <h1 id="methodLabel">Total (Via GCash)</h1>
-    <span id="methodTotal">₱0.00</span>
-</div>
-<button id="payNowBtn" class="contopay">Pay ₱0.00 Now</button>
+    window.proofError = function (msg) {
+        err.textContent = msg;
+        err.hidden = false;
+        drop.classList.add('bad');
+    };
+    function reset() {
+        input.value = '';
+        prev.hidden = true;
+        drop.hidden = false;
+        err.hidden = true;
+        drop.classList.remove('bad');
+    }
+    input.addEventListener('change', function () {
+        var f = input.files[0];
+        err.hidden = true;
+        drop.classList.remove('bad');
+        if (!f) { reset(); return; }
+        if (!/^image\/(png|jpe?g)$/.test(f.type)) { input.value = ''; window.proofError('Please choose a PNG or JPG image.'); return; }
+        if (f.size > 5 * 1024 * 1024) { input.value = ''; window.proofError('That image is over 5 MB. Please choose a smaller one.'); return; }
+        img.src = URL.createObjectURL(f);
+        document.getElementById('proofName').textContent = f.name;
+        document.getElementById('proofSize').textContent = (f.size / 1024 < 1024)
+            ? Math.round(f.size / 1024) + ' KB'
+            : (f.size / 1048576).toFixed(1) + ' MB';
+        drop.hidden = true;
+        prev.hidden = false;
+    });
+    document.getElementById('proofRemove').addEventListener('click', reset);
+})();
+</script>
             </div>
        
     </div>
@@ -782,35 +854,50 @@ if (firstOn) {
             unavailModal.hidden = true;
         });
 
-        
-       payNowBtn.addEventListener('click', function () {
-        var periods = [], half = [];
-    checks.forEach(function (c) { if (c.checked) periods.push(c.value); });
-    halves.forEach(function (h) { if (h.checked) half.push(h.value); });
+        function setPayLoading(on) {
+    payNowBtn.disabled = on;
+    payNowBtn.classList.toggle('is-loading', on);
+    if (on) {
+        payNowBtn.innerHTML = '<span class="btn-spinner" aria-hidden="true"></span><span>Processing, please wait...</span>';
+    } else {
+        payNowBtn.textContent = 'Pay ' + money(selectedTotal) + ' Now';
+    }
+}
+payNowBtn.addEventListener('click', function () {
+    var proof = document.getElementById('proofInput').files[0];
+    if (!proof) {
+       proofError('Please upload a screenshot of your payment first.');
+        return;
+    }
 
-    payNowBtn.disabled = true;
+    var fd = new FormData();
+    checks.forEach(function (c) { if (c.checked) fd.append('periods[]', c.value); });
+    halves.forEach(function (h) { if (h.checked) fd.append('half[]', h.value); });
+    fd.append('method', method);
+    fd.append('proof', proof);
+
+    setPayLoading(true);
     fetch("{{ route('tenant.payments.pay') }}", {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
         },
-               body: JSON.stringify({ periods: periods, half: half, method: method })
+        body: fd
     })
     .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
     .then(function (res) {
-        payNowBtn.disabled = false;
+        setPayLoading(false);
         if (!res.ok || !res.d.ok) {
             alert(res.d.message || 'Payment failed. Please try again.');
             return;
         }
-               successText.textContent = money(selectedTotal) + ' sent via ' + method;
+        successText.textContent = money(selectedTotal) + ' sent via ' + method;
         payModal2.hidden = true;
         payModal3.hidden = false;
     })
     .catch(function () {
-        payNowBtn.disabled = false;
+        setPayLoading(false);
         alert('Something went wrong. Please try again.');
     });
 });

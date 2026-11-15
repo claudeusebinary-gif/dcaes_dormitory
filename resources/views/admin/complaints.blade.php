@@ -125,6 +125,12 @@
                 </div>
                 <h3>{{ $c['title'] }}</h3>
                 <h2>{{ $c['message'] }}</h2>
+                @if (!empty($c['photo']))
+    <a href="{{ $c['photo'] }}" target="_blank" rel="noopener" style="display:inline-block;margin:6px 0 2px;">
+        <img src="{{ $c['photo'] }}" alt="Complaint photo" loading="lazy"
+            style="max-width:100%;max-height:140px;border-radius:10px;border:1px solid #ddd;object-fit:cover;">
+    </a>
+@endif
                 <div class="notifsacomplaint">
                     <div class="notifsacomplaint1">
                         <h4>{{ $c['type_label'] }}</h4>
@@ -192,6 +198,13 @@
                 </div>
                 <p class="cv-label">DESCRIPTION</p>
                 <div class="cv-box" id="vMsg"></div>
+                <div id="vPhotoWrap" hidden>
+    <p class="cv-label">PHOTO</p>
+    <a id="vPhotoLink" href="#" target="_blank" rel="noopener">
+        <img id="vPhoto" alt="Complaint photo"
+            style="max-width:100%;max-height:320px;border-radius:10px;border:1px solid #ddd;display:block;margin-bottom:12px;">
+    </a>
+</div>
                 <div class="cv-box cv-grid">
                     <div>
                         <p class="cv-label">PHONE</p><b id="vPhone"></b>
@@ -368,6 +381,14 @@
                 $('vHigh').hidden = !(c.high && c.status !== 'resolved');
                 $('vFiled').textContent = 'Filed ' + c.filed;
                 $('vMsg').textContent = c.message;
+                if (c.photo) {
+    $('vPhotoWrap').hidden = false;
+    $('vPhotoLink').href = c.photo;
+    $('vPhoto').src = c.photo;
+} else {
+    $('vPhotoWrap').hidden = true;
+    $('vPhoto').removeAttribute('src');
+}
                 $('vPhone').textContent = c.phone || '—';
                 $('vEmail').textContent = c.email || '—';
                 $('vT1').textContent = c.filed_full;

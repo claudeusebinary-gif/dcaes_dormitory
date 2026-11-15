@@ -66,24 +66,20 @@
                     <span>2mins ago</span>
                 </div>
             </div>
-            <div class="badge-secure badge-payment">
+                       <div class="badge-secure badge-payment">
                 <div class="badge-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#672C2C" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round">
                         <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
                     </svg>
-                </div><div class="hero-art im">
-    <img src="{{ asset('images/house.svg') }}" alt="" class="house">
-    <img src="{{ asset('images/house.svg') }}" alt="" class="house1">
-    <img src="{{ asset('images/house.svg') }}" alt="" class="house2">
-    <img src="{{ asset('images/house.svg') }}" alt="" class="house3">s
+                </div>
                 <div class="badge-text">
                     <strong>Fast payment</strong>
                     <span>Pay in seconds</span>
                 </div>
             </div>
         </div>
-       </div> 
+    </div>
 <h1 class="ov">Overview</h1>
         <hr class="hw">
         <div class="threw">

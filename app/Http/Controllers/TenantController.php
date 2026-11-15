@@ -131,7 +131,7 @@ public function book(Request $request): JsonResponse
         'school_employer'   => ['nullable', 'string', 'max:150'],
         'id_type'           => ['nullable', 'string', 'max:50'],
         'id_number'         => ['nullable', 'string', 'max:50'],
-        'id_photo'          => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+                'payment_proof'     => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
         'length_of_stay'    => ['nullable', 'string', 'max:30'],
         'agree'             => ['nullable'],
     ]);
@@ -197,6 +197,7 @@ public function book(Request $request): JsonResponse
             'id_type'        => $data['id_type'] ?? null,
             'id_number'      => $data['id_number'] ?? null,
             'id_photo_path'  => $request->file('id_photo')->store('ids', 'local'),
+                        'proof_path'     => $request->file('payment_proof')->store('payment-proofs', 'local'),
             'length_of_stay' => $data['length_of_stay'] ?? null,
             'agreed'         => ! empty($data['agree']),
         ]);
@@ -254,6 +255,12 @@ public function sendMessage(Request $request): JsonResponse
             'half'      => ['nullable', 'array'],
             'half.*'    => ['regex:/^\d{4}-\d{2}$/'],
             'method'    => ['required', 'in:' . implode(',', DormStats::enabledMethodNames())],
+           'proof'     => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+        ], [
+            'proof.required' => 'Please upload a screenshot of your payment.',
+            'proof.mimes'    => 'The proof must be a PNG or JPG image.',
+            'proof.max'      => 'The proof must be 5 MB or smaller.',
+            'proof.uploaded' => 'The image could not be uploaded. Please try a smaller screenshot.',
         ]);
 
         $user = $request->user();
@@ -268,7 +275,9 @@ public function sendMessage(Request $request): JsonResponse
 
         $total = 0;
 
-        DB::transaction(function () use ($data, $user, $unpaid, &$total) {
+        $proof = $request->file('proof')->store('payment-proofs', 'local');
+
+        DB::transaction(function () use ($data, $user, $unpaid, $proof, &$total) {
             foreach (array_unique($data['periods']) as $period) {
                 $inv = $unpaid->get($period);
                 if (! $inv) continue;
@@ -282,7 +291,8 @@ public function sendMessage(Request $request): JsonResponse
                     'user_id' => $user->id,
                     'type'    => 'payment',
                     'status'  => 'pending',
-                    'period'  => $period,
+                   'period'  => $period,
+                    'proof_path' => $proof,
                     'amount'  => $pay,
                     'fee'     => $fee,
                     'partial' => $pay + 0.01 < (float) $inv['amount'],

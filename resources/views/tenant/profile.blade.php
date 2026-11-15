@@ -529,9 +529,33 @@
                     rows="4" placeholder="Describe the problem: what happened, where, and when..."></textarea>
                 <span class="msgcount" id="ctComplaintCount">0 / 1000</span>
             </div>
-            <input type="button" class="sending" id="ctComplaintSend" value="Send Complaint"
-                data-url="{{ route('tenant.complaints.store') }}">
-            <p class="msg-status" hidden></p>
+            <div class="photo-drop">
+    <span class="photo-drop-label">Attach a photo (optional)</span>
+    <input type="file" id="ctComplaintPhoto" class="photo-drop-input" accept="image/jpeg,image/png,image/webp">
+    <label for="ctComplaintPhoto" class="photo-drop-area">
+        <span class="photo-drop-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" />
+            </svg>
+        </span>
+        <span class="photo-drop-text">
+            <strong>Click to upload or drag a photo here</strong>
+            <span>JPG, PNG or WEBP, up to 5 MB</span>
+        </span>
+    </label>
+    <div class="photo-preview">
+        <img alt="Selected photo preview">
+        <div class="photo-preview-info">
+            <span class="photo-preview-name"></span>
+            <span class="photo-preview-size"></span>
+        </div>
+        <button type="button" class="photo-remove" aria-label="Remove photo">&times;</button>
+    </div>
+</div>
+
+<input type="button" class="sending" id="ctComplaintSend" value="Send Complaint"
+    data-url="{{ route('tenant.complaints.store') }}">
+<p class="msg-status" hidden></p>
         </div>
 
         <div class="adminbox" id="ctSuggestion" hidden>
@@ -746,15 +770,15 @@
                     btn.value = 'Sending...';
                     setStatus(box, '');
 
-                    fetch(btn.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrf
-                        },
-                        body: JSON.stringify(out.data)
-                    }).then(function (res) {
+                  var isForm = out.data instanceof FormData;
+var hdrs = { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf };
+if (!isForm) hdrs['Content-Type'] = 'application/json';
+
+fetch(btn.dataset.url, {
+    method: 'POST',
+    headers: hdrs,
+    body: isForm ? out.data : JSON.stringify(out.data)
+}).then(function (res) {
                         return res.json().catch(function () { return {}; }).then(function (data) {
                             if (res.status === 429) throw new Error('You are sending too fast. Please wait a moment.');
                             if (res.status === 419) throw new Error('Your session expired. Refresh the page and try again.');
@@ -797,9 +821,22 @@
                     var text = document.getElementById('ctComplaintText').value.trim();
                     if (!type) return { error: 'Please select a complaint type.' };
                     if (text.length < 5) return { error: 'Please describe your complaint.' };
-                    return { data: { type: type, message: text } };
+                   var fd = new FormData();
+fd.append('type', type);
+fd.append('message', text);
+var photo = document.getElementById('ctComplaintPhoto').files[0];
+if (photo) {
+    if (photo.size > 5 * 1024 * 1024) return { error: 'The photo must be 5 MB or smaller.' };
+    fd.append('photo', photo);
+}
+return { data: fd };
                 },
-                function () { document.getElementById('ctComplaintType').selectedIndex = 0; resetText('ctComplaintText'); });
+                function () {
+    document.getElementById('ctComplaintType').selectedIndex = 0;
+   document.getElementById('ctComplaintPhoto').value = '';
+document.getElementById('ctComplaintPhoto').dispatchEvent(new Event('change'));
+    resetText('ctComplaintText');
+}); 
 
             wire('ctSuggestionSend', 'Send Suggestion', 'Thank you! Your suggestion was sent.',
                 function () {

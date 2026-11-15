@@ -8,18 +8,23 @@
     const cancelBtn = modal.querySelector('.lo-cancel');
     let lastFocus = null;
 
+      let closeTimer = null;
+
     function open() {
+        clearTimeout(closeTimer);
         lastFocus = document.activeElement;
         modal.hidden = false;
         document.body.classList.add('lo-open');
-        requestAnimationFrame(() => modal.classList.add('show'));
-        cancelBtn.focus();
+        void modal.offsetWidth;          // lets the browser paint the start state first
+        modal.classList.add('show');
+        cancelBtn.focus({ preventScroll: true });
     }
 
     function close() {
         modal.classList.remove('show');
         document.body.classList.remove('lo-open');
-        setTimeout(() => { modal.hidden = true; }, 180);
+        clearTimeout(closeTimer);
+        closeTimer = setTimeout(() => { modal.hidden = true; }, 320);
         if (lastFocus) lastFocus.focus();
     }
 

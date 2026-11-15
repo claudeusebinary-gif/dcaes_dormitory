@@ -309,3 +309,124 @@ body.sb-no-anim .sidebar .sb-indicator {
 html body .sidebar span.sb-indicator.snapping {
     transition: none !important;
 }
+
+.step-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: #FAF6F4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    transform: translateY(100%);
+    pointer-events: none;
+}
+
+.step-curtain.in {
+    transform: translateY(0);
+    transition: transform .5s cubic-bezier(.77, 0, .18, 1);
+    pointer-events: all;
+}
+
+.step-curtain.covered {
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.step-curtain.out {
+    transform: translateY(-100%);
+    transition: transform .5s cubic-bezier(.77, 0, .18, 1);
+}
+
+.sc-label {
+    color: #672c2c;
+    font-family: "Inria Serif", serif;
+    font-size: 1.6rem;
+}
+
+.sc-bar {
+    position: relative;
+    width: min(260px, 60%);
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(103, 44, 44, .15);
+    overflow: hidden;
+}
+
+.sc-bar i {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 40%;
+    border-radius: 4px;
+    background: #672c2c;
+    animation: scSlide 1s ease-in-out infinite;
+}
+
+@keyframes scSlide {
+    from {
+        transform: translateX(-100%);
+    }
+
+    to {
+        transform: translateX(250%);
+    }
+}
+
+.sb-usermenu {
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: max-height .4s cubic-bezier(.4, 0, .2, 1),
+        margin .4s cubic-bezier(.4, 0, .2, 1),
+        opacity .3s ease,
+        visibility 0s linear .4s;
+}
+
+.sb-usermenu.open {
+    max-height: 220px;
+    margin: 0 0 6px;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.sb-usermenu .sb-subitem {
+    opacity: 0;
+    translate: -12px 0;
+    transition: opacity .3s ease, translate .3s ease, background .15s;
+}
+
+.sb-usermenu.open .sb-subitem {
+    opacity: 1;
+    translate: 0 0;
+}
+
+.sb-usermenu.open .sb-subitem:nth-child(1) {
+    transition-delay: .08s, .08s, 0s;
+}
+
+.sb-usermenu.open .sb-subitem:nth-child(2) {
+    transition-delay: .14s, .14s, 0s;
+}
+
+.sb-usermenu.open .sb-subitem:nth-child(3) {
+    transition-delay: .20s, .20s, 0s;
+}
+
+.sb-chevron .sb-icon {
+    transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .sb-usermenu,
+    .sb-usermenu .sb-subitem {
+        transition: none;
+    }
+}

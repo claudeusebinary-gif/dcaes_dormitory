@@ -790,10 +790,10 @@
 
   .badge-payment {
       top: 200px;
-      left: 1600px;
+      left: auto;
+      right: 60px;
       display: none;
   }
-
 
   .badge-secure {
       --d: 0s;
@@ -884,8 +884,34 @@
       --d: -0.9s;
   }
 
-  .badge-payment {
+   .badge-payment {
       --d: -1.8s;
+  }
+
+ 
+  .badge-secure.badge-payment {
+      animation:
+          badgePop .6s cubic-bezier(.34, 1.56, .64, 1) both,
+          badgeFloat 1s ease-in-out var(--d) infinite alternate;
+  }
+
+  @keyframes badgePop {
+      from {
+          opacity: 0;
+          translate: 40px 0;
+          scale: .6;
+      }
+      to {
+          opacity: 1;
+          translate: 0 0;
+          scale: 1;
+      }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+      .badge-secure.badge-payment {
+          animation: none;
+      }
   }
 
   @media (prefers-reduced-motion: reduce) {

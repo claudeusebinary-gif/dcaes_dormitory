@@ -392,7 +392,29 @@
                     placeholder="Describe the problem: what happened, where, and when..."></textarea>
                 <span class="msgcount" id="complaintCount">0 / 1000</span>
             </div>
-
+<div class="photo-drop">
+    <span class="photo-drop-label">Attach a photo (optional)</span>
+    <input type="file" id="complaintPhoto" class="photo-drop-input" accept="image/jpeg,image/png,image/webp">
+    <label for="complaintPhoto" class="photo-drop-area">
+        <span class="photo-drop-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><path d="m21 15-5-5L5 21" />
+            </svg>
+        </span>
+        <span class="photo-drop-text">
+            <strong>Click to upload or drag a photo here</strong>
+            <span>JPG, PNG or WEBP, up to 5 MB</span>
+        </span>
+    </label>
+    <div class="photo-preview">
+        <img alt="Selected photo preview">
+        <div class="photo-preview-info">
+            <span class="photo-preview-name"></span>
+            <span class="photo-preview-size"></span>
+        </div>
+        <button type="button" class="photo-remove" aria-label="Remove photo">&times;</button>
+    </div>
+</div>
             <input type="button" class="sending" id="sendComplaintBtn" value="Send Complaint"
                 data-url="{{ route('tenant.complaints.store') }}">
             <p class="msg-status" id="complaintStatus" hidden></p>
@@ -1105,7 +1127,39 @@
                 <input type="checkbox" name="agree" id="agree" class="radi" required>
                 <h1>I agree to the dormitory's term of stay and confirm the reservation fee is non-refundable.</h1>
             </div>
-            <button class="lahatbayad">Pay ₱2,120.00 & confirm booking</button>
+                     <div class="proofbooking">
+                <h1>Payment screenshot *</h1>
+    <label class="upload" data-upload>
+        <input type="file" class="upload-input" name="payment_proof" title=""
+            accept="image/png, image/jpeg">
+
+        <div class="upload-empty">
+            <svg viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p class="upload-title">Upload your GCash receipt</p>
+            <p class="upload-hint">JPG or PNG, up to 5MB</p>
+        </div>
+
+        <div class="upload-file" hidden>
+            <img class="upload-thumb" alt="">
+            <div class="upload-info">
+                <p class="upload-name"></p>
+                <p class="upload-size"></p>
+            </div>
+            <button type="button" class="upload-remove" aria-label="Remove file">
+                <svg viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+        </div>
+    </label>
+    <p class="upload-error" hidden></p>
+</div>
+            <button type="button" class="lahatbayad">Pay ₱2,120.00 & confirm booking</button>
             <div class="yours12">
                 <h1>Your bed stays reserved while you complete this form.</h1>
                 <div class="linyavable"></div>
@@ -2092,7 +2146,8 @@
 @endsection
 
 @push('scripts')
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
     <script>document.querySelectorAll('[data-upload]').forEach(box => {
             const input = box.querySelector('.upload-input');
             const empty = box.querySelector('.upload-empty');
@@ -2137,9 +2192,15 @@
                 thumb.src = url;
                 nameEl.textContent = f.name;
                 sizeEl.textContent = fmt(f.size);
-                empty.hidden = true;
+                               empty.hidden = true;
                 filebx.hidden = false;
                 box.classList.add('has-file');
+
+               
+                setTimeout(() => {
+                    const payBtn = document.querySelector('#paymentStepModal .lahatbayad');
+                    if (payBtn) payBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 250);
             });
 
             box.querySelector('.upload-remove').addEventListener('click', e => {
@@ -2421,7 +2482,7 @@
             const complaintCount = document.getElementById('complaintCount');
             const complaintBtn = document.getElementById('sendComplaintBtn');
             const complaintStatus = document.getElementById('complaintStatus');
-
+const complaintPhoto = document.getElementById('complaintPhoto');
             function setComplaintStatus(text, type) {
                 complaintStatus.hidden = !text;
                 complaintStatus.textContent = text || '';
@@ -2455,15 +2516,24 @@
                 setComplaintStatus('');
 
                 try {
-                    const res = await fetch(complaintBtn.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': csrf
-                        },
-                        body: JSON.stringify({ type: complaintType.value, message: text })
-                    });
+                 const fd = new FormData();
+fd.append('type', complaintType.value);
+fd.append('message', text);
+if (complaintPhoto.files[0]) {
+    if (complaintPhoto.files[0].size > 5 * 1024 * 1024) {
+        throw new Error('The photo must be 5 MB or smaller.');
+    }
+    fd.append('photo', complaintPhoto.files[0]);
+}
+
+const res = await fetch(complaintBtn.dataset.url, {
+    method: 'POST',
+    headers: {
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': csrf
+    },
+    body: fd
+});
 
                     if (res.status === 429) throw new Error('You are sending too fast. Please wait a moment.');
                     if (res.status === 419) throw new Error('Your session expired. Refresh the page and try again.');
@@ -2475,6 +2545,8 @@
                     if (!res.ok) throw new Error('Could not send your complaint. Please try again.');
 
                     complaintType.selectedIndex = 0;
+                    complaintPhoto.value = '';
+complaintPhoto.dispatchEvent(new Event('change'));
                     complaintMsg.value = '';
                     updateComplaintCount();
                     setComplaintStatus('Complaint sent! We will get back to you soon.', 'ok');
@@ -2747,10 +2819,32 @@
                 payModal.setAttribute('aria-hidden', 'true');
             }
 
-            bookBtn.addEventListener('click', openPayment);
+           bookBtn.addEventListener('click', () => {
+    if (isGuest || myRoom || hasPending || !selectedBed || !selectedBed.deck || !window.StepCurtain) {
+        openPayment();
+        return;
+    }
+    window.StepCurtain.run('Your details', openPayment);
+});
 
             const todayLocal = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().split('T')[0];
-            detailsForm.querySelector('[name="date_of_birth"]').max = todayLocal;
+          flatpickr(detailsForm.querySelector('[name="date_of_birth"]'), {
+    altInput: true,
+    altFormat: 'F j, Y',
+    dateFormat: 'Y-m-d',
+    maxDate: 'today',
+    disableMobile: true,
+    allowInput: false
+});
+
+flatpickr(detailsForm.querySelector('[name="move_in_date"]'), {
+    altInput: true,
+    altFormat: 'F j, Y',
+    dateFormat: 'Y-m-d',
+    minDate: 'today',
+    disableMobile: true,
+    allowInput: false
+});
             detailsForm.querySelector('[name="move_in_date"]').min = todayLocal;
 
             function openStep3() {
@@ -2770,11 +2864,11 @@
                 setProgressStep(2);
             }
 
-            detailsForm.addEventListener('submit', e => {
+                      detailsForm.addEventListener('submit', e => {
                 e.preventDefault();
-                openStep3();
+                if (window.StepCurtain) window.StepCurtain.run('Payment', openStep3);
+                else openStep3();
             });
-
             stepModal.addEventListener('click', e => {
                 if (e.target.closest('[data-back-to-details]')) closeStep3();
             });
@@ -2817,6 +2911,14 @@
                     const fd = new FormData();
                     Object.entries(bookingData).forEach(([k, v]) => fd.append(k, v));
 
+const proofFile = stepModal.querySelector('[name="payment_proof"]').files[0];
+if (!proofFile) {
+    throw new Error('Please upload a screenshot of your payment.');
+}
+fd.append('payment_proof', proofFile);
+
+                                      if (window.StepCurtain) await window.StepCurtain.show('Submitting your booking');
+
                     const res = await fetch(bookUrl, {
                         method: 'POST',
                         headers: {
@@ -2850,15 +2952,44 @@
                     stopHold();
                     openConfirm(data);
                 } catch (err) {
+                                        if (window.StepCurtain) await window.StepCurtain.hide();
                     alert(err instanceof TypeError ? 'No connection. Check your internet and try again.' : err.message);
-                } finally {
+                             } finally {
                     payBtnEl.disabled = false;
                     payBtnEl.textContent = original;
+                    if (window.StepCurtain) window.StepCurtain.hide();
                 }
             }
 
             payBtnEl.addEventListener('click', submitBooking);
+            // Auto-scroll to the pay button after a valid screenshot is chosen
+            const proofInput = stepModal.querySelector('[name="payment_proof"]');
 
+            function scrollToPayBtn() {
+                // find the element that actually scrolls (the modal or the form panel)
+                let el = payBtnEl.parentElement;
+                while (el && el !== document.body) {
+                    const oy = getComputedStyle(el).overflowY;
+                    if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight) break;
+                    el = el.parentElement;
+                }
+                if (!el || el === document.body) {
+                    payBtnEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    return;
+                }
+                const boxRect = el.getBoundingClientRect();
+                const btnRect = payBtnEl.getBoundingClientRect();
+                const target = el.scrollTop + (btnRect.bottom - boxRect.bottom) + 90;
+                el.scrollTo({ top: target, behavior: 'smooth' });
+            }
+
+            proofInput.addEventListener('change', () => {
+                const f = proofInput.files[0];
+                if (!f) return;
+                if (!['image/jpeg', 'image/png'].includes(f.type)) return;
+                if (f.size > 5 * 1024 * 1024) return;
+                setTimeout(scrollToPayBtn, 350);
+            });
             confirmModal.addEventListener('click', e => {
                 if (e.target.closest('[data-back-to-payment]')) closeConfirm();
             });

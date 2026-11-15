@@ -325,3 +325,113 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+/* ===== Electricity bills page ===== */
+.elec-layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 24px;
+    align-items: start;
+    margin-top: 20px;
+}
+
+.elec-form {
+    position: relative;
+    box-sizing: border-box;
+    padding: 34px 32px 30px;
+    background-color: #FFFCF8;
+    border: 1px solid #00000018;
+    border-radius: 0 12px 12px 12px;
+    font-family: 'Nunito Sans', sans-serif;
+}
+
+.elec-form::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    background-color: #7B3D3B;
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.elec-title {
+    margin: 0 0 14px;
+    font-family: 'Inria Serif', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #7B3D3B;
+}
+
+.elec-grid {
+    margin-top: 0;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.elec-ok {
+    margin: 0 0 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #E8F2EB;
+    border: 1px solid #2D724833;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #2D7248;
+}
+
+.elec-drop {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 64px;
+    border: 2px dashed #e2bcac;
+    border-radius: 10px;
+    background-color: #F9F5EE;
+    color: #672c2c;
+    font-size: .9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.elec-drop:hover {
+    background-color: #ffffff;
+    border-color: #7B3D3B;
+}
+
+.elec-drop svg {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+}
+
+.elec-drop span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 230px;
+}
+
+@media (max-width: 1200px) {
+    .elec-layout { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+    .elec-grid { grid-template-columns: 1fr; }
+}
+.paidrightcol{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex: 0 0 auto;
+}
+.paidrightcol .proof-link{
+    color: #1060BC;
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    line-height: 1.2;
+}

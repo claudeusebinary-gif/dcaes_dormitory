@@ -269,6 +269,8 @@ public function tenantDestroy(Request $request, int $id): JsonResponse
     $tenant = User::where('role', 'tenant')->findOrFail($id);
     abort_if($tenant->id === $request->user()->id, 422, "You can't delete your own account.");
 
+        abort_if(\App\Models\Payment::where('user_id', $tenant->id)->exists(), 422, 'This tenant has payment records and cannot be deleted. Move them out instead.');
+
     $name = $tenant->display_name;
     $tenant->delete();
     AdminLog::record('tenants', "Deleted tenant {$name}");
@@ -473,6 +475,7 @@ public function payments(): View
             'submitted'   => (float) (($subs->get($u->id) ?? collect())->sum(fn ($s) => (float) $s->amount + (float) $s->fee)),
             'submitted_note' => ($subs->get($u->id) ?? collect())->map(fn ($s) => Billing::money((float) $s->amount + (float) $s->fee) . ' for ' . Carbon::parse($s->period . '-01')->format('M Y'))->implode(' + '),
             'approve_ids' => ($subs->get($u->id) ?? collect())->pluck('id')->values()->all(),
+            'proofs'      => ($subs->get($u->id) ?? collect())->filter(fn ($s) => $s->proof_path)->map(fn ($s) => route('admin.approvals.proof', $s->id))   ->values()->all(),
             'label'       => match ($c['status']) { 'paid' => 'RECORDED PAYMENT', 'partial' => 'PAID SO FAR', default => 'AMOUNT DUE' },
             'amount'      => Billing::money(in_array($c['status'], ['paid', 'partial']) ? $c['paid'] : $c['rent']),
             'sub'         => $sub,
@@ -519,6 +522,7 @@ private function paymentCycle(User $u): array
     }
 
     $period = $cycle->format('Y-m');
+    $rent   = Billing::dueFor($u, $period);
     $row    = $rows->get($period);
 
     if ($row && $row->partial) {
@@ -559,7 +563,7 @@ private function paymentCycle(User $u): array
         'can_record'    => $status !== 'paid',
         'target_period' => $t->format('Y-m'),
         'target_label'  => $t->format('F Y'),
-        'target_left'   => max(0, $rent - ($tRow && $tRow->partial ? (float) $tRow->amount : 0)),
+        'target_left'   => max(0, Billing::dueFor($u, $t->format('Y-m')) - ($tRow && $tRow->partial ? (float) $tRow->amount : 0)),
     ];
 }
 
@@ -595,7 +599,7 @@ public function paymentStore(Request $request): JsonResponse
 
     $row->fill([
         'amount'    => $total,
-        'partial'   => $total + 0.01 < $c['rent'],
+        'partial'   => $total + 0.01 < Billing::dueFor($tenant, $period),
         'method'    => 'Recorded by admin',
         'reference' => 'DAC-' . str_replace('-', '', $period) . '-' . str_pad($tenant->id, 4, '0', STR_PAD_LEFT),
         'paid_at'   => Carbon::parse($data['paid_on'])->setTimeFrom(now()),
@@ -683,7 +687,8 @@ public function complaints(): View
             'filed_full'  => $fmt($c->created_at),
             'progress_at' => $fmt($c->in_progress_at),
             'resolved_at' => $fmt($c->resolved_at),
-            'status_url'  => route('admin.complaints.status', $c->id),
+           'status_url'  => route('admin.complaints.status', $c->id),
+'photo'       => $c->photo_path ? route('admin.complaints.photo', $c->id) : null,
         ];
     });
     $cards = $cards->sortBy(fn ($c) => ['open' => 0, 'progress' => 1, 'resolved' => 2][$c['status']] ?? 3)->values();
@@ -739,6 +744,13 @@ AdminLog::record('complaints', ($data['status'] === 'resolved' ? 'Resolved' : 'S
     return response()->json(['ok' => true, 'message' => $data['status'] === 'resolved' ? 'Marked as resolved.' : 'Marked as in progress.']);
 }
 
+public function complaintPhoto(int $id)
+{
+    $c = Complaint::findOrFail($id);
+    abort_unless($c->photo_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($c->photo_path), 404);
+
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($c->photo_path);
+}
 public function approvals(): View
 {
     $labels = Approval::TYPES;
@@ -811,6 +823,7 @@ public function approvals(): View
                 'relationship' => $ec?->relationship,
                 'phone'        => $ec?->phone,
             ],
+                        'proof'          => $a->proof_path ? route('admin.approvals.proof', $a->id) : null,
                        'idcard'         => ['type' => $a->id_type, 'number' => $a->id_number, 'photo' => $a->id_photo_path ? route('admin.approvals.id-photo', $a->id) : null],
             'request'        => $rr ? [
                 'from'          => $rr->room_number ? 'Room ' . $rr->room_number : null,
@@ -1194,6 +1207,81 @@ public function saveNotifications(Request $request): JsonResponse
 
     return response()->json(['ok' => true]);
 }
+public function approvalProof(int $id)
+{
+    $a = Approval::findOrFail($id);
+    abort_unless($a->proof_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($a->proof_path), 404);
+
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($a->proof_path);
+}
+
+public function electricity(): View
+{
+    $rooms  = Room::orderBy('room_number')->get();
+    $counts = User::where('role', 'tenant')->whereNotNull('room_number')
+        ->selectRaw('room_number, count(*) as c')->groupBy('room_number')->pluck('c', 'room_number');
+    $bills  = \App\Models\ElectricityBill::orderByDesc('period')->orderBy('room_number')->limit(60)->get();
+
+    return view('admin.electricity', compact('rooms', 'counts', 'bills'));
+}
+
+public function electricityStore(Request $request)
+{
+    $data = $request->validate([
+        'room_number' => ['required', 'string', 'exists:rooms,room_number'],
+        'period'      => ['required', 'regex:/^\d{4}-\d{2}$/'],
+        'amount'      => ['required', 'numeric', 'min:1', 'max:1000000'],
+        'photo'       => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+    ]);
+
+    $bill = \App\Models\ElectricityBill::firstOrNew(['room_number' => $data['room_number'], 'period' => $data['period']]);
+    if ($bill->photo_path) {
+        \Illuminate\Support\Facades\Storage::disk('local')->delete($bill->photo_path);
+    }
+    $bill->amount     = round((float) $data['amount'], 2);
+    $bill->photo_path = $request->file('photo')->store('electricity', 'local');
+    $bill->save();
+
+        $tenants = Billing::electricSharers($data['room_number'], $data['period']);
+            // advance-paid months: whatever the electricity adds becomes a balance due on that month's due date
+    foreach ($tenants as $t) {
+        $row = \App\Models\Payment::where('user_id', $t->id)->where('period', $data['period'])->first();
+        if (! $row) continue;
+
+        $partial = (float) $row->amount + 0.01 < Billing::dueFor($t, $data['period']);
+
+        if ($partial !== (bool) $row->partial) {
+            $row->update(['partial' => $partial]);
+        }
+        if ($partial && $t->payment_status === 'up_to_date') {
+            $t->update(['payment_status' => 'due']);
+        }
+    }
+    $share   = $tenants->count() ? round($bill->amount / $tenants->count(), 2) : 0;
+    $month   = Carbon::parse($data['period'] . '-01')->format('F Y');
+
+    foreach ($tenants as $t) {
+        Notification::create([
+            'tenant_id' => $t->id,
+            'title'     => 'Electricity bill posted',
+            'message'   => "The {$month} electricity bill for Room {$data['room_number']} is " . Billing::money($bill->amount)
+                         . ". Your share is " . Billing::money($share) . '.',
+        ]);
+    }
+
+    AdminLog::record('payments', "Posted {$month} electricity bill for Room {$data['room_number']} (" . Billing::money($bill->amount) . ')');
+
+    return redirect()->route('admin.electricity')->with('status', 'Electricity bill saved. Each tenant\'s share is ' . Billing::money($share) . '.');
+}
+
+public function electricityPhoto(int $id)
+{
+    $b = \App\Models\ElectricityBill::findOrFail($id);
+    abort_unless($b->photo_path && \Illuminate\Support\Facades\Storage::disk('local')->exists($b->photo_path), 404);
+
+    return \Illuminate\Support\Facades\Storage::disk('local')->response($b->photo_path);
+}
+
 public function approvalIdPhoto(int $id)
 {
     $a = Approval::findOrFail($id);
@@ -1201,9 +1289,10 @@ public function approvalIdPhoto(int $id)
 
     return \Illuminate\Support\Facades\Storage::disk('local')->response($a->id_photo_path);
 }
-      public function approve(int $id): JsonResponse
-{
-    $a = Approval::with('user')->where('status', 'pending')->findOrFail($id);
+       public function approve(int $id): JsonResponse
+   {
+       return DB::transaction(function () use ($id) {
+       $a = Approval::with('user')->where('status', 'pending')->lockForUpdate()->findOrFail($id);
 
     if (! $a->is_manual && $a->type === 'new_tenant' && $a->room_number) {
         $error = $this->assignRoom($a);
@@ -1251,12 +1340,13 @@ if ($a->user) {
         ]);
     }
 
-    return response()->json(['ok' => true, 'message' => 'Request approved.', 'counts' => $this->approvalCounts()]);
-}
+              return response()->json(['ok' => true, 'message' => 'Request approved.', 'counts' => $this->approvalCounts()]);
+       });
+   }
     private function recordPayment(Approval $a): void
     {
         $tenant = $a->user;
-        $rent   = Billing::rentFor($tenant);
+        $rent   = Billing::dueFor($tenant, $a->period); 
 
         $row   = Payment::firstOrNew(['user_id' => $tenant->id, 'period' => $a->period]);
         $total = round((float) ($row->exists ? $row->amount : 0) + (float) $a->amount, 2);
